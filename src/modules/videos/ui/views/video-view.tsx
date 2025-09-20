@@ -15,12 +15,12 @@ export const VideoView = ({ videoId }: VideoViewProps) => {
                     <VideoSection videoId={videoId} />
                     <SuggestionsSection videoId={videoId} />
                     <div className="xl:hidden block mt-4 sm:overflow-auto">
-                        <CommentsSection videoId={videoId} />
+                        <CommentsSection videoId={videoId}  openComments/>
                     </div>
                 </div>
-                <div className="hidden xl:block w-full xl:w-[380px] 2xl:w-[460px] shrink
+                <div className="hidden xl:block w-full xl:w-[460px] 2xl:w-[460px] shrink
 +                 xl:sticky xl:top-4 xl:self-start xl:h-fit xl:z-20">
-                    <CommentsSection videoId={videoId} />
+                    <CommentsSection videoId={videoId} openComments/>
                 </div>
             </div>
         </div>

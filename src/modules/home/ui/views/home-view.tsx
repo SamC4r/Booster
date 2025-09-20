@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Bell, User, Search, Home, TrendingUp, History } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { trpc } from '@/trpc/client';
 import { VideoSection } from '../sections/video-section';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const HomeView = () => {
   const [video] = trpc.home.getOne.useSuspenseQuery({
@@ -11,14 +12,26 @@ export const HomeView = () => {
   });
 
   const [videoIndex, setVideoIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState('home');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [direction, setDirection] = useState(0);
+
+  // HARD lock body scroll while this page is mounted
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
 
   // Keyboard navigation
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') setVideoIndex((i) => i + 1);
-      if (e.key === 'ArrowLeft') setVideoIndex((i) => Math.max(0, i - 1));
+      if (e.key === 'ArrowRight') {
+        setDirection(1);
+        setVideoIndex((i) => i + 1);
+      }
+      if (e.key === 'ArrowLeft') {
+        setDirection(-1);
+        setVideoIndex((i) => Math.max(0, i - 1));
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -26,100 +39,101 @@ export const HomeView = () => {
 
   if (!video) return null;
 
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
+
   return (
-    <div className="min-h-96 flex flex-col bg-gradient-to-br from-amber-50 to-orange-50 text-gray-900 overflow-hidden">
-
+    <div className="h-dvh w-full flex flex-col overflow-hidden">
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 z-50 md:hidden">
-            <div className="absolute inset-0 bg-black/20" onClick={() => setSidebarOpen(false)} />
-            <div className="absolute left-0 top-0 bottom-0 w-64 bg-white border-r border-amber-200 shadow-lg p-4">
-              <div className="mb-6">
-                <div className="text-xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                  VidFlow
-                </div>
-              </div>
-              
-              <nav className="space-y-1">
-                <button 
-                  className={`flex items-center w-full p-3 rounded-lg text-left transition-colors ${activeTab === 'home' ? 'bg-amber-100 text-amber-700' : 'hover:bg-amber-50'}`}
-                  onClick={() => setActiveTab('home')}
-                >
-                  <Home size={20} className="mr-3 text-amber-600" />
-                  <span>Home</span>
-                </button>
-                
-                <button 
-                  className={`flex items-center w-full p-3 rounded-lg text-left transition-colors ${activeTab === 'trending' ? 'bg-amber-100 text-amber-700' : 'hover:bg-amber-50'}`}
-                  onClick={() => setActiveTab('trending')}
-                >
-                  <TrendingUp size={20} className="mr-3 text-amber-600" />
-                  <span>Trending</span>
-                </button>
-                
-                <button 
-                  className={`flex items-center w-full p-3 rounded-lg text-left transition-colors ${activeTab === 'history' ? 'bg-amber-100 text-amber-700' : 'hover:bg-amber-50'}`}
-                  onClick={() => setActiveTab('history')}
-                >
-                  <History size={20} className="mr-3 text-amber-600" />
-                  <span>History</span>
-                </button>
-              </nav>
+      <div className="flex-1 flex overflow-hidden gap-3">
+
+
+        {/* Center content — no scrolling here */}
+        <main className="flex-1 p-4 md:p-6 overflow-hidden">
+          <div className="flex justify-center mx-auto max-w-full h-[95%]">
+            {/* Left navigation button (matches home.html style) */}
+            <div className="hidden md:flex h-full">
+              <motion.button
+                aria-label="Previous video"
+                onClick={() => {
+                  setDirection(-1);
+                  setVideoIndex((i) => Math.max(0, i - 1));
+                }}
+                className=" w-20 rounded-2xl bg-primary/20 m-4  shadow-lg backdrop-blur-md flex items-center justify-center
+               transition-all"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <ChevronLeft className="h-10 w-10" />
+              </motion.button>
             </div>
-          </div>
-        )}
-
-        
-
-        {/* Main content with side nav buttons + centered video */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <div className="flex items-center justify-center gap-4 md:gap-6 max-w-6xl mx-auto">
-            {/* Left nav button */}
-            <button
-              aria-label="Previous"
-              onClick={() => setVideoIndex((i) => Math.max(0, i - 1))}
-              className="hidden md:flex h-16 w-14 items-center justify-center rounded-xl
-                         bg-white hover:bg-amber-50 border border-amber-200 text-amber-700 hover:text-amber-800
-                         shadow-sm transition"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-
-            {/* Center content */}
-            <div className="w-full max-w-4xl">
-              <VideoSection video={video} />
+            <AnimatePresence custom={direction} mode="wait">
+              <motion.div
+                key={videoIndex}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="w-full h-full"
+              >
+                <VideoSection video={video} />
+              </motion.div>
+            </AnimatePresence>
+             <div className="hidden md:flex h-full">
+              <motion.button
+                aria-label="Previous video"
+                onClick={() => {
+                  setDirection(-1);
+                  setVideoIndex((i) => Math.max(0, i - 1));
+                }}
+                className=" w-20 rounded-2xl bg-primary/20 m-4  shadow-lg backdrop-blur-md flex items-center justify-center
+               transition-all"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <ChevronRight className="h-10 w-10" />
+              </motion.button>
             </div>
-
-            {/* Right nav button */}
-            <button
-              aria-label="Next"
-              onClick={() => setVideoIndex((i) => i + 1)}
-              className="hidden md:flex h-16 w-14 items-center justify-center rounded-xl
-                         bg-white hover:bg-amber-50 border border-amber-200 text-amber-700 hover:text-amber-800
-                         shadow-sm transition"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
           </div>
         </main>
+
       </div>
 
       {/* Mobile navigation buttons */}
-      <div className="fixed bottom-4 left-0 right-0 flex justify-center gap-4 md:hidden z-10 px-4">
-        <button
-          onClick={() => setVideoIndex((i) => Math.max(0, i - 1))}
-          className="h-14 w-14 bg-white rounded-full shadow-lg border border-amber-200 flex items-center justify-center text-amber-700 hover:bg-amber-50 transition-colors"
+      <div className="fixed bottom-6 left-0 right-0 flex justify-center gap-6 md:hidden z-10 px-4 pointer-events-none">
+        <motion.button
+          onClick={() => {
+            setDirection(-1);
+            setVideoIndex((i) => Math.max(0, i - 1));
+          }}
+          className="pointer-events-auto h-14 w-14 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-amber-200 dark:border-gray-600 flex items-center justify-center text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-gray-700 transition-colors"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           <ChevronLeft className="h-6 w-6" />
-        </button>
-        <button
-          onClick={() => setVideoIndex((i) => i + 1)}
-          className="h-14 w-14 bg-white rounded-full shadow-lg border border-amber-200 flex items-center justify-center text-amber-700 hover:bg-amber-50 transition-colors"
+        </motion.button>
+        <motion.button
+          onClick={() => {
+            setDirection(1);
+            setVideoIndex((i) => i + 1);
+          }}
+          className="pointer-events-auto h-14 w-14 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-amber-200 dark:border-gray-600 flex items-center justify-center text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-gray-700 transition-colors"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           <ChevronRight className="h-6 w-6" />
-        </button>
+        </motion.button>
       </div>
     </div>
   );

@@ -3,9 +3,14 @@ import { MainSection } from "./main-section"
 import { Separator } from "@/components/ui/separator"
 import { PersonalSection } from "./personal-section"
 
-export const ExplorerSidebar = () => {
+
+interface Props{
+    collapsible:"icon" | "offcanvas" | "none" | undefined;
+    variant:"sidebar" | "floating" | "inset" | undefined;
+}
+export const ExplorerSidebar = ({collapsible,variant}:Props) => {
     return (
-        <Sidebar className="pt-16 z-40 border" collapsible="icon" variant="inset">
+        <Sidebar className="pt-16 z-40 -ml-2"   collapsible={collapsible} variant={variant} defaultOpen={false} >
             <SidebarContent className='bg-background' >
                 <MainSection />
                 <Separator />

@@ -63,7 +63,7 @@ export const VideoOwner = ({ user, videoId}: Props) => {
           <div className="ml-auto sm:hidden">
             {userId === user.clerkId ? (
               <Button
-                className="rounded-full gap-2 shadow-sm hover:shadow-md transition-all"
+                className="rounded-full gap-2  shadow-sm hover:shadow-md transition-all"
                 asChild
                 variant="secondary"
                 size="sm"

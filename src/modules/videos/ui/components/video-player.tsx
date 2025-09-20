@@ -871,6 +871,7 @@ translate: 4% 4%;
                 
                     ref={videoRef} //ignore xD
                     theme="media-theme-sutro"
+                    className='h-full w-full'
                         slot="media"
                         playbackId={playbackId}
                         playsInline

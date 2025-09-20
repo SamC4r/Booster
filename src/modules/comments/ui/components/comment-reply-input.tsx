@@ -45,9 +45,9 @@ export const CommentReplyInput = ({viewer,addCommentReply,parentCommentId,isPend
                     />
                     <div className="flex items-center gap-2">
                         <p className="ml-2 text-xs text-muted-foreground">{replyText.length}/{MAX_COMMENT_LENGTH}</p>
-                        <button className="text-gray-500 hover:text-amber-500 transition-colors">
+                        {/* <button className="text-gray-500 hover:text-amber-500 transition-colors">
                             <Smile className="w-5 h-5" />
-                        </button>
+                        </button> */}
                         <button
                             onClick={() => handleAddReply(parentCommentId)}
                             disabled={!replyText.trim() || isPending}

@@ -1,36 +1,53 @@
 'use client'
 
-import { UserAvatar } from "@/components/user-avatar"
-import { UserInfo } from "@/modules/users/ui/components/user-info";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { trpc } from "@/trpc/client";
-import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Heart, MessageCircle, MoreHorizontal, Send, Smile, ChevronDown, ChevronUp, Crown, Star, Zap } from "lucide-react";
 import { useAuth, useClerk } from "@clerk/clerk-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { COMMENT_SECTION_SIZE } from "@/constants";
 import { InfiniteScroll } from "@/components/infinite-scroll";
 import { Comment } from "@/modules/comments/ui/components/comment";
-import { compactNumber } from "@/lib/utils";
 import { CommentInput } from "@/modules/comments/ui/components/comment-input";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { compactNumber } from "@/lib/utils";
 
 interface CommentSectionProps {
   videoId: string;
+  openComments: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
+export const CommentsSection = (props: CommentSectionProps) => {
+  return (
+    <Suspense fallback={<CommentsSkeleton />}>
+      <ErrorBoundary fallback={<div className="text-destructive p-4 rounded-lg bg-destructive/10">Error loading comments</div>}>
+        <CommentsSuspense {...props} />
+      </ErrorBoundary>
+    </Suspense>
+  );
+};
 
-export const CommentsSection = ({ videoId }: CommentSectionProps) => {
+const CommentsSkeleton = () => (
+  <div className="h-full flex flex-col">
+    <div className="h-[70px] px-5 flex items-center justify-between border-b border-white/10">
+      <div className="h-6 w-40 bg-white/10 rounded animate-pulse" />
+      <div className="h-10 w-10 bg-white/10 rounded-full animate-pulse" />
+    </div>
+    <div className="flex-1 bg-white/5" />
+  </div>
+);
 
+export const CommentsSuspense = ({ videoId, openComments, onOpenChange }: CommentSectionProps) => {
   const clerk = useClerk();
   const utils = trpc.useUtils();
   const { isSignedIn } = useAuth();
 
-  const [rootComments, query] = trpc.comments.getTopLevel.useSuspenseInfiniteQuery({
-    videoId,
-    limit: COMMENT_SECTION_SIZE,
-  }, {
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-  });
-
+  const [rootComments, query] = trpc.comments.getTopLevel.useSuspenseInfiniteQuery(
+    { videoId, limit: COMMENT_SECTION_SIZE },
+    { getNextPageParam: (lastPage) => lastPage.nextCursor }
+  );
 
   const items = useMemo(
     () => rootComments ? rootComments.pages.flatMap(p => p.comments) : [],
@@ -38,202 +55,126 @@ export const CommentsSection = ({ videoId }: CommentSectionProps) => {
   );
 
   const viewer = rootComments.pages[0].viewer;
+  const key = { videoId, limit: COMMENT_SECTION_SIZE };
 
-  const key = { videoId, limit: COMMENT_SECTION_SIZE }; 
-
-  const {mutate: createRootComment,isPending} = trpc.comments.create.useMutation({
+  const { mutate: createRootComment, isPending } = trpc.comments.create.useMutation({
     onMutate: async ({ videoId, comment }) => {
-      // 1) stop any in-flight fetches for THIS exact key
       await utils.comments.getTopLevel.cancel(key);
-
-      // 2) snapshot current cache
       const prev = utils.comments.getTopLevel.getInfiniteData(key);
-
-      const tempId = crypto.randomUUID()
-
+      const tempId = crypto.randomUUID();
       const now = new Date();
-      const viewer = prev?.pages?.[0]?.viewer;
-
-      // 3) optimistic row – shape must match rows from getTopLevel
-      const optimisticItem = {
+      const optimistic = {
         commentId: tempId,
         userId: viewer?.id ?? "optimistic-user",
-        videoId,
-        comment,
-        createdAt: now,
-        updatedAt: now,
-        parentId: null,
-        replies: 0,
-        user: viewer ?? {
-          id: "optimistic-user",
-          clerkId: "",
-          name: "You",
-          imageUrl: "",
-        },
-        commentLikes: 0,
-        viewerLiked: false,
+        videoId, comment,
+        createdAt: now, updatedAt: now,
+        parentId: null, replies: 0,
+        user: viewer ?? { id: "optimistic-user", clerkId: "", name: "You", imageUrl: "" },
+        commentLikes: 0, viewerLiked: false,
       } as NonNullable<typeof prev>["pages"][number]["comments"][number];
 
-      // 4) write optimistic cache
       utils.comments.getTopLevel.setInfiniteData(key, (old) => {
         if (!old) return old;
-
         const [first, ...rest] = old.pages;
-        const firstPage =
-          first ??
-          ({
-            comments: [],
-            viewer,
-            commentCount: 0,
-            nextCursor: null,
-          } as (typeof old)["pages"][number]);
-
-        const newFirstPage = {
-          ...firstPage,
-          comments: [optimisticItem, ...firstPage.comments].slice(0, COMMENT_SECTION_SIZE),
-          commentCount: (firstPage.commentCount ?? 0) + 1,
+        const newFirst = {
+          ...first,
+          comments: [optimistic, ...first.comments].slice(0, COMMENT_SECTION_SIZE),
+          commentCount: (first.commentCount ?? 0) + 1,
         };
-
-        // preserve pageParams to avoid cache bugs
-        return {
-          ...old,
-          pages: [newFirstPage, ...rest],
-        };
+        return { ...old, pages: [newFirst, ...rest] };
       });
 
-      // provide rollback context
-      return { prev,tempId };
+      return { prev, tempId };
     },
-
-    onError: (_err, _vars, ctx) => {
+    onError: (_e, _v, ctx) => { if (ctx) utils.comments.getTopLevel.setInfiniteData(key, ctx.prev); },
+    onSettled: () => { utils.comments.getTopLevel.invalidate(key); },
+    onSuccess: (serverRow, _v, ctx) => {
       if (!ctx) return;
-      utils.comments.getTopLevel.setInfiniteData(key, ctx.prev);
-    },
-
-    onSettled: () => {
-      utils.comments.getTopLevel.invalidate(key);
-    },
-     onSuccess: (serverRow, _vars, ctx) => {
-      if (!ctx) return;
-
-      // `serverRow` should be what your mutation returns: the created comment row.
-      // Make sure your server returns the same shape your list uses (join fields, etc.).
       utils.comments.getTopLevel.setInfiniteData(key, (old) => {
         if (!old) return old;
-
-        // Try to replace inside the first page; if you paginate, you could scan all pages
         const pages = old.pages.map((p, i) => {
           if (i !== 0) return p;
-          const idx = p.comments.findIndex((c) => c.commentId === ctx.tempId);
+          const idx = p.comments.findIndex(c => c.commentId === ctx.tempId);
           if (idx === -1) return p;
-
-          // Merge to preserve any client-only fields if needed
-          const replaced = {
-            ...p.comments[idx],
-            ...serverRow, // server has the real commentId, updatedAt, etc.
-          };
-
-          const nextComments = p.comments.slice();
-          nextComments[idx] = replaced;
-          return { ...p, comments: nextComments };
+          const next = p.comments.slice();
+          next[idx] = { ...next[idx], ...serverRow };
+          return { ...p, comments: next };
         });
-
         return { ...old, pages };
       });
-
-      // still refetch in background to be safe
-      utils.comments.getTopLevel.invalidate({videoId,limit:COMMENT_SECTION_SIZE});
     },
   });
 
+  const createComment = (newComment: string) => {
+    if (!isSignedIn) return clerk.openSignIn();
+    createRootComment({ videoId, comment: newComment });
+  };
 
-  const createComment = (newComment:string) => {
-    if (!isSignedIn) {
-      clerk.openSignIn();
-      return;
-    }
-    console.log('creating optimistic')
-    createRootComment({
-      videoId,
-      comment: newComment,
-    })
-  }
-
-
-  const UserTag = ({ tag }: { tag: string }) => {
-    let bgColor = "bg-blue-100";
-    let textColor = "text-blue-800";
-    let icon = null;
-
-    if (tag === "Creator") {
-      bgColor = "bg-purple-100";
-      textColor = "text-purple-800";
-      icon = <Crown className="w-3 h-3" />;
-    } else if (tag === "Top Fan" || tag === "VIP") {
-      bgColor = "bg-amber-100";
-      textColor = "text-amber-800";
-      icon = <Star className="w-3 h-3" />;
-    } else if (tag === "Editor") {
-      bgColor = "bg-green-100";
-      textColor = "text-green-800";
-      icon = <Zap className="w-3 h-3" />;
-    } else if (tag === "Explorer") {
-      bgColor = "bg-indigo-100";
-      textColor = "text-indigo-800";
-    } else if (tag === "Musician") {
-      bgColor = "bg-pink-100";
-      textColor = "text-pink-800";
-    }
-
-    return (
-      <span className={`inline-flex items-center gap-1 ${bgColor} ${textColor} px-2 py-1 rounded-full text-xs font-medium`}>
-        {icon}
-        {tag}
-      </span>
-    );
+  // Controlled open mirror (header always visible at 70px)
+  const [open, setOpen] = useState(openComments);
+  useEffect(() => setOpen(openComments), [openComments]);
+  const toggle = () => {
+    const next = !open;
+    setOpen(next);
+    onOpenChange?.(next);
   };
 
   return (
+    <div className="h-full flex flex-col overflow-hidden "
 
-    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg h-full flex flex-col border border-gray-200 dark:border-gray-800 space-y-4 flex-1 ">
-
-
-      {/* Comment description UI: input + comment count */}
-
-
-      <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
-          <span className="text-montserrat">Comments</span>
-          {/* <span className="text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-1 ml-2">
-            {comments.reduce((total, comment) => total + 1 + (comment.replies?.reduce((replyTotal, reply) => 
-              replyTotal + 1 + (reply.replies?.length || 0), 0) || 0), 0)}
-          </span> */}
-          {compactNumber(rootComments.pages[0].commentCount ?? 0)}
+    >
+      {/* HEADER — fixed 70px, matches home.html */}
+      <div
+        className="h-[60px] p-3 flex items-center justify-between border-b border-white/10 hover:cursor-pointer"
+        onClick={toggle}
+      >
+        <h2 className="text-[1.1rem] font-semibold flex items-center gap-2  ml-2">
+          <MessageCircle className="w-5 h-5 text-black" />
+          <span>Comments {compactNumber(rootComments.pages[0].commentCount ?? 0)}</span>
         </h2>
+        <span className="h-10 w-10 rounded-full bg-white hover:bg-white/20 inline-flex items-center justify-center transition">
+          {query.isFetching && !query.isFetchingNextPage
+            ? <Spinner variant='circle' className="w-5 h-5" />
+            : (open ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />)}
+        </span>
       </div>
 
-      {/* COmment input */}
-      <CommentInput 
-        viewer={viewer}
-        createComment={createComment}
-      />
-      
-      <div className="flex flex-col gap-6 m-4 min-w-0 overflow-x-hidden">
+      {/* CONTENT — fills remaining height INSIDE this panel; scrolls internally */}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex-1 min-h-0 flex flex-col"
+          >
+            <div className="px-5  border-b border-white/10">
+              <CommentInput viewer={viewer} createComment={createComment} />
+            </div>
 
-        {items.map((comment) =>
-          <Comment key={comment.commentId} parentComment={comment} videoId={videoId} viewer={rootComments.pages[0].viewer} isPending={isPending} depth={1} maxDepth={4}/>
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1">
+              {items.map(c => (
+                <Comment
+                  key={c.commentId}
+                  parentComment={c}
+                  videoId={videoId}
+                  viewer={viewer}
+                  isPending={isPending}
+                  depth={1}
+                  maxDepth={5}
+                />
+              ))}
+              <InfiniteScroll
+                isManual={false}
+                hasNextPage={query.hasNextPage}
+                isFetchingNextPage={query.isFetchingNextPage}
+                fetchNextPage={query.fetchNextPage}
+              />
+            </div>
+          </motion.div>
         )}
-      </div>
-      <InfiniteScroll
-        isManual={false}
-        hasNextPage={query.hasNextPage}
-        isFetchingNextPage={query.isFetchingNextPage}
-        fetchNextPage={query.fetchNextPage}
-      />
-
-    </div >
-
+      </AnimatePresence>
+    </div>
   );
 };
-
