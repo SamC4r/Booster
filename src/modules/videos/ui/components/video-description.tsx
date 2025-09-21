@@ -21,9 +21,9 @@ export const VideoDescription = ({
 
   return (
     <div 
-      className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-5 cursor-pointer 
-                 border border-yellow-200/50 shadow-lg hover:shadow-xl transition-all duration-300
-                 hover:border-yellow-300/70"
+      className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 rounded-2xl p-5 cursor-pointer 
+                 border border-yellow-200/50 dark:border-yellow-800/50 shadow-lg hover:shadow-xl transition-all duration-300
+                 hover:border-yellow-300/70 dark:hover:border-yellow-700/70"
       onClick={() => setIsExpanded((current) => !current)}
     >
       <div className="flex justify-between items-center mb-3">
@@ -31,7 +31,7 @@ export const VideoDescription = ({
           <span className="font-semibold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
             {isExpanded ? expandedViews : compactViews} views
           </span>
-          <span className="font-semibold text-gray-600">
+          <span className="font-semibold text-gray-600 dark:text-gray-400">
             {isExpanded ? expandedDate : compactDate}
           </span>
         </div>
@@ -52,7 +52,7 @@ export const VideoDescription = ({
       
       <div className="relative">
         <p className={cn(
-          "text-gray-700 transition-all duration-500",
+          "text-gray-700 dark:text-gray-300 transition-all duration-500",
           !isExpanded && "line-clamp-3"
         )}>
           {description || "No description available for this video."}

@@ -20,11 +20,11 @@ export const FollowList = () => {
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-bold text-amber-900 mb-2">Communities you follow</h1>
+                    <h1 className="text-3xl font-bold text-amber-900 dark:text-amber-100 mb-2">Communities you follow</h1>
                 </div>
 
                 {/* Search and Stats Bar */}
-                <div className="bg-white rounded-xl p-4 shadow-lg mb-6">
+                <div className="bg-white dark:bg-[#333333] rounded-xl p-4 shadow-lg mb-6 border border-gray-200 dark:border-gray-700">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="relative w-full md:w-64">
                             {/* TODO: implement. Not for MVP */}
@@ -38,7 +38,7 @@ export const FollowList = () => {
                             />
                         </div>
                         
-                        <div className="flex items-center text-amber-800">
+                        <div className="flex items-center text-amber-800 dark:text-amber-200">
                             <Globe className="h-5 w-5 mr-2" />
                             <span className="font-medium">{followList.length} following</span>
                         </div>
@@ -49,7 +49,7 @@ export const FollowList = () => {
                 {/* User Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {filteredUsers.map((e) => (
-                        <div key={e.user?.id} className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 border border-amber-100 hover:border-amber-200">
+                        <div key={e.user?.id} className="bg-white dark:bg-[#333333] rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 border border-amber-100 dark:border-amber-800 hover:border-amber-200 dark:hover:border-amber-700">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <UserAvatar
@@ -60,8 +60,8 @@ export const FollowList = () => {
                                         className="ring-2 ring-amber-400"
                                     />
                                     <div>
-                                        <h3 className="font-semibold text-amber-900">{e.user?.name}</h3>
-                                        <div className="flex items-center text-amber-600 text-sm mt-1">
+                                        <h3 className="font-semibold text-amber-900 dark:text-amber-100">{e.user?.name}</h3>
+                                        <div className="flex items-center text-amber-600 dark:text-amber-400 text-sm mt-1">
                                             <Users className="h-4 w-4 mr-1" />
                                             <span>{e.user?.followsCount || 0} followers</span>
                                         </div>
@@ -75,7 +75,7 @@ export const FollowList = () => {
                             
                             {/* Action Buttons */}
                             <div className="flex gap-2 mt-4 pt-3 border-t border-amber-100">
-                                <button className="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-800 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <button className="flex-1 bg-yellow-100 hover:bg-[#ffca55] text-black py-2 rounded-lg text-sm font-medium transition-colors">
                                     View Profile
                                 </button>
                                
@@ -86,14 +86,14 @@ export const FollowList = () => {
 
                 {/* Empty State */}
                 {filteredUsers.length === 0 && (
-                    <div className="text-center py-12 bg-white rounded-xl shadow-lg">
+                    <div className="text-center py-12 bg-white dark:bg-[#333333] rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
                         <div className="mx-auto h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center mb-4">
                             <Users className="h-8 w-8 text-amber-500" />
                         </div>
-                        <h3 className="text-xl font-medium text-amber-900 mb-2">
+                        <h3 className="text-xl font-medium text-amber-900 dark:text-amber-100 mb-2">
                             {searchQuery ? "No matches found" : "You are not following any community yet"}
                         </h3>
-                        <p className="text-amber-600 max-w-md mx-auto mb-4">
+                        <p className="text-amber-600 dark:text-amber-400 max-w-md mx-auto mb-4">
                             {searchQuery 
                                 ? `No users found for "${searchQuery}". Try a different search term.`
                                 : "Start following people and see them here."

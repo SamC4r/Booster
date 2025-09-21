@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { compactDate, compactNumber } from '@/lib/utils';
-import { VideoGetOneOutput } from '@/modules/videos/types';
+import { HomeGetManyOutput, VideoGetOneOutput } from '@/modules/videos/types';
 import { VideoPlayer } from '@/modules/videos/ui/components/video-player';
 import { CommentsSection } from '@/modules/videos/ui/sections/comments-section';
 import { Eye, Calendar, ThumbsUp, Share, Download, Save, Play, Clock, Edit3Icon, ChevronLeft, ZapIcon } from 'lucide-react';
@@ -15,8 +15,40 @@ import { UserAvatar } from '@/components/user-avatar';
 import { trpc } from '@/trpc/client';
 import { VideoReactions } from '@/modules/videos/ui/components/video-reactions';
 import { toast } from 'sonner';
+import { DEFAULT_LIMIT } from '@/constants';
+import { User } from '@/modules/users/types';
 
-type Video = VideoGetOneOutput;
+type Video = {
+    user: {
+        followsCount: number;
+        viewerIsFollowing: boolean;
+        videoCount: number;
+        viewerRating: number;
+        id: string;
+        clerkId: string;
+        name: string;
+        imageUrl: string;
+        createdAt: Date;
+        updatedAt: Date;
+    };
+    videoRatings: number;
+    averageRating: number;
+    videoViews: number;
+    id: string;
+    title: string;
+    description: string | null;
+    muxStatus: string | null;
+    muxAssetId: string | null;
+    muxUploadId: string | null;
+    muxPlaybackId: string | null;
+    muxTrackId: string | null;
+    muxTrackStatus: string | null;
+    thumbnailUrl: string | null;
+    thumbnailKey: string | null;
+    updatedAt: Date;
+    createdAt: Date;
+    viewer:User | null;
+}
 
 interface Props { video: Video; }
 
@@ -41,7 +73,7 @@ export const VideoSection = ({ video }: Props) => {
     }, []);
 
     const createView = trpc.videoViews.create.useMutation({
-        onSuccess: () => { utils.videos.getOne.invalidate({ id: video.id }); },
+        onSuccess: () => { utils.home.getMany.invalidate({ limit:DEFAULT_LIMIT }); },
     });
 
     const handlePlay = () => {
@@ -56,7 +88,7 @@ export const VideoSection = ({ video }: Props) => {
 
     const createRating = trpc.videoRatings.create.useMutation({
         onSuccess: () => {
-            utils.home.getOne.invalidate({ id: video.id })
+            utils.home.getMany.invalidate({ limit:DEFAULT_LIMIT })
         },
         onError: (error) => {
             if (error.message === "limit") toast.error("Wait a bit before rating again!")
@@ -77,7 +109,7 @@ export const VideoSection = ({ video }: Props) => {
     return (
         <div className="h-full w-full flex flex-col gap-4 overflow-hidden">
             {/* VIDEO AREA */}
-            <div className="relative group flex-1 rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+            <div className="relative group flex-1 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
 
                 {/* Floating title on pause / first seconds */}
                 <AnimatePresence>
@@ -88,9 +120,9 @@ export const VideoSection = ({ video }: Props) => {
                             exit={{ opacity: 0, scale: 0.9 }}
                             className="absolute top-4 left-4 z-20 hidden sm:block pointer-events-none rounded-lg"
                         >
-                            <div className="bg-white/90 backdrop-blur-md rounded-xl p-4 max-w-md border border-gray-200 shadow-md">
-                                <h2 className="text-gray-900 font-bold text-lg line-clamp-1">{video.title}</h2>
-                                <div className="flex items-center gap-4 mt-2 text-gray-600 text-sm">
+                            <div className="bg-white/90 dark:bg-[#333333]/90 backdrop-blur-md rounded-xl p-4 max-w-md border border-gray-200 dark:border-gray-700 shadow-md">
+                                <h2 className="text-gray-900 dark:text-white font-bold text-lg line-clamp-1">{video.title}</h2>
+                                <div className="flex items-center gap-4 mt-2 text-gray-600 dark:text-gray-300 text-sm">
                                     <div className="flex items-center gap-1"><Eye className="w-4 h-4" /><span>{compactNumber(video.videoViews)} views</span></div>
                                     <div className="flex items-center gap-1"><Clock className="w-4 h-4" /><span>{new Date(video.createdAt).toLocaleDateString()}</span></div>
                                 </div>
@@ -121,7 +153,7 @@ export const VideoSection = ({ video }: Props) => {
                                 exit={{ opacity: 0, scale: 0.85 }}
                                 className="absolute inset-0 z-20 flex items-center justify-center"
                             >
-                                <div className="w-20 h-20 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center border border-gray-200">
+                                <div className="w-20 h-20 rounded-full bg-white/80 dark:bg-[#333333]/80 backdrop-blur-md flex items-center justify-center border border-gray-200 dark:border-gray-700">
                                     <div className="w-16 h-16 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
                                         <Play className="h-8 w-8 text-white fill-white ml-1" />
                                     </div>
@@ -135,17 +167,17 @@ export const VideoSection = ({ video }: Props) => {
             {/* META + BUTTONS */}
             <div className='flex items-start justify-between'>
                 <div className="flex flex-col sm:items-start sm:justify-between gap-3 ml-2">
-                    <div className="flex flex-wrap items-center gap-2 text-gray-700 text-sm max-w-7xl">
-                        <p className='text-2xl font-semibold text-gray-900 line-clamp-1'>{video.title} </p>
+                    <div className="flex flex-wrap items-center gap-2 text-gray-700 dark:text-gray-300 text-sm max-w-7xl">
+                        <p className='text-2xl font-semibold text-gray-900 dark:text-white line-clamp-1'>{video.title} </p>
                     </div>
-                    <div className="flex items-center bg-white rounded-2xl px-4 border border-gray-200 shadow-sm">
+                    <div className="flex items-center bg-white dark:bg-[#333333] rounded-2xl px-4 border border-gray-200 dark:border-gray-700 shadow-sm">
                         <div className="flex items-center gap-2">
                             <UserAvatar size="lg" imageUrl={video.user.imageUrl} name={video.user.name} className="ring-2 ring-white shadow-sm" />
                             <div className="flex-1">
                                 <div className='flex items-center gap-2'>
-                                    <h3 className="font-semibold text-gray-900">{video.user?.name ?? 'Channel Name'}</h3>
+                                    <h3 className="font-semibold text-gray-900 dark:text-white">{video.user?.name ?? 'Channel Name'}</h3>
                                 </div>
-                                <p className="text-sm text-gray-600">{compactNumber(video.user.followsCount)} followers</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300">{compactNumber(video.user.followsCount)} followers</p>
                                 <div className="my-1 justify-center text-center sm:flex items-center bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full max-w-20">
                                     <ZapIcon className="hidden sm:block size-3 sm:mr-1" />
                                     <p className='text-xs'>Level 1</p>
@@ -153,7 +185,7 @@ export const VideoSection = ({ video }: Props) => {
                             </div>
                             <div className='ml-2'>
                                 {userId === video.user.clerkId ? (
-                                    <Button asChild variant="outline" size="sm" className="rounded-full gap-2 p-4 shadow-sm hover:shadow-md border-gray-300 text-gray-700 hover:bg-gray-50">
+                                    <Button asChild variant="outline" size="sm" className="rounded-full gap-2 p-4 shadow-sm hover:shadow-md border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
                                         <a href={`/studio/videos/${video.id}`}>
                                             <Edit3Icon className="size-4" /><p>Edit</p>
                                         </a>
@@ -171,19 +203,19 @@ export const VideoSection = ({ video }: Props) => {
                     </div>
                 </div>
                 <div className="flex flex-wrap items-start gap-2">
-                    <button className="px-4 h-10 rounded-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition inline-flex items-center gap-2 shadow-sm">
+                    <button className="px-4 h-10 rounded-full bg-white dark:bg-[#333333] border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition inline-flex items-center gap-2 shadow-sm">
                         <Share className="w-4 h-4" /><span className="text-sm font-medium">Share</span>
                     </button>
-                    <div className="inline-flex items-center gap-2 bg-white border border-gray-300 px-3 py-1.5 rounded-full text-gray-700">
+                    <div className="inline-flex items-center gap-2 bg-white dark:bg-[#333333] border border-gray-300 dark:border-gray-600 px-3 py-1.5 rounded-full text-gray-700 dark:text-gray-300">
                         <Eye className="h-4 w-4" /><span className="font-medium">{compactNumber(video.videoViews)}</span>
                     </div>
-                    <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} />
+                    <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} viewerRating={video.user.viewerRating}/>
                 </div>
             </div>
 
             {/* COMMENTS PANEL */}
             <motion.div
-                className="comments-panel rounded-2xl border border-gray-200 bg-white backdrop-blur-md overflow-hidden shadow-sm"
+                className="comments-panel rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#333333] backdrop-blur-md overflow-hidden shadow-sm"
                 initial={false}
                 animate={{ height: commentsOpen ? '45vh' : collapsedPx }}
                 transition={{ duration: 0.35, ease: 'easeInOut' }}
@@ -197,6 +229,7 @@ export const VideoSection = ({ video }: Props) => {
                 ) : null}
 
                 <CommentsSection
+                    home
                     videoId={video.id}
                     openComments={commentsOpen}
                     onOpenChange={setCommentsOpen}

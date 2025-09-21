@@ -28,7 +28,7 @@ export default withUt({
   				foreground: 'hsl(var(--primary-foreground))'
   			},
   			secondary: {
-  				DEFAULT: '#fcf1d9', //'hsl(var(--secondary))',
+  				DEFAULT: '#ffa100', //'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'
   			},
   			muted: {

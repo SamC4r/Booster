@@ -8,10 +8,11 @@ interface Props {
     avgRating: number;
     videoRatings: number;
     onRate: (rating: number) => boolean;
+    viewerRating: number;
 }
 
-export const VideoReactions = ({ avgRating, onRate, videoRatings }: Props) => {
-    const [userRating, setUserRating] = useState(0);
+export const VideoReactions = ({ avgRating, onRate, videoRatings, viewerRating }: Props) => {
+    const [userRating, setUserRating] = useState(viewerRating || 0);
     const [isChoosing, setChoose] = useState(false);
     const [isRated, setIsRated] = useState(false);
     const [showThanks, setShowThanks] = useState(false);
@@ -40,10 +41,10 @@ export const VideoReactions = ({ avgRating, onRate, videoRatings }: Props) => {
     }, [videoRatings])
 
     return (
-        <div className="flex flex-col items-center justify-center p-4 bg-white border border-amber-200 rounded-2xl shadow-[0_5px_25px_rgba(255,161,0,0.1)] gap-2 max-w-sm mx-auto">
+        <div className="flex flex-col items-center justify-center p-4 bg-white dark:bg-[#333333] border border-amber-200 dark:border-amber-600 rounded-2xl shadow-[0_5px_25px_rgba(255,161,0,0.1)] gap-2 max-w-sm mx-auto">
             {/* Header */}
             <div className="text-center">
-                <p className="font-bold text-lg text-amber-900">Rate this video</p>
+                <p className="font-bold text-lg text-amber-900 dark:text-amber-100">Rate this video</p>
             </div>
 
             {/* User Rating Interaction */}
@@ -71,18 +72,18 @@ export const VideoReactions = ({ avgRating, onRate, videoRatings }: Props) => {
                 <div className="flex flex-col items-center w-full">
                     <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 text-amber-500 fill-current" />
-                        <p className="font-bold text-lg text-amber-800">{avgRating.toFixed(1)}</p>
+                        <p className="font-bold text-lg text-amber-800 dark:text-amber-200">{Number(avgRating).toFixed(1)}</p>
                     </div>
-                    <p className="text-xs text-amber-600">Average</p>
+                    <p className="text-xs text-amber-600 dark:text-amber-400">Average</p>
                 </div>
 
                 {/* Total Ratings */}
                 <div className="flex flex-col items-center w-full">
                     <div className="flex items-center gap-1">
                         <Users className="w-4 h-4 text-amber-500" />
-                        <p className="font-bold text-lg text-amber-800">{compactRatings}</p>
+                        <p className="font-bold text-lg text-amber-800 dark:text-amber-200">{compactRatings}</p>
                     </div>
-                    <p className="text-xs text-amber-600">Ratings</p>
+                    <p className="text-xs text-amber-600 dark:text-amber-400">Ratings</p>
                 </div>
             </div>
 

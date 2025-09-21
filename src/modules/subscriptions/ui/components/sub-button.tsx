@@ -19,7 +19,7 @@ export const SubButton = ({
         <Button
             size={size}
             variant={isSubscribed ? "ghost" : "default"}
-            className={cn(className,`rounded-full ${isSubscribed ? "" : "opacity-50"}`)}
+            className={cn(`rounded-full ${isSubscribed ? "opacity-50" : ""}`,className)}
             onClick={onClick}
         >
 

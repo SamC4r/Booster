@@ -127,14 +127,14 @@ const FormSectionSkeleton = () => {
 
 const FormErrorFallback = () => {
     return (
-        <div className="flex flex-col items-center justify-center p-12 text-center bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <div className="flex flex-col items-center justify-center p-12 text-center bg-white dark:bg-[#333333] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
             <div className="p-3 bg-red-100 rounded-full mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-800 mb-2">Something went wrong</h3>
-            <p className="text-gray-600 mb-6">We couldn't load the video details. Please try again.</p>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">Something went wrong</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">We couldn't load the video details. Please try again.</p>
             <Button 
                 onClick={() => window.location.reload()} 
                 className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
@@ -217,8 +217,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                 <form onSubmit={form.handleSubmit(onSubmit)} >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Video Details</h1>
-                            <p className="text-sm text-gray-600 mt-1">Manage and update your video information</p>
+                            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Video Details</h1>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage and update your video information</p>
                         </div>
                         <div className="flex items-center gap-x-3">
                             <Button 
@@ -259,13 +259,13 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                     <div className="grid grid-cols-1 lg:grid-cols-5 justify-between">
                         <div className="space-y-6 lg:col-span-3 mr-44">
                             {/* Title Field */}
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                                 <FormField
                                     control={form.control}
                                     name='title'
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-base font-medium text-gray-800 flex items-center justify-between">
+                                            <FormLabel className="text-base font-medium text-gray-800 dark:text-white flex items-center justify-between">
                                                 Title
                                                 <Button 
                                                     type="button" 
@@ -291,13 +291,13 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                             </div>
                             
                             {/* Description Field */}
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                                 <FormField
                                     control={form.control}
                                     name='description'
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-base font-medium text-gray-800 flex items-center justify-between">
+                                            <FormLabel className="text-base font-medium text-gray-800 dark:text-white flex items-center justify-between">
                                                 Description
                                                 <Button 
                                                     type="button" 
@@ -325,8 +325,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                             </div>
                             
                             {/* Thumbnail Field */}
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <FormLabel className="text-base font-medium text-gray-800">Thumbnail</FormLabel>
+                            <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                                <FormLabel className="text-base font-medium text-gray-800 dark:text-white">Thumbnail</FormLabel>
                                 <div className="mt-4">
                                     <div className="relative h-[180px] w-full max-w-[320px] group rounded-xl overflow-hidden border-2 border-dashed border-gray-200 hover:border-blue-400 transition-all duration-300">
                                         <Image 
@@ -368,18 +368,18 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                             </DropdownMenu>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-gray-500 mt-3">Recommended: 1280×720 pixels (16:9 ratio)</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Recommended: 1280×720 pixels (16:9 ratio)</p>
                                 </div>
                             </div>
                             
                             {/* Category Field */}
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                                 <FormField
                                     control={form.control}
                                     name='categoryId'
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-base font-medium text-gray-800">Category</FormLabel>
+                                            <FormLabel className="text-base font-medium text-gray-800 dark:text-white">Category</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value !== undefined ? String(field.value) : undefined}
@@ -410,8 +410,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                         
                         <div className="flex flex-col gap-y-6 lg:col-span-2 -pl-24">
                             {/* Video Preview Card */}
-                            <div className="flex flex-col gap-4 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm h-fit">
-                                <h3 className="font-semibold text-gray-800 text-lg">Video Preview</h3>
+                            <div className="flex flex-col gap-4 bg-white dark:bg-[#333333] rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm h-fit">
+                                <h3 className="font-semibold text-gray-800 dark:text-white text-lg">Video Preview</h3>
                                 <div className="aspect-video relative rounded-xl overflow-hidden shadow-md min-w-0 w-full">
                                     <VideoPlayer
                                         playbackId={video.muxPlaybackId}
@@ -421,27 +421,27 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                 
                                 {/* Video Stats */}
                                 <div className="grid grid-cols-3 gap-3 mt-2">
-                                    <div className="bg-gray-50 p-3 rounded-lg flex items-center">
+                                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg flex items-center">
                                         <Eye className="h-4 w-4 text-gray-500 mr-2" />
                                         <div>
-                                            <p className="text-xs text-gray-500">Views</p>
-                                            <p className="text-sm font-medium">{(video as any).views || 0}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Views</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white">{(video as any).views || 0}</p>
                                         </div>
                                     </div>
-                                    <div className="bg-gray-50 p-3 rounded-lg flex items-center">
+                                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg flex items-center">
                                         <Calendar className="h-4 w-4 text-gray-500 mr-2" />
                                         <div>
-                                            <p className="text-xs text-gray-500">Uploaded</p>
-                                            <p className="text-sm font-medium">
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Uploaded</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white">
                                                 {video.createdAt ? format(new Date(video.createdAt), 'MMM d, yyyy') : 'N/A'}
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="bg-gray-50 p-3 rounded-lg flex items-center">
+                                    <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg flex items-center">
                                         <Clock className="h-4 w-4 text-gray-500 mr-2" />
                                         <div>
-                                            <p className="text-xs text-gray-500">Duration</p>
-                                            <p className="text-sm font-medium">{formatDuration(video?.duration)}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Duration</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white">{formatDuration(video?.duration)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -449,10 +449,10 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                 <div className="p-2 flex flex-col gap-y-5">
                                     <div className="flex justify-between items-center gap-x-2">
                                         <div className="flex flex-col gap-y-1 flex-1">
-                                            <p className="text-xs text-gray-500 font-medium">
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                                 Video URL
                                             </p>
-                                            <div className="flex items-center gap-x-2 bg-gray-50 p-2 rounded-lg max-w-lg">
+                                            <div className="flex items-center gap-x-2 bg-gray-50 dark:bg-gray-800 p-2 rounded-lg max-w-lg">
                                                 <Link
                                                     href={`/explorer/videos/${video.id}`}
                                                     className="line-clamp-1 text-sm text-blue-600 hover:text-blue-700 flex-1"
@@ -477,25 +477,25 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                     </div>
                                     
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-gray-50 p-3 rounded-lg">
-                                            <p className="text-xs text-gray-500 font-medium mb-1">Video Status</p>
+                                        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Video Status</p>
                                             <div className="flex items-center">
                                                 <div className={`h-2 w-2 rounded-full mr-2 ${
                                                     video.muxStatus === 'ready' ? 'bg-green-500' : 
                                                     video.muxStatus === 'preparing' ? 'bg-yellow-500' : 'bg-gray-500'
                                                 }`}></div>
-                                                <p className="text-sm font-medium">{snakeCaseToTitle(video.muxStatus || "Preparing")}</p>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-white">{snakeCaseToTitle(video.muxStatus || "Preparing")}</p>
                                             </div>
                                         </div>
                                         
-                                        <div className="bg-gray-50 p-3 rounded-lg">
-                                            <p className="text-xs text-gray-500 font-medium mb-1">Subtitles Status</p>
+                                        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Subtitles Status</p>
                                             <div className="flex items-center">
                                                 <div className={`h-2 w-2 rounded-full mr-2 ${
                                                     video.muxTrackStatus === 'ready' ? 'bg-green-500' : 
                                                     video.muxTrackStatus === 'preparing' ? 'bg-yellow-500' : 'bg-gray-500'
                                                 }`}></div>
-                                                <p className="text-sm font-medium">{snakeCaseToTitle(video.muxTrackStatus || "No Subtitles")}</p>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-white">{snakeCaseToTitle(video.muxTrackStatus || "No Subtitles")}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -503,13 +503,13 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                             </div>
 
                             {/* Visibility Field */}
-                            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                                 <FormField
                                     control={form.control}
                                     name='visibility'
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-base font-medium text-gray-800">Visibility</FormLabel>
+                                            <FormLabel className="text-base font-medium text-gray-800 dark:text-white">Visibility</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
                                                 defaultValue={field.value !== undefined ? String(field.value) : undefined}

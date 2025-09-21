@@ -17,6 +17,7 @@ interface CommentSectionProps {
   videoId: string;
   openComments: boolean;
   onOpenChange?: (open: boolean) => void;
+  home:boolean;
 }
 
 export const CommentsSection = (props: CommentSectionProps) => {
@@ -39,7 +40,7 @@ const CommentsSkeleton = () => (
   </div>
 );
 
-export const CommentsSuspense = ({ videoId, openComments, onOpenChange }: CommentSectionProps) => {
+export const CommentsSuspense = ({ videoId, openComments, onOpenChange,home }: CommentSectionProps) => {
   const clerk = useClerk();
   const utils = trpc.useUtils();
   const { isSignedIn } = useAuth();
@@ -56,6 +57,7 @@ export const CommentsSuspense = ({ videoId, openComments, onOpenChange }: Commen
 
   const viewer = rootComments.pages[0].viewer;
   const key = { videoId, limit: COMMENT_SECTION_SIZE };
+  const maxDepth =(home ? 5 : 3); // limit depth on home for performance
 
   const { mutate: createRootComment, isPending } = trpc.comments.create.useMutation({
     onMutate: async ({ videoId, comment }) => {
@@ -122,18 +124,18 @@ export const CommentsSuspense = ({ videoId, openComments, onOpenChange }: Commen
   return (
     <div className="h-full flex flex-col overflow-hidden "
 
-        onMouseLeave={()=>{setOpen(false); onOpenChange?.(false)}}
-        onMouseEnter={()=>{setOpen(true);onOpenChange?.(true)}}
+        onMouseLeave={()=>{if(!home) return; setOpen(false); onOpenChange?.(false)}}
+        onMouseEnter={()=>{if(!home) return; setOpen(true);onOpenChange?.(true)}}
     >
       {/* HEADER — fixed 70px, matches home.html */}
       <div
         className="h-[60px] p-3 flex items-center justify-between border-b border-white/10 hover:cursor-pointer"
       >
-        <h2 className="text-[1.1rem] font-semibold flex items-center gap-2  ml-2">
-          <MessageCircle className="w-5 h-5 text-black" />
+        <h2 className="text-[1.1rem] font-semibold flex items-center gap-2  ml-2 text-gray-900 dark:text-white">
+          <MessageCircle className="w-5 h-5 text-gray-900 dark:text-white" />
           <span>Comments {compactNumber(rootComments.pages[0].commentCount ?? 0)}</span>
         </h2>
-        <span className="h-10 w-10 rounded-full bg-white hover:bg-white/20 inline-flex items-center justify-center transition">
+        <span className="h-10 w-10 rounded-full bg-white dark:bg-[#333333] hover:bg-white/20 dark:hover:bg-[#333333]/80 inline-flex items-center justify-center transition">
           {query.isFetching && !query.isFetchingNextPage
             ? <Spinner variant='circle' className="w-5 h-5" />
             : (open ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />)}
@@ -163,7 +165,7 @@ export const CommentsSuspense = ({ videoId, openComments, onOpenChange }: Commen
                   viewer={viewer}
                   isPending={isPending}
                   depth={1}
-                  maxDepth={5}
+                  maxDepth={maxDepth}
                 />
               ))}
               <InfiniteScroll

@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 import { TRPCProvider } from "@/trpc/client";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,10 +32,17 @@ export default function RootLayout({
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         </head>
         <body className={inter.className}>
-          <TRPCProvider>
-            {children}
-            <Toaster richColors closeButton />
-          </TRPCProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TRPCProvider>
+              {children}
+              <Toaster richColors closeButton />
+            </TRPCProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
