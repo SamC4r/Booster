@@ -30,8 +30,8 @@ export const VideoReactions = ({ avgRating, onRate, videoRatings, viewerRating }
         setUserRating(value);
         setIsRated(true);
 
-        if (value >= 4)
-            setShowThanks(true);
+        // if (value >= 4)
+        //     setShowThanks(true);
     };
 
     const compactRatings = useMemo(() => {

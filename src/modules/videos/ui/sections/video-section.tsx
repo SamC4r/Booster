@@ -11,6 +11,7 @@ import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Eye, Clock, Loader2, Sparkles } from "lucide-react";
+import { DEFAULT_LIMIT } from "@/constants";
 
 interface VideoSectionProps {
     videoId: string;
@@ -80,6 +81,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     const createRating = trpc.videoRatings.create.useMutation({
         onSuccess: () => {
             utils.videos.getOne.invalidate({ id: videoId })
+            utils.home.getMany.invalidate({ limit:DEFAULT_LIMIT })
         },
         onError: (error) => {
             if (error.message === "limit") toast.error("Wait a bit before rating again!")

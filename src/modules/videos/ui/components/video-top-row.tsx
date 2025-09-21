@@ -51,8 +51,7 @@ export const VideoTopRow = ({ video, onRate,}: Props) => {
                 <div className="flex flex-row items-center justify-between sm:justify-end sm:min-w-[180px] gap-2 order-1 sm:order-2">
                     <VideoReactions 
                         onRate={onRate} 
-                        compactViews={compactViews} 
-                        expandedViews={expandedViews} 
+                        viewerRating={video.user.viewerRating}
                         avgRating={video.averageRating} 
                         videoRatings={video.videoRatings} 
                     />

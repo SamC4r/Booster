@@ -73,7 +73,10 @@ export const VideoSection = ({ video }: Props) => {
     }, []);
 
     const createView = trpc.videoViews.create.useMutation({
-        onSuccess: () => { utils.home.getMany.invalidate({ limit:DEFAULT_LIMIT }); },
+        onSuccess: () => { 
+            utils.home.getMany.invalidate({ limit:DEFAULT_LIMIT });  
+            utils.videos.getOne.invalidate({ id:video.id });
+        },
     });
 
     const handlePlay = () => {
@@ -88,6 +91,7 @@ export const VideoSection = ({ video }: Props) => {
 
     const createRating = trpc.videoRatings.create.useMutation({
         onSuccess: () => {
+            utils.videos.getOne.invalidate({ id:video.id })
             utils.home.getMany.invalidate({ limit:DEFAULT_LIMIT })
         },
         onError: (error) => {

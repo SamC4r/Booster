@@ -48,7 +48,9 @@ export const videosRouter = createTRPCRouter({
                 ...getTableColumns(users),
                 followsCount: sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(Number),
                 viewerIsFollowing: isNotNull(viewerFollow.userId).mapWith(Boolean),
-                videoCount: sql<number>`(SELECT COUNT(*) FROM ${videos} WHERE ${videos.userId} = ${users.id})`.mapWith(Number)
+                videoCount: sql<number>`(SELECT COUNT(*) FROM ${videos} WHERE ${videos.userId} = ${users.id})`.mapWith(Number),
+                viewerRating: sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(Number) 
+
             },
             videoRatings: db.$count(videoRatings, eq(videoRatings.videoId,videos.id)), //inefficient?
         })
