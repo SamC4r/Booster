@@ -10,6 +10,8 @@ export const FollowList = () => {
     const [followList] = trpc.follows.getMany.useSuspenseQuery();
     const [searchQuery, setSearchQuery] = useState("");
 
+    //TODO: consider changing this to all channels in the platform?
+
     // Filter users based on search query
     const filteredUsers = followList.filter(user => 
         user.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -24,7 +26,7 @@ export const FollowList = () => {
                 </div>
 
                 {/* Search and Stats Bar */}
-                <div className="bg-white dark:bg-[#333333] rounded-xl p-4 shadow-lg mb-6 border border-gray-200 dark:border-gray-700">
+                <div className="bg-amber-400 dark:bg-[#333333] rounded-xl p-4 shadow-lg mb-6 border border-gray-200 dark:border-gray-700">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="relative w-full md:w-64">
                             {/* TODO: implement. Not for MVP */}
@@ -34,7 +36,7 @@ export const FollowList = () => {
                                 placeholder="Search people..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-amber-50 text-amber-900 rounded-lg border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                className="w-full pl-10 pr-4 py-2 text-white rounded-lg border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
                             />
                         </div>
                         
@@ -58,7 +60,7 @@ export const FollowList = () => {
                                         onClick={() => {}}
                                         size='lg'
                                         className="ring-2 ring-amber-400"
-                                        userId={e.user.id}
+                                        userId={e.user?.id}
                                     />
                                     <div>
                                         <h3 className="font-semibold text-amber-900 dark:text-amber-100">{e.user?.name}</h3>
@@ -75,8 +77,8 @@ export const FollowList = () => {
                             </div>
                             
                             {/* Action Buttons */}
-                            <div className="flex gap-2 mt-4 pt-3 border-t border-amber-100">
-                                <button className="flex-1 bg-yellow-100 hover:bg-[#ffca55] text-black py-2 rounded-lg text-sm font-medium transition-colors">
+                            <div className="flex gap-2 mt-4 pt-3 border-t border-amber-500">
+                                <button className="flex-1 bg-gradient-to-t from-amber-500 to-yellow-500 text-black py-2 rounded-lg text-sm font-medium transition-colors">
                                     View Profile
                                 </button>
                                

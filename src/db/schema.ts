@@ -16,6 +16,8 @@ export const users = pgTable("users", {
     updatedAt: timestamp("updated_at").defaultNow().notNull(),about: text("about"),
     xp: integer("xp").default(0), // THis is the virtual currency to trade and boost a channel
     boostPoints: integer("boost_points").default(0), // to measure the amount of boost given to the channel (amount of XP given to the channel). Can only be done with xp
+    // level: integer("level").default(1),
+    newLevelUpgrade: timestamp("new_level_at")
 }, (t) => [uniqueIndex("clerk_id_idx").on(t.clerkId)]);
 
 //create index on clerk_id to query faster. --> speed up WHERE, JOIN, ORDER BY clauses. B-Tree sorted by the column I index

@@ -69,7 +69,7 @@ export const VideoOwner = ({ user, videoId }: Props) => {
     // Here you would implement the actual XP adding logic
     console.log(`Adding ${selectedXp} XP`);
     setShowAddXpModal(false);
-    toast.success(`Added ${selectedXp} XP to ${video.user.name}`);
+    toast.success(`Added ${selectedXp} XP to ${user.name}`);
   };
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {

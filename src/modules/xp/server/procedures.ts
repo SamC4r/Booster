@@ -58,6 +58,25 @@ export const xpRouter = createTRPCRouter({
 
       return updated; 
     }),
+
+    updateLevelChange: baseProcedure
+    .input(z.object({userId: z.string().uuid()}))
+    .mutation(async ({input}) => {
+
+      const { userId } = input;
+
+        const [updated] = await db
+        .update(users)
+        .set({
+          newLevelUpgrade: new Date(),
+        })
+        .where(eq(users.id,userId))
+        .returning();
+
+        return updated
+        
+    }),
+    
     getBoostByUserId: baseProcedure
     .input(z.object({userId: z.string().uuid()}))
     .query( async ({ctx,input}) => {

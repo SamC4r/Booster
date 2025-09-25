@@ -31,7 +31,7 @@ export const VideoThumbnail = ({imageUrl,title,previewUrl, duration}: VideoThumb
 
                 
             {/* Duration box */}
-            <div className="absolute bottom-2 right-2 px-1 py-0.5 rounded bg-black/80 text-white text-xs font-medium">
+            <div className="absolute bottom-2 right-2 px-1 py-0.5 rounded bg-amber-700 text-white text-xs font-medium">
                 {formatDuration(duration)}
             </div>
         </div>

@@ -240,7 +240,7 @@ export const ExplorerView = ({ categoryId }: HomeViewProps) => {
                 {selectedCategory === "all" ? "Popular Videos" : `${selectedCategory} Videos`}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Curated selection of top content
+                Top content 
               </p>
             </div>
           </div>
@@ -280,7 +280,7 @@ export const ExplorerView = ({ categoryId }: HomeViewProps) => {
                   initial={{ opacity: 0, y: 30, scale: 0.9 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{  duration: 0.3 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
+                  whileHover={{ y: -3, scale: 1.01 }}
                   onHoverStart={() => setHoveredVideo(video.id)}
                   onHoverEnd={() => setHoveredVideo(null)}
                   className="group cursor-pointer relative"
@@ -288,7 +288,9 @@ export const ExplorerView = ({ categoryId }: HomeViewProps) => {
 
                   <Link href={`/explorer/videos/${video.id}`}>
                   {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-orange-400/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-105" />
+                  
+                  {/* TODO: This could be a premium feature */}
+                  {/* <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-orange-400/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform scale-105" /> */}
                   
                   <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-[#333333] dark:to-[#333333] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-gray-200 dark:border-gray-700 transition-all duration-300">
                     {/* Video Thumbnail */}
@@ -321,9 +323,9 @@ export const ExplorerView = ({ categoryId }: HomeViewProps) => {
                       </div>
                       
                       {/* Duration */}
-                      <div className="absolute bottom-3 right-3 bg-black/80 text-white px-2 py-1 rounded-lg text-xs font-medium backdrop-blur-sm">
+                      {/* <div className="absolute bottom-3 right-3 bg-black/80 text-white px-2 py-1 rounded-lg text-xs font-medium backdrop-blur-sm">
                         {formatDuration(video.duration)}
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Content */}
@@ -344,7 +346,6 @@ export const ExplorerView = ({ categoryId }: HomeViewProps) => {
                           <p className="font-medium text-gray-900 dark:text-white text-sm truncate">
                             {video.user?.name?.replace(/\s*null\s*$/i, "") || "Anonymous"}
                           </p>
-                          <p className="text-gray-500 dark:text-gray-400 text-xs">Content Creator</p>
                         </div>
                       </div>
 
