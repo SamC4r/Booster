@@ -402,6 +402,7 @@ export const MarketSection = () => {
           </div>
         )}
 
+
         {/* Featured Section */}
         <div className="mt-12">
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">

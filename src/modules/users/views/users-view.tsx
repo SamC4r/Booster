@@ -1,30 +1,46 @@
-'use client'
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { UserAvatar } from "@/components/user-avatar"
-import { trpc } from "@/trpc/client"
-import Image from "next/image"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { compactDate } from "@/lib/utils"
-import { Check, EyeIcon, Lock, Rocket, Star, Zap, Sparkles, Badge, Crown, Trophy, RocketIcon, StarIcon } from "lucide-react"
-import { XpCard } from "@/modules/home/ui/components/xp-card"
-import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { diff } from "util"
-import { LevelUpBadge } from "../components/level-up-badge"
-import { LevelUpAnimation } from "../components/level-up-animation"
-import { BoosterRankings } from "../components/boosters-rankings"
+import { useState, useEffect, useRef } from "react";
+import { UserAvatar } from "@/components/user-avatar";
+import { trpc } from "@/trpc/client";
+import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { compactDate, compactNumber } from "@/lib/utils";
+import {
+  Check,
+  EyeIcon,
+  Lock,
+  Rocket,
+  Star,
+  Zap,
+  Sparkles,
+  Badge,
+  Crown,
+  Trophy,
+  RocketIcon,
+  StarIcon,
+  Edit3Icon,
+} from "lucide-react";
+import { XpCard } from "@/modules/home/ui/components/xp-card";
+import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { diff } from "util";
+import { LevelUpBadge } from "../components/level-up-badge";
+import { LevelUpAnimation } from "../components/level-up-animation";
+import { BoosterRankings } from "../components/boosters-rankings";
+import { useFollow } from "@/modules/follows/hooks/follow-hook";
+import { SubButton } from "@/modules/subscriptions/ui/components/sub-button";
 
 interface Props {
-  userId: string
+  userId: string;
 }
 
 const f = (x: number) => {
   return Math.floor((x * x) / 1000);
-}
+};
 
 const diff_time = (date?: Date | string | null): number => {
   if (!date) return Infinity;
@@ -35,82 +51,106 @@ const diff_time = (date?: Date | string | null): number => {
 };
 
 export const UsersView = ({ userId }: Props) => {
-  const [user] = trpc.users.getByUserId.useSuspenseQuery({ userId })
-  const [userVideos] = trpc.users.getVideosByUserId.useSuspenseQuery({ userId })
-  const [boostPoints] = trpc.xp.getBoostByUserId.useSuspenseQuery({ userId })
-
+  const [user] = trpc.users.getByUserId.useSuspenseQuery({ userId });
+  const [followers] = trpc.follows.getFollowersByUserId.useSuspenseQuery({
+    userId,
+  });
+  const [userVideos] = trpc.users.getVideosByUserId.useSuspenseQuery({
+    userId,
+  });
+  const [boostPoints] = trpc.xp.getBoostByUserId.useSuspenseQuery({ userId });
+  const [creatorViews] = trpc.videoViews.getAllViewsByUserId.useSuspenseQuery({
+    userId,
+  });
 
   const utils = trpc.useUtils();
 
   const prefetchRankings = () => {
-    utils.xp.getBoostersByCreatorId.prefetch({creatorId: userId})
-  }
+    utils.xp.getBoostersByCreatorId.prefetch({ creatorId: userId });
+  };
 
-  const [currentXp, setCurrentXp] = useState(3250)
-  const [showXpPopup, setShowXpPopup] = useState(false)
-  const [selectedXpValue, setSelectedXpValue] = useState(100)
-  const [showLevelUp, setShowLevelUp] = useState(false)
-  const [newLevel, setNewLevel] = useState(0)
-  const previousLevelRef = useRef<number | null>(null)
-  const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [currentXp, setCurrentXp] = useState(3250);
+  const [showXpPopup, setShowXpPopup] = useState(false);
+  const [selectedXpValue, setSelectedXpValue] = useState(100);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [newLevel, setNewLevel] = useState(0);
+  const previousLevelRef = useRef<number | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const [activeTab, setActiveTab] = useState("videos")
+  const [activeTab, setActiveTab] = useState("videos");
 
-  console.log(activeTab)
+  const channelLevel = Math.floor(
+    Math.floor(Math.sqrt(boostPoints.boostPoints * 1000)) / 1000
+  );
 
-  const channelLevel = Math.floor(Math.floor(Math.sqrt(boostPoints.boostPoints * 1000)) / 1000);
-
-  const xpOnCurrentLevel = f(1000 * (channelLevel))
-  const xpForNextLevel = f(1000 * (channelLevel + 1))
+  const xpOnCurrentLevel = f(1000 * channelLevel);
+  const xpForNextLevel = f(1000 * (channelLevel + 1));
 
   const recentUpgrade = diff_time(user?.newLevelUpgrade) <= 72;
 
   const updateLevelChange = trpc.xp.updateLevelChange.useMutation({
     onSuccess: () => {
-      utils.users.getByUserId.invalidate({userId})
-    }
-  })
+      utils.users.getByUserId.invalidate({ userId });
+    },
+  });
 
   // Track level changes - only show animation on actual level ups, not initial load
   useEffect(() => {
     if (isInitialLoad) {
       // Set the initial level without showing animation
-      previousLevelRef.current = channelLevel
-      setIsInitialLoad(false)
-      return
+      previousLevelRef.current = channelLevel;
+      setIsInitialLoad(false);
+      return;
     }
-    
+
     prefetchRankings();
 
-
-    if (previousLevelRef.current !== null && channelLevel > previousLevelRef.current) {
-      setNewLevel(channelLevel)
-      setShowLevelUp(true)
-      updateLevelChange.mutate({ userId })
+    if (
+      previousLevelRef.current !== null &&
+      channelLevel > previousLevelRef.current
+    ) {
+      setNewLevel(channelLevel);
+      setShowLevelUp(true);
+      updateLevelChange.mutate({ userId });
     }
-    previousLevelRef.current = channelLevel
-  }, [channelLevel, isInitialLoad])
+    previousLevelRef.current = channelLevel;
+  }, [channelLevel, isInitialLoad]);
 
   //TODO: implement community rankings
 
   // Calculate XP bar percentage
-  const xpPercentage = Math.max(0, Math.min(100, ((boostPoints.boostPoints - xpOnCurrentLevel) / (xpForNextLevel - xpOnCurrentLevel)) * 100))
+  const xpPercentage = Math.max(
+    0,
+    Math.min(
+      100,
+      ((boostPoints.boostPoints - xpOnCurrentLevel) /
+        (xpForNextLevel - xpOnCurrentLevel)) *
+        100
+    )
+  );
 
   // Handle adding XP
   const handleAddXp = () => {
-    setCurrentXp(prev => prev + selectedXpValue)
-    setShowXpPopup(false)
+    setCurrentXp((prev) => prev + selectedXpValue);
+    setShowXpPopup(false);
 
     // Check for level up (simplified)
     if (currentXp + selectedXpValue >= xpForNextLevel) {
-      setNewLevel(channelLevel + 1)
-      setShowLevelUp(true)
+      setNewLevel(channelLevel + 1);
+      setShowLevelUp(true);
     }
-  }
+  };
 
   const handleLevelUpComplete = () => {
-    setShowLevelUp(false)
-  }
+    setShowLevelUp(false);
+  };
+
+  const { onClick, isPending } = useFollow({
+    //ignore xd?
+    userId: user.id,
+    isFollowing: true,
+    // fromVideoId: videoId,
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -132,50 +172,72 @@ export const UsersView = ({ userId }: Props) => {
               <UserAvatar
                 size="xl"
                 imageUrl={user?.imageUrl || undefined}
-                name={user?.name || 'Unknown user'}
-                className={`w-40 h-40 border-4 border-border hover:border-primary transition-all duration-300 mb-4 ${showLevelUp ? 'animate-pulse ring-4 ring-yellow-400' : ''
-                  }`}
+                name={user?.name || "Unknown user"}
+                className={`w-40 h-40 border-4 border-border hover:border-primary transition-all duration-300 mb-4 ${
+                  showLevelUp ? "animate-pulse ring-4 ring-yellow-400" : ""
+                }`}
                 userId={user.id}
-                iconSize='md'
+                iconSize="md"
               />
 
               <div className="text-center md:text-center">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent flex items-center justify-center md:justify-center">
-                  {user?.name || 'Unknown User'}
+                  {user?.name || "Unknown User"}
                   <span className="ml-2 text-primary">✓</span>
                 </h1>
 
                 <div className="flex flex-wrap gap-3 my-4 justify-center md:justify-start">
-                  <div className="bg-muted/50 p-3 rounded-lg border border-border text-center min-w-[90px] hover:translate-y-[-5px] transition-transform">
-                    <div className="text-primary font-bold text-lg">3</div>
-                    <div className="text-muted-foreground text-xs uppercase">Videos</div>
+                  <div className="bg-muted/50 p-3 rounded-lg border border-border text-center min-w-[90px]  transition-transform">
+                    <div className="text-primary font-bold text-lg">
+                      {userVideos.userVideos.length}
+                    </div>
+                    <div className="text-muted-foreground text-xs uppercase">
+                      Video{userVideos.userVideos.length === 1 ? "" : "s"}{" "}
+                    </div>
                   </div>
-                  <div className="bg-muted/50 p-3 rounded-lg border border-border text-center min-w-[90px] hover:translate-y-[-5px] transition-transform">
-                    <div className="text-primary font-bold text-lg">26.9K</div>
-                    <div className="text-muted-foreground text-xs uppercase">Followers</div>
+                  <div className="bg-muted/50 p-3 rounded-lg border border-border text-center min-w-[90px] transition-transform">
+                    <div className="text-primary font-bold text-lg">
+                      {compactNumber(followers.followsCount)}
+                    </div>
+                    <div className="text-muted-foreground text-xs uppercase">
+                      Follower{followers.followsCount === 1 ? "" : "s"}
+                    </div>
                   </div>
-                  <div className="bg-muted/50 p-3 rounded-lg border border-border text-center min-w-[90px] hover:translate-y-[-5px] transition-transform">
-                    <div className="text-primary font-bold text-lg">10.7M</div>
-                    <div className="text-muted-foreground text-xs uppercase">Views</div>
+                  <div className="bg-muted/50 p-3 rounded-lg border border-border text-center min-w-[90px]  transition-transform">
+                    <div className="text-primary font-bold text-lg">
+                      {compactNumber(creatorViews.creatorViews)}
+                    </div>
+                    <div className="text-muted-foreground text-xs uppercase">
+                      View{creatorViews.creatorViews === 1 ? "" : "s"}
+                    </div>
                   </div>
                 </div>
 
-                <p className="text-muted-foreground text-sm mt-3">{user.about}</p>
+                <p className="text-muted-foreground text-sm mt-3">
+                  {user.about}
+                </p>
               </div>
             </div>
 
             {/* XP POP UP */}
-            {showXpPopup && <XpCard user={user} setShowAddXpModal={setShowXpPopup} />}
+            {showXpPopup && (
+              <XpCard user={user} setShowAddXpModal={setShowXpPopup} />
+            )}
 
             <div className="md:w-2/3 md:pl-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   Channel Boost
                 </h2>
-                <div className={`text-primary font-bold flex items-center gap-2 ${showLevelUp ? 'animate-bounce' : ''
-                  }`}>
+                <div
+                  className={`text-primary font-bold flex items-center gap-2 ${
+                    showLevelUp ? "animate-bounce" : ""
+                  }`}
+                >
                   Level {channelLevel}
-                  {showLevelUp && <Sparkles className="w-4 h-4 text-yellow-500 animate-spin" />}
+                  {showLevelUp && (
+                    <Sparkles className="w-4 h-4 text-yellow-500 animate-spin" />
+                  )}
                 </div>
               </div>
 
@@ -199,11 +261,36 @@ export const UsersView = ({ userId }: Props) => {
 
               <div className="flex justify-between text-muted-foreground text-sm mb-4">
                 <div className="flex items-start gap-1 text-center">
-                  <span className="font-semibold">Boost progress </span><span>{xpPercentage.toFixed(2)}% </span>
+                  <span className="font-semibold">Boost progress </span>
+                  <span>{xpPercentage.toFixed(2)}% </span>
                 </div>
-                <span>{(xpForNextLevel - boostPoints.boostPoints).toLocaleString()} XP for next level</span>
+                <span>
+                  {(xpForNextLevel - boostPoints.boostPoints).toLocaleString()}{" "}
+                  XP for next level
+                </span>
               </div>
+              <div className="flex items-center justify-between">
 
+              {userId === user.clerkId ? (
+                <Button
+                  className="rounded-full gap-2 shadow-sm hover:shadow-md transition-all dark:bg-[#333333] dark:text-white dark:hover:bg-[#404040]"
+                  asChild
+                  variant="secondary"
+                  size="sm"
+                >
+                  <Link href={`/studio/videos/${videoId}`}>
+                    <Edit3Icon className="size-4" />
+                    Edit Video
+                  </Link>
+                </Button>
+              ) : (
+                <SubButton
+                  onClick={onClick}
+                  disabled={isPending}
+                  isSubscribed={false}
+                  className="rounded-full p-4 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
+                />
+              )}
               <Button
                 onClick={() => setShowXpPopup(true)}
                 className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-2 px-6 rounded-full hover:opacity-90 transition-all hover:scale-105 active:scale-95"
@@ -212,32 +299,40 @@ export const UsersView = ({ userId }: Props) => {
                 Boost
               </Button>
 
-              <div className="flex justify-between ">
+              {/* aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa */}
 
+              </div>
+
+              <div className="flex justify-between ">
                 <div className="mt-6">
-                  <h3 className="text-primary font-semibold mb-3">Unlocked Rewards</h3>
+                  <h3 className="text-primary font-semibold mb-3">
+                    Unlocked Rewards
+                  </h3>
                   <div className="space-y-2">
                     <div className="flex items-center text-sm">
-                      <span className="text-primary mr-2"><Check className="size-4" /></span>
+                      <span className="text-primary mr-2">
+                        <Check className="size-4" />
+                      </span>
                       <span>Custom Emotes</span>
                     </div>
                     <div className="flex items-center text-sm">
-                      <span className="text-primary mr-2"><Check className="size-4" /></span>
+                      <span className="text-primary mr-2">
+                        <Check className="size-4" />
+                      </span>
                       <span>Extended Video Upload Quality</span>
                     </div>
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <span className="text-primary mr-2"><Lock className="size-4" /></span>
+                      <span className="text-primary mr-2">
+                        <Lock className="size-4" />
+                      </span>
                       <span>Verified</span>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  {recentUpgrade && (
-                  <LevelUpBadge newLevel={channelLevel}/>
-                  )}
+                  {recentUpgrade && <LevelUpBadge  newLevel={channelLevel} />}
                 </div>
-
               </div>
             </div>
           </div>
@@ -249,23 +344,26 @@ export const UsersView = ({ userId }: Props) => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeTab === tab
-                ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted/50"
-                }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                activeTab === tab
+                  ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted/50"
+              }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
 
-
-
         {/* Video Grid */}
         {activeTab === "videos" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6" >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {userVideos.userVideos.map((video) => (
-              <Link key={video.id} className="bg-card border-border overflow-hidden  flex flex-col gap-12 transition-transform cursor-pointer rounded-2xl" href={`/explorer/videos/${video.id}`}>
+              <Link
+                key={video.id}
+                className="bg-card border-border overflow-hidden  flex flex-col gap-12 transition-transform cursor-pointer rounded-2xl"
+                href={`/explorer/videos/${video.id}`}
+              >
                 <div className="h-56 relative">
                   <VideoThumbnail
                     duration={video.duration || 0}
@@ -275,12 +373,20 @@ export const UsersView = ({ userId }: Props) => {
                   />
                 </div>
                 <CardContent className="p-4">
-                  <h3 className="font-semibold line-clamp-2 truncate">{video.title} </h3>
+                  <h3 className="font-semibold line-clamp-2 truncate">
+                    {video.title}{" "}
+                  </h3>
 
                   <div className="flex justify-between text-muted-foreground text-sm mt-2">
                     <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1"><EyeIcon className="size-4" />{video.videoViews} </span>
-                      <span className="flex items-center gap-1"><StarIcon className="size-4 text-yellow-300" /> {video.averageRating} </span>
+                      <span className="flex items-center gap-1">
+                        <EyeIcon className="size-4" />
+                        {video.videoViews}{" "}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <StarIcon className="size-4 text-yellow-300" />{" "}
+                        {Number(video.averageRating).toFixed(1)}{" "}
+                      </span>
                     </div>
                     <span>{compactDate(video.createdAt)}</span>
                   </div>
@@ -290,12 +396,8 @@ export const UsersView = ({ userId }: Props) => {
           </div>
         )}
 
-        {activeTab === "community" && (
-          <BoosterRankings  userId={userId}/>
-        )}
+        {activeTab === "community" && <BoosterRankings userId={userId} />}
       </div>
-
-      
     </div>
-  )
-}
+  );
+};

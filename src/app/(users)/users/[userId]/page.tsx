@@ -16,6 +16,8 @@ const Page = async ({ params }: PageProps) => {
     void trpc.users.getByUserId.prefetch({ userId});
     void trpc.users.getVideosByUserId.prefetch({ userId});
     void trpc.xp.getXpByUserId.prefetch({userId})
+    void trpc.follows.getFollowersByUserId.prefetch({userId})
+    void trpc.videoViews.getAllViewsByUserId.prefetch({userId})
 
 
     return (

@@ -1,4 +1,5 @@
 'use client'
+import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/user-avatar";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
 import { trpc } from "@/trpc/client"
@@ -78,9 +79,13 @@ export const FollowList = () => {
                             
                             {/* Action Buttons */}
                             <div className="flex gap-2 mt-4 pt-3 border-t border-amber-500">
-                                <button className="flex-1 bg-gradient-to-t from-amber-500 to-yellow-500 text-black py-2 rounded-lg text-sm font-medium transition-colors">
-                                    View Profile
-                                </button>
+                                <Link
+                                    href={`/users/${e.user?.id}`}
+                                
+                                        className="text-center font-semibold flex-1 bg-gradient-to-t from-amber-500 to-yellow-500 text-black py-2 rounded-lg text-sm  transition-colors"
+                                    >
+                                        View Profile
+                                </Link>
                                
                             </div>
                         </div>

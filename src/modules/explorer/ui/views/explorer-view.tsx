@@ -145,27 +145,16 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="text-center mb-8"
       >
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ delay: 0.2, duration: 0.6, ease: "backOut" }}
-          className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-full mb-6 shadow-lg shadow-amber-500/25"
-        >
-          <Zap className="w-5 h-5" />
-          <span className="text-sm font-semibold tracking-wide">TRENDING NOW</span>
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-        </motion.div>
+        
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4 leading-tight"
+          className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mt-5 pt-5 leading-tight"
         >
-          Discover 
-          <span className="block bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-            Content
-          </span>
+          Explorer
+          
         </motion.h1>
 
       </motion.div>

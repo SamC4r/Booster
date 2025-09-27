@@ -13,6 +13,8 @@ export default async function Page({ params }: PageProps) {
   void trpc.videos.getOne.prefetch({ id: videoId });
   void trpc.comments.getTopLevel.prefetchInfinite({videoId, limit: COMMENT_SECTION_SIZE})
 
+  console.log("AAAAAAAAA")
+
   return (
     <HydrateClient>
       <VideoView videoId={videoId} />

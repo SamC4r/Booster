@@ -190,10 +190,8 @@ export const BoosterRankingsSuspense = ({ userId }: Props) => {
                                 <div className="grid grid-cols-12 gap-4 items-center ">
                                     {/* Rank */}
                                     <div className="col-span-1">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${user.id <= 3
-                                            ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white'
-                                            : 'bg-muted text-muted-foreground'
-                                            }`}>
+                                        <div className='w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-muted text-muted-foreground'>
+                                            
                                             {index + 4}
                                         </div>
                                     </div>
@@ -301,10 +299,10 @@ export const BoosterRankingsSuspense = ({ userId }: Props) => {
                 </CardContent>
             </Card> */}
             <div className="flex justify-center mt-6">
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-bold py-2 px-6 rounded-full transition-all hover:scale-105">
+                <div className="flex items-center gap-2 bg-gradient-to-t from-[#ffa100] to-[#ffca55]   text-white font-bold py-2 px-6 rounded-full transition-all">
                     <Rocket className="w-4 h-4 mr-2" />
                     Boost to Rank Up
-                </Button>
+                </div>
             </div>
         </div>
     )

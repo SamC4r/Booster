@@ -18,7 +18,6 @@ export const explorerRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const { cursor, limit } = input;
             const {clerkUserId}  = ctx;
-            console.log(clerkUserId)
 
             let userId;
 

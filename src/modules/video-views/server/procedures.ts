@@ -1,12 +1,31 @@
  import { db } from "@/db";
-import { videoViews } from "@/db/schema";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { videos, videoViews } from "@/db/schema";
+import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import z from "zod";
 
 
 export const videoViewsRouter = createTRPCRouter({
+
+    getAllViewsByUserId: baseProcedure
+    .input(z.object({userId:z.string().uuid()}))
+    .query(async ({input}) => {
+
+        const {userId: creatorId} = input;
+
+        const [views] = await db
+        .select({
+            creatorViews: sql<number>`(SELECT SUM (${videoViews.seen}) WHERE ${videos.userId}=${creatorId})`.mapWith(Number),
+        })
+        .from(videoViews)
+        .leftJoin(videos, eq(videos.id, videoViews.videoId))
+        .groupBy(videos.userId)
+        .where(eq(videos.userId, creatorId))
+
+        return views;
+    }),
+    
     //TODO: check for RCE
     create: protectedProcedure
     .input(z.object({videoId:z.string().uuid()}))

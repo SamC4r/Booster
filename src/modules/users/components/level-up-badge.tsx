@@ -15,7 +15,7 @@ export const LevelUpBadge = ({ newLevel, onComplete }: LevelUpBadgeProps) => {
   if (!show) return null;
 
   return (
-    <div className={`relative transform transition-all duration-500 ${
+    <div className={`mt-7 relative transform transition-all duration-500 ${
       isExiting ? 'scale-0 opacity-0 -translate-y-4' : 'scale-100 opacity-100 translate-y-0'
     }`}>
       {/* Floating particles */}

@@ -2,29 +2,33 @@
 
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { useAuth, useClerk } from "@clerk/nextjs";
-import { FlameIcon, HistoryIcon, HomeIcon, ListVideoIcon, PlaySquareIcon, Sidebar, ThumbsUpIcon } from "lucide-react";
+import { FileQuestionMark, FlameIcon, HistoryIcon, HomeIcon, ListVideoIcon, MessageCircleQuestion, PlaySquareIcon, Settings, Sidebar, Star, StarIcon, Stars, ThumbsUpIcon } from "lucide-react";
 import Link from "next/link";
 
 
 const items = [
+    
     {
-        title: "History",
-        url: "/playlists/history",
-        icon: HistoryIcon,
-        auth: true,
-    },
-    {
-        title: "Liked videos",
-        url: "/playlists/liked",
-        icon: ThumbsUpIcon,
+        title: "Rated videos",
+        url: "/rated",
+        icon: Stars,
         auth:true,
     },
+   
     {
-        title: "All playlists",
-        url: "/playlists",
-        icon: ListVideoIcon,
+        title: "Settings",
+        url: "/settings",
+        icon: Settings,
         auth:true,
-    }, 
+    },
+
+    {
+        title: "Help",
+        url: "/help",
+        icon: MessageCircleQuestion,
+        auth:false,
+    },
+
 
 ]
 
