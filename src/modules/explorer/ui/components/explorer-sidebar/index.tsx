@@ -10,7 +10,7 @@ interface Props{
 }
 export const ExplorerSidebar = ({collapsible,variant}:Props) => {
     return (
-        <Sidebar className="pt-16 z-40 -ml-2 overflow-hidden"   collapsible={collapsible} variant={variant}  >
+        <Sidebar className="pt-16 z-40 overflow-hidden"   collapsible={collapsible} variant={variant}  >
             <SidebarContent className='bg-background overflow-hidden' >
                 <MainSection />
                 <Separator />
