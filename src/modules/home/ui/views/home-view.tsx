@@ -46,7 +46,10 @@ export const HomeViewSuspense = () => {
   //prefetch video data for when required
   useEffect(() => {
     const ids = [videos[videoIndex]?.id, videos[videoIndex + 1]?.id].filter(Boolean) as string[];
-    ids.forEach((id) => utils.videos.getOne.prefetch({ id }));
+    ids.forEach((id) => {
+      utils.videos.getOne.prefetch({ id })
+      utils.xp.getBoostByVideoId.prefetch({videoId:id})
+  });
   }, [videoIndex, videos, utils]);
 
 

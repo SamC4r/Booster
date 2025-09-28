@@ -6,7 +6,7 @@ import {
   baseProcedure,
 } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { sql, eq, and, inArray, getTableColumns } from "drizzle-orm";
+import { sql, eq, and, inArray, getTableColumns, isNotNull } from "drizzle-orm";
 import { get } from "http";
 import z from "zod";
 
@@ -15,16 +15,32 @@ export const followsRouter = createTRPCRouter({
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { userId: creatorId } = input;
+      const { clerkUserId } = ctx;
 
 
-      console.log("Fetching followers for userId:", creatorId);
+      let userId;
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(inArray(users.clerkId, clerkUserId ? [clerkUserId] : []))
+
+      if(user) userId = user.id
+
+   
       const [followers] = await db
         .select({
           id: sql<number>`${creatorId}`.mapWith(Number),
           followsCount: sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${creatorId}) `.mapWith(Number),
+          viewerIsFollowing: 
+          (userId ? sql<boolean>`EXISTS ( SELECT 1 FROM ${userFollows} WHERE ${userFollows.creatorId} = ${creatorId} AND ${userFollows.userId} = ${userId} )`.mapWith(Boolean)
+                :
+          sql<boolean>`NULL`.mapWith(Boolean)),
         })
         .from(userFollows)
         .where(inArray(userFollows.creatorId, [creatorId]));
+
+        // console.log(followers)
 
       return followers;
     }),

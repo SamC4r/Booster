@@ -39,6 +39,8 @@ export const VideoSection = ({videoId}:Props) => {
 export const VideoSectionSuspense = ({ videoId }: Props) => {
 
     const [video] = trpc.videos.getOne.useSuspenseQuery({id:videoId})
+   const [boostPoints] = trpc.xp.getBoostByVideoId.useSuspenseQuery({videoId})
+
 
     const [commentsOpen, setCommentsOpen] = useState(false);
     const { isSignedIn, userId } = useAuth();
@@ -51,7 +53,6 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
         userId: video.user.id,
         isFollowing: video.user.viewerIsFollowing,
         fromVideoId: video.id,
-        home: true,
     });
 
     useEffect(() => {
@@ -167,7 +168,7 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
 
                     <div className="flex flex-col sm:flex-row gap-4">
                         {/* Channel Info Card */}
-                        <VideoOwner user={video.user} videoId={video.id} />
+                        <VideoOwner user={video.user} videoId={video.id} boostPoints={Number(boostPoints.boostPoints)} />
                         
 
                         {/* Antiguo video owner descrption */}

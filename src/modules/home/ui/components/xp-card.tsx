@@ -11,8 +11,9 @@ import { toast } from "sonner";
 interface Props {
   user: User;
   setShowAddXpModal: (show: boolean) => void;
+  videoId?: string;
 }
-export const XpCard = ({ user,setShowAddXpModal }: Props) => {
+export const XpCard = ({ user,setShowAddXpModal,videoId }: Props) => {
   const [selectedXp, setSelectedXp] = useState(10);
   const xpOptions = [10, 20, 50, 75, 100, 500, 1000];
   const currentXp = 350;
@@ -43,6 +44,8 @@ export const XpCard = ({ user,setShowAddXpModal }: Props) => {
       utils.xp.getXpByUserId.invalidate({ userId }); //userId => current logged user
       utils.xp.getBoostByUserId.invalidate({userId: user.id}) //user.id => creator
       utils.xp.getBoostersByCreatorId.invalidate({creatorId: user.id})
+      utils.users.getByUserId.invalidate({ userId: user.id });
+      if(videoId) utils.xp.getBoostByVideoId.invalidate({ videoId })
     }
   })
 

@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { boostTransactions, users } from "@/db/schema";
+import { boostTransactions, users, videos } from "@/db/schema";
 import { stripe } from "@/lib/stripe";
 import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
@@ -7,6 +7,24 @@ import { and, desc, eq, getTableColumns, gte, sql, sum } from "drizzle-orm";
 import z from "zod";
 
 export const xpRouter = createTRPCRouter({
+
+    getBoostByVideoId: baseProcedure
+    .input(z.object({videoId: z.string().uuid()}))
+    .query(async ({ctx,input}) => {
+      const {videoId} = input;
+
+      const [points] = await db
+      .select({
+        boostPoints:users.boostPoints,
+      })
+      .from(videos)
+      .innerJoin(users,eq(videos.userId,users.id))
+      .where(eq(videos.id,videoId))
+
+      return points;
+      
+    }),
+
     getXpByUserId: baseProcedure
     .input(z.object({userId: z.string().uuid()}))
     .query( async ({ctx,input}) => {

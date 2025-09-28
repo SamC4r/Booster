@@ -52,16 +52,10 @@ const diff_time = (date?: Date | string | null): number => {
 
 export const UsersView = ({ userId }: Props) => {
   const [user] = trpc.users.getByUserId.useSuspenseQuery({ userId });
-  const [followers] = trpc.follows.getFollowersByUserId.useSuspenseQuery({
-    userId,
-  });
-  const [userVideos] = trpc.users.getVideosByUserId.useSuspenseQuery({
-    userId,
-  });
+  const [followers] = trpc.follows.getFollowersByUserId.useSuspenseQuery({ userId, });
+  const [userVideos] = trpc.users.getVideosByUserId.useSuspenseQuery({ userId, });
   const [boostPoints] = trpc.xp.getBoostByUserId.useSuspenseQuery({ userId });
-  const [creatorViews] = trpc.videoViews.getAllViewsByUserId.useSuspenseQuery({
-    userId,
-  });
+  const [creatorViews] = trpc.videoViews.getAllViewsByUserId.useSuspenseQuery({ userId, });
 
   const utils = trpc.useUtils();
 
@@ -82,7 +76,7 @@ export const UsersView = ({ userId }: Props) => {
   const channelLevel = Math.floor(
     Math.floor(Math.sqrt(boostPoints.boostPoints * 1000)) / 1000
   );
-
+  
   const xpOnCurrentLevel = f(1000 * channelLevel);
   const xpForNextLevel = f(1000 * (channelLevel + 1));
 
@@ -125,7 +119,7 @@ export const UsersView = ({ userId }: Props) => {
       100,
       ((boostPoints.boostPoints - xpOnCurrentLevel) /
         (xpForNextLevel - xpOnCurrentLevel)) *
-        100
+      100
     )
   );
 
@@ -148,9 +142,10 @@ export const UsersView = ({ userId }: Props) => {
   const { onClick, isPending } = useFollow({
     //ignore xd?
     userId: user.id,
-    isFollowing: true,
-    // fromVideoId: videoId,
+    isFollowing: followers.viewerIsFollowing,
   });
+
+  console.log(followers)
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -173,9 +168,8 @@ export const UsersView = ({ userId }: Props) => {
                 size="xl"
                 imageUrl={user?.imageUrl || undefined}
                 name={user?.name || "Unknown user"}
-                className={`w-40 h-40 border-4 border-border hover:border-primary transition-all duration-300 mb-4 ${
-                  showLevelUp ? "animate-pulse ring-4 ring-yellow-400" : ""
-                }`}
+                className={`w-40 h-40 border-4 border-border hover:border-primary transition-all duration-300 mb-4 ${showLevelUp ? "animate-pulse ring-4 ring-yellow-400" : ""
+                  }`}
                 userId={user.id}
                 iconSize="md"
               />
@@ -230,9 +224,8 @@ export const UsersView = ({ userId }: Props) => {
                   Channel Boost
                 </h2>
                 <div
-                  className={`text-primary font-bold flex items-center gap-2 ${
-                    showLevelUp ? "animate-bounce" : ""
-                  }`}
+                  className={`text-primary font-bold flex items-center gap-2 ${showLevelUp ? "animate-bounce" : ""
+                    }`}
                 >
                   Level {channelLevel}
                   {showLevelUp && (
@@ -271,35 +264,19 @@ export const UsersView = ({ userId }: Props) => {
               </div>
               <div className="flex items-center justify-between">
 
-              {userId === user.clerkId ? (
-                <Button
-                  className="rounded-full gap-2 shadow-sm hover:shadow-md transition-all dark:bg-[#333333] dark:text-white dark:hover:bg-[#404040]"
-                  asChild
-                  variant="secondary"
-                  size="sm"
-                >
-                  <Link href={`/studio/videos/${videoId}`}>
-                    <Edit3Icon className="size-4" />
-                    Edit Video
-                  </Link>
-                </Button>
-              ) : (
                 <SubButton
                   onClick={onClick}
                   disabled={isPending}
-                  isSubscribed={false}
+                  isSubscribed={followers.viewerIsFollowing}
                   className="rounded-full p-4 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
                 />
-              )}
-              <Button
-                onClick={() => setShowXpPopup(true)}
-                className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-2 px-6 rounded-full hover:opacity-90 transition-all hover:scale-105 active:scale-95"
-              >
-                <Rocket className="size-4 mr-2" />
-                Boost
-              </Button>
-
-              {/* aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa */}
+                <Button
+                  onClick={() => setShowXpPopup(true)}
+                  className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-2 px-6 rounded-full hover:opacity-90 transition-all hover:scale-105 active:scale-95"
+                >
+                  <Rocket className="size-4 mr-2" />
+                  Boost
+                </Button>
 
               </div>
 
@@ -331,7 +308,7 @@ export const UsersView = ({ userId }: Props) => {
                 </div>
 
                 <div>
-                  {recentUpgrade && <LevelUpBadge  newLevel={channelLevel} />}
+                  {recentUpgrade && <LevelUpBadge newLevel={channelLevel} />}
                 </div>
               </div>
             </div>
@@ -344,11 +321,10 @@ export const UsersView = ({ userId }: Props) => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeTab === tab
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeTab === tab
                   ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted/50"
-              }`}
+                }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>

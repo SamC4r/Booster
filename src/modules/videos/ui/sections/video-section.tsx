@@ -62,6 +62,9 @@ const VideoErrorFallback = () => {
 
 const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     const [video] = trpc.videos.getOne.useSuspenseQuery({ id: videoId });
+    const [boostPoints] = trpc.xp.getBoostByVideoId.useSuspenseQuery({videoId})
+
+    console.log("BOOST AAAA",boostPoints.boostPoints)
 
     const [isPlaying, setIsPlaying] = useState(true)
 
@@ -198,7 +201,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
             </div>
 
             <VideoBanner status={video.muxStatus} />
-            <VideoTopRow video={video} onRate={onRate} />
+            <VideoTopRow video={video} onRate={onRate} boostPoints={Number(boostPoints.boostPoints)} />
         </div>
     )
 }

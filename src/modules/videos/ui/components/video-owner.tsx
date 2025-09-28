@@ -25,35 +25,70 @@ type User = {
   imageUrl: string;
   createdAt: Date;
   updatedAt: Date;
+  about: string | null;
+  xp: number | null;
+  boostPoints: number | null;
+  newLevelUpgrade: Date | null;
 }
+
 
 
 interface Props {
   user: User,
   videoId: string;
+  boostPoints: number
 }
 
-export const VideoOwner = ({ user, videoId }: Props) => {
+const f = (x: number) => {
+  return Math.floor((x * x) / 1000);
+};
+
+const diff_time = (date?: Date | string | null): number => {
+  if (!date) return Infinity;
+  const d = date instanceof Date ? date : new Date(date);
+  const t = d.getTime();
+  if (Number.isNaN(t)) return Infinity; // invalid date string
+  return (Date.now() - t) / (1000 * 60 * 60); // hours
+};
+
+export const VideoOwner = ({ user, videoId,boostPoints }: Props) => {
   const { userId } = useAuth();
   const [isSupported, setIsSupported] = useState(false);
   const [xpProgress, setXpProgress] = useState(65); // Example progress percentage
   const [selectedXp, setSelectedXp] = useState(10);
   const [showAddXpModal, setShowAddXpModal] = useState(false);
 
-  
-  const [boostPoints] = trpc.xp.getBoostByUserId.useSuspenseQuery({userId:user.id})
+  //WHERE IS THE PREFETCH? -- TODO: getBoostByVideoId -> userId -> boost points
+  // const [boostPoints] = trpc.xp.getBoostByUserId.useSuspenseQuery({userId:user.id})
+
+  console.log(boostPoints)
+
+  const channelLevel = Math.floor(
+    Math.floor(Math.sqrt(boostPoints * 1000)) / 1000
+  );
+
+  const xpOnCurrentLevel = f(1000 * channelLevel);
+  const xpForNextLevel = f(1000 * (channelLevel + 1));
+
+  console.log(xpOnCurrentLevel,xpForNextLevel)
+
+  const progressPercentage =  Math.max( 0, Math.min( 100, ((boostPoints - xpOnCurrentLevel) / (xpForNextLevel - xpOnCurrentLevel)) * 100)
+  );
 
 
-  const progressPercentage = 92;
+  const utils = trpc.useUtils();
 
-  const xpNeededForNextLevel = 1000;
-  const level = 1;
+  const updateLevelChange = trpc.xp.updateLevelChange.useMutation({
+    onSuccess: () => {
+      utils.users.getByUserId.invalidate({ userId: user.id });
+      utils.xp.getBoostByVideoId.invalidate({videoId})
+    },
+  });
 
-  const clerk = useClerk();
 
-  const channelLevel = 2;
-  const xpToNextLevel = 250; // Example XP needed for next level
-  const currentXp = 162; // Example current XP
+
+
+
 
   const { onClick, isPending } = useFollow({
     //ignore xd?
@@ -64,41 +99,13 @@ export const VideoOwner = ({ user, videoId }: Props) => {
 
   const xpOptions = [10, 20, 50, 75, 100, 500, 1000];
 
-
-  const handleAddXp = () => {
-    // Here you would implement the actual XP adding logic
-    console.log(`Adding ${selectedXp} XP`);
-    setShowAddXpModal(false);
-    toast.success(`Added ${selectedXp} XP to ${user.name}`);
-  };
-
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    setSelectedXp(value);
-
-    // Snap to the closest predefined value
-    const closest = xpOptions.reduce((prev, curr) => {
-      return Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev;
-    });
-
-    setSelectedXp(closest);
-  };
-
-  // Create evenly spaced positions for all markers
-  const getMarkerPosition = (value: number, index: number) => {
-    return (index / (xpOptions.length - 1)) * 100;
-  };
-
-
-
-
   return (
     <div className="flex items-center gap-2">
       <div className="flex flex-col p-4 sm:p-4 bg-gradient-to-br from-slate-50 to-gray-100 dark:from-[#333333] dark:to-[#333333] rounded-xl sm:rounded-2xl border border-gray-200 dark:border-[#404040] shadow-sm dark:shadow-none">
         {/* Add XP Modal */}
         <AnimatePresence>
           {showAddXpModal && (
-            <XpCard user={user} setShowAddXpModal={setShowAddXpModal} />
+            <XpCard user={user} setShowAddXpModal={setShowAddXpModal} videoId={videoId} />
           )}
         </AnimatePresence>
         {/* Top Section - User Info */}
@@ -176,7 +183,7 @@ export const VideoOwner = ({ user, videoId }: Props) => {
             <div className="bg-gradient-to-r from-amber-400 to-orange-500 p-1 rounded-lg">
               <ZapIcon className="w-4 h-4 text-white" />
             </div>
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">Level {level}</span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">Level {channelLevel}</span>
           </div>
 
           <button
@@ -202,7 +209,7 @@ export const VideoOwner = ({ user, videoId }: Props) => {
         <div className="flex justify-end items-center text-center gap-5">
           <p className='text-xs font-semibold pb-1'>Boost progress: </p>
           <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">
-            {progressPercentage.toFixed(0)}%
+            {progressPercentage.toFixed(1)}%
           </p>
         </div>
       </div>
