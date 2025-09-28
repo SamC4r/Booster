@@ -234,8 +234,8 @@ export const xpRouter = createTRPCRouter({
         mode:'payment',
         payment_method_types: ['card'],
         line_items: [{price: price.id, quantity: 1}],
-        success_url: `${process.env.APP_URL ?? "http://localhost:3000"}/market?status=success`,
-        cancel_url: `${process.env.APP_URL ?? "http://localhost:3000"}/market?status=cancel`,
+        success_url: `${process.env.VERCEL_URL ?? "http://localhost:3000"}/market?status=success`,
+        cancel_url: `${process.env.VERCEL_URL ?? "http://localhost:3000"}/market?status=cancel`,
         client_reference_id: user.id, 
         metadata: {price_lookup_key: input.priceLookupKey},
       })
