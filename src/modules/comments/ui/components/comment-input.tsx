@@ -1,3 +1,4 @@
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { UserAvatar } from "@/components/user-avatar";
 import { MAX_COMMENT_LENGTH } from "@/constants";
 import { User } from "@/modules/users/types";
@@ -9,9 +10,10 @@ import { useState } from "react";
 interface CommentInputProps{
     viewer?: User,
     createComment: (newComment: string) => void;
+    isPending: boolean;
 }
 
-export const CommentInput = ({viewer,createComment}:CommentInputProps) => {
+export const CommentInput = ({isPending,viewer,createComment}:CommentInputProps) => {
 
 
     const [newComment, setNewComment] = useState("");
@@ -52,7 +54,10 @@ export const CommentInput = ({viewer,createComment}:CommentInputProps) => {
                 disabled={!newComment.trim()}
                 className={`p-1 rounded-full transition-colors ${newComment.trim() ? 'text-amber-500 hover:text-amber-600' : 'text-gray-400'}`}
               >
-                <Send className="w-5 h-5" />
+                {isPending ? 
+                <Spinner variant="ring"/>
+                :
+                <Send className="w-5 h-5" />}
               </button>
             </div>
           </div>

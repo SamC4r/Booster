@@ -15,6 +15,7 @@ import { useClampDetector } from "../../hooks/resize-hook";
 import { CommentReplyInput } from "./comment-reply-input";
 import { User } from "@/modules/users/types";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { toast } from "sonner";
 
 type Comment = CommentOutput[0];
 
@@ -55,10 +56,12 @@ export const Comment = ({ parentComment, videoId, viewer, depth, maxDepth }: Com
     const [open, setOpen] = useState(false);
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
     const { setRefFor, isClamped } = useClampDetector();
-    const [replyingTo, setReplyingTo] = useState<{ id: string } | null>(null);
+    const [replyingTo, setReplyingTo] = useState("");
 
     // Determine if the current viewer is the comment author
     const isViewerCommentAuthor = viewer?.id === parentComment.userId;
+
+    // console.log("PADREEEEEEEEEEEEEE", parentComment)
 
    
 
@@ -90,135 +93,16 @@ export const Comment = ({ parentComment, videoId, viewer, depth, maxDepth }: Com
     const listKey = { commentId: parentComment.parentId, videoId, limit: COMMENT_REPLIES_SIZE };
 
     const { mutate: commentAddReply, isPending: isReplying } = trpc.comments.createReply.useMutation({
-        onMutate: async ({ parentId, comment }) => {
-            // Cancel any outgoing refetches
-            await utils.comments.getReplies.cancel({ commentId: parentId, videoId, limit: COMMENT_REPLIES_SIZE });
-            
-            // Snapshot the previous value
-            const previousReplies = utils.comments.getReplies.getInfiniteData({ commentId: parentId, videoId, limit: COMMENT_REPLIES_SIZE });
-            
-            // Generate a temporary ID for the optimistic update
-            const tempId = `temp-${Date.now()}`;
-            const now = new Date();
-            
-            // Create the optimistic comment
-            const optimisticComment = {
-                commentId: tempId,
-                userId: viewer?.id || "optimistic-user",
-                videoId,
-                comment,
-                createdAt: now,
-                updatedAt: now,
-                parentId: parentId,
-                replies: 0,
-                user: viewer || {
-                    id: "optimistic-user",
-                    clerkId: "",
-                    name: "You",
-                    imageUrl: "",
-                },
-                commentLikes: 0,
-                viewerLiked: false,
-            };
-            
-            // Optimistically update the cache
-            utils.comments.getReplies.setInfiniteData(
-                { commentId: parentId, videoId, limit: COMMENT_REPLIES_SIZE },
-                // @ts-ignore
-                (old) => {
-                    if (!old) return old;
-                    
-                    return {
-                        ...old,
-                        pages: old.pages.map((page, i) => 
-                            i === 0 
-                                ? { ...page, comments: [ ...page.comments,optimisticComment] }
-                                : page
-                        ),
-                    };
-                }
-            );
-            
-            // Also update the parent comment's reply count optimistically
-            utils.comments.getTopLevel.setInfiniteData(
-                { videoId, limit: COMMENT_SECTION_SIZE },
-                (old) => {
-                    if (!old) return old;
-                    
-                    return {
-                        ...old,
-                        pages: old.pages.map(page => ({
-                            ...page,
-                            comments: page.comments.map(c => 
-                                c.commentId === parentId 
-                                    ? { ...c, replies: (c.replies || 0) + 1 }
-                                    : c
-                            ),
-                        })),
-                    };
-                }
-            );
-            
-            return { previousReplies, tempId };
+        onError: () => {
+            toast.error("something went wrong")
         },
-        onError: (err, variables, context) => {
-            // Rollback the optimistic update
-            if (context?.previousReplies) {
-                utils.comments.getReplies.setInfiniteData(
-                    { commentId: variables.parentId, videoId, limit: COMMENT_REPLIES_SIZE },
-                    context.previousReplies
-                );
-            }
-            
-            // Also rollback the parent comment's reply count
-            utils.comments.getTopLevel.setInfiniteData(
-                { videoId, limit: COMMENT_SECTION_SIZE },
-                (old) => {
-                    if (!old) return old;
-                    
-                    return {
-                        ...old,
-                        pages: old.pages.map(page => ({
-                            ...page,
-                            comments: page.comments.map(c => 
-                                c.commentId === variables.parentId 
-                                    ? { ...c, replies: Math.max(0, (c.replies || 0) - 1) }
-                                    : c
-                            ),
-                        })),
-                    };
-                }
-            );
-        },
-        onSuccess: (data, variables, context) => {
-            // Replace the temporary comment with the real one
-            utils.comments.getReplies.setInfiniteData(
-                { commentId: variables.parentId, videoId, limit: COMMENT_REPLIES_SIZE },
-                // @ts-ignore
-                (old) => {
-                    if (!old) return old;
-                    
-                    return {
-                        ...old,
-                        pages: old.pages.map(page => ({
-                            ...page,
-                            comments: page.comments.map(c => 
-                                c.commentId === context?.tempId 
-                                    ? { ...c, ...data, commentId: data?.commentId }
-                                    : c
-                            ),
-                        })),
-                    };
-                }
-            );
+        onSuccess: (data) => {
+            console.log("LA DATA", data)
+            utils.comments.getTopLevel.invalidate({ videoId, limit: COMMENT_SECTION_SIZE });
+            utils.comments.getReplies.invalidate({commentId:parentComment.commentId, videoId, limit: COMMENT_REPLIES_SIZE});
 
-            utils.comments.getReplies.invalidate({ commentId: parentComment.commentId, videoId, limit: COMMENT_REPLIES_SIZE });
-            utils.comments.getTopLevel.invalidate({ videoId, limit: COMMENT_SECTION_SIZE });
-        },
-        onSettled: () => {
-            // Refetch to ensure we have fresh data
-            utils.comments.getReplies.invalidate({ commentId: parentComment.commentId, videoId, limit: COMMENT_REPLIES_SIZE });
-            utils.comments.getTopLevel.invalidate({ videoId, limit: COMMENT_SECTION_SIZE });
+            //@ts-ignore --> here comment is guaranteed to have a parentId. In the worst case, the procedure will reject it
+            utils.comments.getReplies.invalidate({commentId:parentComment.parentId, videoId, limit: COMMENT_REPLIES_SIZE});
         },
     });
 
@@ -347,8 +231,9 @@ export const Comment = ({ parentComment, videoId, viewer, depth, maxDepth }: Com
     const addCommentReply = (commentId: string, replyText: string) => {
         if (!isSignedIn) return clerk.openSignIn();
         setOpen(true);
-        setReplyingTo({id:""})
-        commentAddReply({ parentId: commentId, videoId, comment: replyText });
+        console.log("ADDING")
+        commentAddReply({ parentId: replyingTo, videoId, comment: replyText });
+        setReplyingTo("")
     }
 
     const handleLike = (c: Comment) => {
@@ -427,7 +312,7 @@ export const Comment = ({ parentComment, videoId, viewer, depth, maxDepth }: Com
                         {depth < maxDepth && (
                             <motion.button
                                 whileTap={{ scale: 0.95 }}
-                                onClick={() => {setReplyingTo({id:""}); setReplyingTo({ id: parentComment.commentId })}}
+                                onClick={() => {setReplyingTo(""); setReplyingTo(parentComment.commentId)}}
                                 className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                                 disabled={isReplying}
                             >
@@ -459,7 +344,7 @@ export const Comment = ({ parentComment, videoId, viewer, depth, maxDepth }: Com
 
                     {/* Reply input */}
                     <AnimatePresence>
-                        {replyingTo?.id === parentComment.commentId && (
+                        {replyingTo === parentComment.commentId && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}

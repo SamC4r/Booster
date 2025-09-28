@@ -28,7 +28,6 @@ export const SuggestionsSection = ({
     title = "Watch next",
     videoId,
 }: SuggestionsSectionProps) => {
-    console.log(videoId)
     return (
         <div className="relative py-8">
             {/* Background gradient */}
@@ -71,6 +70,8 @@ export const SuggestionsSection = ({
                                     <Image
                                         src={video.thumbnailUrl}
                                         alt={video.title}
+                                        width={240}
+                                        height={240}
                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                     />
 
@@ -109,6 +110,8 @@ export const SuggestionsSection = ({
                                         <Image
                                             src={video.user.imageUrl}
                                             alt={video.user.name}
+                                            width={24}
+                                            height={24}
                                             className="w-6 h-6 rounded-full object-cover"
                                         />
                                         <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -175,7 +178,7 @@ const mockVideos: Video[] = [
     {
         id: "1",
         title: "Amazing Mountain Landscape Timelapse",
-        thumbnailUrl: "/placeholder.svg",//"https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        thumbnailUrl: "/placeholder.webp",//"https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
 
         duration: "4:32",
         views: 1250000,
@@ -189,33 +192,33 @@ const mockVideos: Video[] = [
     {
         id: "2",
         title: "Urban City Life - Street Photography",
-        thumbnailUrl:  "/placeholder.svg",//"https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        thumbnailUrl:  "/placeholder.webp",//"https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
         duration: "7:15",
         views: 890000,
         rating: 4.6,
         user: {
             name: "CityExplorer",
-            imageUrl:  "/placeholder.svg",// "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+            imageUrl:  "/placeholder.webp",// "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
         },
         category: "Urban"
     },
     {
         id: "3",
         title: "Cooking Masterclass: Italian Cuisine",
-        thumbnailUrl:  "/placeholder.svg",//"https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        thumbnailUrl:  "/placeholder.webp",//"https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
         duration: "12:45",
         views: 2300000,
         rating: 4.9,
         user: {
             name: "ChefMarco",
-            imageUrl:  "/placeholder.svg", //"https://images.unsplash.com/photo-1566554273541-37a9ca77b91f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
+            imageUrl:  "/placeholder.webp", //"https://images.unsplash.com/photo-1566554273541-37a9ca77b91f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80"
         },
         category: "Cooking"
     },
     {
         id: "4",
         title: "Sunset Beach Meditation Guide",
-        thumbnailUrl:  "/placeholder.svg",//"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        thumbnailUrl:  "/placeholder.webp",//"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
         duration: "18:20",
         views: 560000,
         rating: 4.7,

@@ -12,6 +12,7 @@ import { Comment } from "@/modules/comments/ui/components/comment";
 import { CommentInput } from "@/modules/comments/ui/components/comment-input";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { compactNumber } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface CommentSectionProps {
   videoId: string;
@@ -60,50 +61,11 @@ export const CommentsSuspense = ({ videoId, openComments, onOpenChange,home }: C
   const maxDepth =(home ? 5 : 3); // limit depth on home for performance
 
   const { mutate: createRootComment, isPending } = trpc.comments.create.useMutation({
-    onMutate: async ({ videoId, comment }) => {
-      await utils.comments.getTopLevel.cancel(key);
-      const prev = utils.comments.getTopLevel.getInfiniteData(key);
-      const tempId = crypto.randomUUID();
-      const now = new Date();
-      const optimistic = {
-        commentId: tempId,
-        userId: viewer?.id ?? "optimistic-user",
-        videoId, comment,
-        createdAt: now, updatedAt: now,
-        parentId: null, replies: 0,
-        user: viewer ?? { id: "optimistic-user", clerkId: "", name: "You", imageUrl: "" },
-        commentLikes: 0, viewerLiked: false,
-      } as NonNullable<typeof prev>["pages"][number]["comments"][number];
-
-      utils.comments.getTopLevel.setInfiniteData(key, (old) => {
-        if (!old) return old;
-        const [first, ...rest] = old.pages;
-        const newFirst = {
-          ...first,
-          comments: [optimistic, ...first.comments].slice(0, COMMENT_SECTION_SIZE),
-          commentCount: (first.commentCount ?? 0) + 1,
-        };
-        return { ...old, pages: [newFirst, ...rest] };
-      });
-
-      return { prev, tempId };
+    onError: (_e, _v, ctx) => { 
+      toast.error("something went wrong")
     },
-    onError: (_e, _v, ctx) => { if (ctx) utils.comments.getTopLevel.setInfiniteData(key, ctx.prev); },
-    onSettled: () => { utils.comments.getTopLevel.invalidate(key); },
     onSuccess: (serverRow, _v, ctx) => {
-      if (!ctx) return;
-      utils.comments.getTopLevel.setInfiniteData(key, (old) => {
-        if (!old) return old;
-        const pages = old.pages.map((p, i) => {
-          if (i !== 0) return p;
-          const idx = p.comments.findIndex(c => c.commentId === ctx.tempId);
-          if (idx === -1) return p;
-          const next = p.comments.slice();
-          next[idx] = { ...next[idx], ...serverRow };
-          return { ...p, comments: next };
-        });
-        return { ...old, pages };
-      });
+      utils.comments.getTopLevel.invalidate(key);
     },
   });
 
@@ -149,7 +111,7 @@ export const CommentsSuspense = ({ videoId, openComments, onOpenChange,home }: C
             className="flex-1 min-h-0 flex flex-col"
           >
             <div className="px-5  border-b border-white/10">
-              <CommentInput viewer={viewer} createComment={createComment} />
+              <CommentInput viewer={viewer} createComment={createComment} isPending={isPending}/>
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1">

@@ -216,12 +216,13 @@ export const commentsRouter = createTRPCRouter({
         // .from(comments)
         // .where(eq(comments.commentId,parentId))
 
-        // const [updatedComment] = await db
-        // .update(comments)
-        //   .set({ 
-        //     replies: sql`${comments.replies} + 1`
-        //   }).where(eq(comments.commentId,parentId))
-        // .returning()
+        console.log("updating replies on comment", parentId)
+        await db
+        .update(comments)
+          .set({ 
+            replies: sql`${comments.replies} + 1`
+          }).where(eq(comments.commentId,parentId))
+        .returning()
 
       return createdComment;
     }),
