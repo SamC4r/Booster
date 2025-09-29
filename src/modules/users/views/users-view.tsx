@@ -22,6 +22,7 @@ import { LevelUpAnimation } from "../components/level-up-animation";
 import { BoosterRankings } from "../components/boosters-rankings";
 import { useFollow } from "@/modules/follows/hooks/follow-hook";
 import { SubButton } from "@/modules/subscriptions/ui/components/sub-button";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 interface Props {
   userId: string;
@@ -121,6 +122,7 @@ export const UsersView = ({ userId }: Props) => {
     userId: user.id,
     isFollowing: followers[0]?.viewerIsFollowing,
   });
+
 
 
   return (
@@ -240,12 +242,20 @@ export const UsersView = ({ userId }: Props) => {
               </div>
               <div className="flex items-center justify-between">
 
+                {isPending ? (
+                  <Button 
+                    className="rounded-full flex justify-center text-center p-4 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
+                  >
+                    <Spinner variant="circle"/>
+                  </Button>
+                ) : 
                 <SubButton
                   onClick={onClick}
                   disabled={isPending}
                   isSubscribed={followers[0]?.viewerIsFollowing}
                   className="rounded-full p-4 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
                 />
+              }
                 <Button
                   onClick={() => setShowXpPopup(true)}
                   className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold py-2 px-6 rounded-full hover:opacity-90 transition-all hover:scale-105 active:scale-95"

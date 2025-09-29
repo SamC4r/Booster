@@ -14,6 +14,7 @@ export const useFollow = ({ userId, isFollowing, fromVideoId }: Props) => {
     const follow = trpc.follows.create.useMutation({
         onMutate: async ({ userId }) => {
             if(fromVideoId){ 
+
                 await utils.videos.getOne.cancel({ id: fromVideoId });
                 const previous = utils.videos.getOne.getData({ id: fromVideoId });
                 utils.videos.getOne.setData({ id: fromVideoId }, (old) => {
@@ -28,20 +29,7 @@ export const useFollow = ({ userId, isFollowing, fromVideoId }: Props) => {
                     };
                 });
                 return { previous };
-            }else{
-                await utils.follows.getFollowersByUserId.cancel({userId})
-                const previous = utils.follows.getFollowersByUserId.getData({userId})
-                utils.follows.getFollowersByUserId.setData({userId}, (old) => {
-                    if(!old) return old
-                    return {
-                        ...old,
-                        followsCount: (old[0].followsCount ?? 0) + (old[0].viewerIsFollowing ? 0 : 1),
-                        viewerIsFollowing: true,
-                    }
-                })
-                return {previous}
             }
-
         },
         onError: (_err, _vars, ctx) => {
             if(fromVideoId){
@@ -55,6 +43,8 @@ export const useFollow = ({ userId, isFollowing, fromVideoId }: Props) => {
              utils.videos.getOne.invalidate({id:fromVideoId})
         },
         onSuccess: () =>{
+            utils.follows.getFollowersByUserId.invalidate({ userId })
+             utils.videos.getOne.invalidate({id:fromVideoId})
         }
     });
 
@@ -75,21 +65,7 @@ export const useFollow = ({ userId, isFollowing, fromVideoId }: Props) => {
                     };
                 });
                 return { previous };
-            }else{
-                await utils.follows.getFollowersByUserId.cancel({userId})
-                const previous = utils.follows.getFollowersByUserId.getData({userId})
-                utils.follows.getFollowersByUserId.setData({userId}, (old) => {
-                    if(!old) return old
-                    return {
-                        ...old,
-                        followsCount: (old[0].followsCount ?? 0) - (old[0].viewerIsFollowing ? 1 : 0),
-                        viewerIsFollowing:false,
-                    }
-                })
-
-                return {previous}
-            } 
-
+            }
         },
         onError: (_err, _vars, ctx) => {
             if(fromVideoId){

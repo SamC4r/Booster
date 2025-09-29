@@ -230,7 +230,7 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
 
                         </div>
                         <div className='absolute top-2 right-4 z-50'>
-                            <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} viewerRating={video.user.viewerRating} small={true} />
+                            <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} viewerRating={video.user.viewerRating} small />
                         </div>
                     </>
                 )}
