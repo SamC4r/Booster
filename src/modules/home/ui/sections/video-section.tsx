@@ -5,7 +5,7 @@ import { compactNumber } from '@/lib/utils';
 
 import { VideoPlayer } from '@/modules/videos/ui/components/video-player';
 import { CommentsSection } from '@/modules/videos/ui/sections/comments-section';
-import { Eye, Play, , } from 'lucide-react';
+import { Eye, Play,  } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 ;
 import { useAuth } from '@clerk/nextjs';
