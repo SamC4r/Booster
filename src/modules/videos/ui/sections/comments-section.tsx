@@ -82,8 +82,8 @@ export const CommentsSuspense = ({ videoId, openComments, onOpenChange,home }: C
   return (
     <div className="h-full flex flex-col overflow-hidden "
 
-        onMouseLeave={()=>{if(!home) return; setOpen(false); onOpenChange?.(false)}}
-        onMouseEnter={()=>{if(!home) return; setOpen(true);onOpenChange?.(true)}}
+        // onMouseLeave={()=>{if(!home) return; setOpen(false); onOpenChange?.(false)}}
+        onClick={()=>{if(!home) return; setOpen(true);onOpenChange?.(true)}}
     >
       {/* HEADER — fixed 70px, matches home.html */}
       <div
@@ -108,13 +108,13 @@ export const CommentsSuspense = ({ videoId, openComments, onOpenChange,home }: C
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 min-h-0 flex flex-col"
+            className=" min-h-0 max-w-[95%] flex flex-col"
           >
             <div className="px-5  border-b border-white/10">
               <CommentInput viewer={viewer} createComment={createComment} isPending={isPending}/>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1">
+            <div className="flex flex-col overflow-y-auto px-3 py-4 space-y-1">
               {items.map(c => (
                 <Comment
                   key={c.commentId}

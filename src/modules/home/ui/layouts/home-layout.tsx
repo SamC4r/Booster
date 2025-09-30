@@ -15,11 +15,11 @@ export const HomeLayout = ({children}: HomeLayoutProps) => {
             <div className='w-full'>
                 <ExplorerNavBar />
                 <div className="flex min-h-screen pt-[4rem]">
+                    <ExplorerSidebar collapsible="icon" variant="inset" />
                     <main className="flex-1 ">
                         {children}
                     </main>
                 </div>
-                <ExplorerSidebar  collapsible="offcanvas" variant="sidebar"/>
             </div>
         </SidebarProvider>
     )

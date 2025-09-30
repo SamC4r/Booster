@@ -74,7 +74,7 @@ export const VideoOwner = ({ user, videoId,boostPoints }: Props) => {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex flex-col p-2  bg-gradient-to-br from-slate-50 to-gray-100 dark:from-[#333333] dark:to-[#333333] rounded-xl sm:rounded-2xl border border-gray-200 dark:border-[#404040] shadow-sm dark:shadow-none">
+      <div className="flex flex-col pt-2 pr-2 pl-2  bg-gradient-to-br from-slate-50 to-gray-100 dark:from-[#333333] dark:to-[#333333] rounded-xl sm:rounded-2xl border border-gray-200 dark:border-[#404040] shadow-sm dark:shadow-none">
         {/* Add XP Modal */}
         <AnimatePresence>
           {showAddXpModal && (
@@ -150,7 +150,7 @@ export const VideoOwner = ({ user, videoId,boostPoints }: Props) => {
 
 
       </div>
-      <div className="bg-gradient-to-r from-amber-400/10 to-orange-500/10 dark:from-amber-400/5 dark:to-orange-500/5 rounded-2xl p-2 border border-amber-200 dark:border-amber-800/50 shadow-sm hidden sm:block sm:flex-1 min-w-[300px]">
+      <div className="bg-gradient-to-r from-amber-400/10 to-orange-500/10 dark:from-amber-400/5 dark:to-orange-500/5 rounded-2xl pt-2 pr-2 pl-2  border border-amber-200 dark:border-amber-800/50 shadow-sm hidden sm:block sm:flex-1 min-w-[300px]">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
             <div className="bg-gradient-to-r from-amber-400 to-orange-500 p-1 rounded-lg">

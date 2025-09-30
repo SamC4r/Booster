@@ -371,7 +371,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                       <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
                         {video.categoryId && (
                           <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-lg text-xs font-semibold shadow-lg">
-                            {video.categoryId}
+                            {}
                           </div>
                         )}
 

@@ -41,7 +41,7 @@ const items = [
 ];
 
 export const MainSection = () => {
-    const {  isSignedIn } = useAuth();
+    const { isSignedIn } = useAuth();
     const clerk = useClerk();
     const [activeItem, setActiveItem] = useState("Next Up");
     const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -59,11 +59,8 @@ export const MainSection = () => {
 
     return (
         <SidebarGroup className="relative">
-            {/* Subtle background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-50/5 to-transparent pointer-events-none" />
-            
             <SidebarGroupContent className="relative z-10">
-                <SidebarMenu className="">
+                <SidebarMenu>
                     {items.map((item) => {
                         const isActive = activeItem === item.title;
                         const isHovered = hoveredItem === item.title;
@@ -71,9 +68,9 @@ export const MainSection = () => {
                         
                         return (
                             <SidebarMenuItem key={item.title} className="relative">
-                                {/* Active state background with subtle animation */}
+                                {/* Active state background */}
                                 {isActive && (
-                                    <div className="absolute inset-0 bg-white/10 rounded-lg border  shadow-sm backdrop-blur-sm" />
+                                    <div className="absolute inset-0 bg-white/10 rounded-lg border border-white/20 shadow-sm" />
                                 )}
                                 
                                 {/* Hover state background */}
@@ -96,77 +93,55 @@ export const MainSection = () => {
                                     onMouseLeave={() => setHoveredItem(null)}
                                     className={`
                                         relative
-                                        py-6
-                                        transition-all duration-300 ease-out
+                                        transition-all duration-200
                                         ${isActive 
-                                            ? ' bg-white/5 shadow-sm' 
-                                            : ' hover:scale-[1.01] hover:bg-white/3'
+                                            ? 'bg-white/5' 
+                                            : 'hover:bg-white/3'
                                         }
-                                        border border-transparent
-                                        ${isActive ? '' : ''}
                                         rounded-lg
-                                        overflow-hidden
                                         group
-                                        backdrop-blur-sm
+                                        h-10 /* Fixed height for consistency */
+                                        mx-0.5 /* Add some horizontal margin */
                                     `}
                                 >
                                     <Link 
                                         href={item.url} 
-                                        className="flex items-center gap-3 p-3 relative z-10"
+                                        className="flex items-center gap-2 w-full h-full  relative z-10"
                                     >
-                                        {/* Icon with modern styling */}
+                                        {/* Icon container - simplified for collapsed mode */}
                                         <div className={`
-                                            relative
-                                            transition-all duration-300 ease-out
+                                            flex items-center justify-center
+                                            transition-all duration-200
                                             ${isActive 
-                                                ? 'bg-amber-500 text-slate-900 shadow-sm' 
-                                                : 'bg-white/5 text-white/70 group-hover:bg-amber-300/10 group-hover:text-white'
+                                                ? 'bg-amber-500 text-slate-900' 
+                                                : 'bg-white/10 text-white/70 group-hover:bg-amber-300/10 group-hover:text-white'
                                             }
-                                            rounded-lg p-2
-                                            ${isActive ? 'scale-100' : 'scale-100 group-hover:scale-105'}
+                                            rounded-lg
+                                            w-6 h-6 /* Smaller size for collapsed mode */
+                                            min-w-[1.5rem] /* Prevent shrinking */
+                                            flex-shrink-0 /* Prevent shrinking in flex container */
                                         `}>
-                                            <Icon className={`
-                                                w-4 h-4 transition-transform duration-300
-                                                ${isActive ? 'scale-100' : 'scale-100'}
-                                            `} />
-                                            
-                                           
+                                            <Icon className="w-4 h-4" /> {/* Smaller icon */}
                                         </div>
                                         
-                                        {/* Text with modern typography */}
+                                        {/* Text - will be hidden by sidebar when collapsed */}
                                         <span className={`
-                                            text-sm font-medium transition-all duration-300
+                                            text-sm font-medium transition-all duration-200
                                             ${isActive 
                                                 ? 'text-white font-semibold' 
                                                 : 'text-white/70 group-hover:text-white/90'
                                             }
-                                            ${isActive ? 'translate-x-1' : 'translate-x-0'}
+                                            whitespace-nowrap
+                                            overflow-hidden
                                         `}>
                                             {item.title}
                                         </span>
-                                        
-                                       
-                                        
-                                        {/* Subtle hover arrow */}
-                                        {!isActive && (
-                                            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                                                <div className="w-1 h-1 bg-white/50 rounded-full" />
-                                            </div>
-                                        )}
                                     </Link>
                                 </SidebarMenuButton>
-                                
-                                {/* Subtle glow effect for active item
-                                {isActive && (
-                                    <div className="absolute inset-0 bg-white/3 blur-md rounded-lg -z-10 animate-pulse" />
-                                )} */}
                             </SidebarMenuItem>
                         );
                     })}
                 </SidebarMenu>
-                
-                {/* Subtle accent line */}
-                {/* <div className="absolute top-0 left-3 bottom-0 w-0.5 bg-gradient-to-b from-white/20 via-white/10 to-transparent" /> */}
             </SidebarGroupContent>
         </SidebarGroup>
     );

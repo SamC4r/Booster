@@ -110,7 +110,7 @@ export const VideoReactions = ({ avgRating, onRate, videoRatings, viewerRating, 
                 </div>
             ) :
                 (
-                    <>
+                    <div className="flex flex-col items-center text-center">
                     <div className="flex items-center rounded-xl">
                         <Rating
                             value={viewerRating}
@@ -128,12 +128,12 @@ export const VideoReactions = ({ avgRating, onRate, videoRatings, viewerRating, 
                             ))}
                         </Rating>
                     </div>
-                     <div className="flex items-center justify-between gap-3 mt-2 w-full">
+                     <div className="flex items-center justify-between gap-3 mt-2 ml-3 w-full">
                         {/* Average Rating */}
                         <div className="flex flex-col items-center w-full">
                             <div className="flex items-center gap-1">
                                 <Star className="w-4 h-4 text-amber-500 fill-current" />
-                                <p className="font-bold text-lg text-amber-800 dark:text-amber-200">{Number(avgRating).toFixed(1)}</p>
+                                <p className="font-bold text-md text-amber-800 dark:text-amber-200">{Number(avgRating).toFixed(1)}</p>
                             </div>
                             <p className="text-xs text-amber-600 dark:text-amber-400">Average</p>
                         </div>
@@ -142,12 +142,12 @@ export const VideoReactions = ({ avgRating, onRate, videoRatings, viewerRating, 
                         <div className="flex flex-col items-center w-full">
                             <div className="flex items-center gap-1">
                                 <Users className="w-4 h-4 text-amber-500" />
-                                <p className="font-bold text-lg text-amber-800 dark:text-amber-200">{compactRatings}</p>
+                                <p className="font-bold text-md text-amber-800 dark:text-amber-200">{compactRatings}</p>
                             </div>
                             <p className="text-xs text-amber-600 dark:text-amber-400">Ratings</p>
                         </div>
                     </div>
-                    </>
+                    </div>
                 )}
         </>
     )

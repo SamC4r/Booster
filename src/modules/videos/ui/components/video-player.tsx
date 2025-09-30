@@ -878,6 +878,7 @@ translate: 4% 4%;
                         onPause={onPause}
                         poster={thumbnailUrl || THUMBNAIL_FALLBACK}
                         autoPlay={autoPlay}
+                        loop
                 />
 
                 {/* Additional custom styles */}

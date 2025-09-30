@@ -93,7 +93,6 @@ export const PersonalSection = () => {
                                     onMouseLeave={() => setHoveredItem(null)}
                                     className={`
                                         relative
-                                        py-6
                                         transition-all duration-300 ease-out
                                         ${isActive
                                             ? ' bg-white/5 shadow-sm'
@@ -105,42 +104,41 @@ export const PersonalSection = () => {
                                         overflow-hidden
                                         group
                                         backdrop-blur-sm
+                                        h-10
+                                        mx-0.5
                                     `}
                                 >
                                     <Link
                                         href={item.url}
-                                        className="flex items-center gap-3 p-3 relative z-10"
+                                        className="flex items-center gap-3 w-full h-full relative z-10"
                                     >
                                         {/* Icon with modern styling */}
                                         <div className={`
-                                            relative
+                                            flex items-center justify-center
                                             transition-all duration-300 ease-out
                                             ${isActive
                                                 ? 'bg-amber-500 text-slate-900 shadow-sm'
                                                 : 'bg-white/5 text-white/70 group-hover:bg-amber-300/10 group-hover:text-white'
                                             }
-                                            rounded-lg p-2
-                                            ${isActive ? 'scale-100' : 'scale-100 group-hover:scale-105'}
+                                            rounded-lg 
+                                            w-6 h-6
+                                            min-w-[1.5rem]
+                                            flex-shrink-0
                                         `}>
-                                            <Icon className={`
-                                                w-4 h-4 transition-transform duration-300
-                                                ${isActive ? 'scale-100' : 'scale-100'}
-                                            `} />
+                                            <Icon className='w-4 h-4'/>
 
-                                            {/* Active indicator dot
-                                            {isActive && (
-                                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full ring-2 ring-slate-900" />
-                                            )} */}
+                                           
                                         </div>
 
                                         {/* Text with modern typography */}
-                                        <span className={`
-                                            text-sm font-medium transition-all duration-300
-                                            ${isActive
-                                                ? 'text-white font-semibold'
+                                         <span className={`
+                                            text-sm font-medium transition-all duration-200
+                                            ${isActive 
+                                                ? 'text-white font-semibold' 
                                                 : 'text-white/70 group-hover:text-white/90'
                                             }
-                                            ${isActive ? 'translate-x-1' : 'translate-x-0'}
+                                            whitespace-nowrap
+                                            overflow-hidden
                                         `}>
                                             {item.title}
                                         </span>
@@ -148,11 +146,7 @@ export const PersonalSection = () => {
 
 
                                         {/* Subtle hover arrow */}
-                                        {!isActive && (
-                                            <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                                                <div className="w-1 h-1 bg-white/50 rounded-full" />
-                                            </div>
-                                        )}
+                                       
                                     </Link>
                                 </SidebarMenuButton>
 

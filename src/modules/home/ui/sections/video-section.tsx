@@ -5,7 +5,7 @@ import { compactNumber } from '@/lib/utils';
 
 import { VideoPlayer } from '@/modules/videos/ui/components/video-player';
 import { CommentsSection } from '@/modules/videos/ui/sections/comments-section';
-import { Eye, Play, Clock, } from 'lucide-react';
+import { Eye, Play, , } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 ;
 import { useAuth } from '@clerk/nextjs';
@@ -163,31 +163,64 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
 
 
             {/* VIDEO AREA */}
-            <div className="relative group flex-1 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="relative flex-1 rounded-2xl max-h-[85%] overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm" onMouseEnter={() => setShowTitle(true)} onMouseLeave={() => setShowTitle(false)} >
 
-                {/* Floating title on pause / first seconds */}
+                {/* Floating title on pause / first seconds  TODO: quitar el titulo*/}
                 <AnimatePresence>
                     {(!isPlaying || showTitle) && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="absolute top-4 left-4 z-20 hidden sm:block pointer-events-none rounded-lg"
-                        >
-                            <div className="bg-white/90 dark:bg-[#333333]/90 backdrop-blur-md rounded-xl p-4 max-w-md border border-gray-200 dark:border-gray-700 shadow-md">
-                                <h2 className="text-gray-900 dark:text-white font-bold text-lg line-clamp-1">{video.title}</h2>
-                                <div className="flex items-center gap-4 mt-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <>
+                            {/* Mobile Overlay */}
+                            <div className='sm:hidden block'>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                                    className='absolute bottom-20 left-4 z-30 sm:max-w-[50%] max-w-[90%] truncate'
+                                >
+                                    <span className='text-md'>{video.title} </span>
+                                </motion.div>
 
-                                    <div className="flex items-center gap-1"><Eye className="w-4 h-4" /><span>{compactNumber(video.videoViews)} views</span></div>
-                                    <div className="flex items-center gap-1"><Clock className="w-4 h-4" /><span>{new Date(video.createdAt).toLocaleDateString()}</span></div>
-                                </div>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
+                                    className="absolute top-6 left-6 z-30"
+                                >
+                                    <div className='flex items-center gap-2 text-center justify-start'>
+                                        <UserAvatar imageUrl={video.user.imageUrl} name={video.user.name} userId={video.user.id} />
+                                        <Eye className="h-4 w-4" /><span className="font-medium">{compactNumber(video.videoViews)}</span>
+                                    </div>
+                                </motion.div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    transition={{ duration: 1, ease: 'easeInOut', delay: 0.2 }}
+                                    className='absolute top-6 right-8 z-30'
+                                >
+                                    <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} viewerRating={video.user.viewerRating} small />
+                                </motion.div>
                             </div>
-                        </motion.div>
+
+                            {/* Desktop Title */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 10 }}
+                                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                                className="hidden sm:block sm:absolute top-6 left-6 z-10"
+                            >
+                                <p className='text-2xl font-semibold text-gray-900 dark:text-white line-clamp-1'>{video.title} </p>
+                            </motion.div>
+                        </>
                     )}
                 </AnimatePresence>
 
                 {/* Player fills container */}
-                <div className="absolute inset-0 ">
+                <div className="absolute inset-0">
                     <VideoPlayer
                         ref={videoPlayerRef}
                         autoPlay={isPlaying}
@@ -195,6 +228,7 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
                         onPause={handlePause}
                         playbackId={video.muxPlaybackId}
                         thumbnailUrl={video.thumbnailUrl}
+
                     />
 
                     {/* Play button overlay */}
@@ -219,23 +253,9 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
                     </AnimatePresence>
                 </div>
 
-                {/* Top row small devices */}
-                {(!isPlaying || showTitle) && (
-                    <>
-                        <div className="absolute top-2 left-2 z-50">
-                            <div className='flex items-center gap-2 text-center justify-start'>
-                                <UserAvatar imageUrl={video.user.imageUrl} name={video.user.name} userId={video.user.id} />
-                                <Eye className="h-4 w-4" /><span className="font-medium">{compactNumber(video.videoViews)}</span>
-                            </div>
-
-                        </div>
-                        <div className='absolute top-2 right-4 z-50'>
-                            <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} viewerRating={video.user.viewerRating} small />
-                        </div>
-                    </>
-                )}
 
 
+                {/* 
                 <div className="flex items-start gap-2">
 
                     <div className="inline-flex items-center gap-2 bg-white dark:bg-[#333333] border border-gray-300 dark:border-gray-600 px-3 py-1.5 rounded-full text-gray-700 dark:text-gray-300">
@@ -246,25 +266,22 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
 
                         <VideoMenu variant='secondary' videoId={video.id} />
                     </div>
-                </div>
+                </div> */}
 
             </div>
 
             {/* TOP ROW Large*/}
             <div className='hidden sm:flex items-start justify-between'>
                 <div className="flex flex-col sm:items-start sm:justify-between gap-3 ml-2 flex-1">
-                    <div className="flex flex-wrap items-center gap-2 text-gray-700 dark:text-gray-300 text-sm max-w-7xl">
-                        <p className='text-2xl font-semibold text-gray-900 dark:text-white line-clamp-1'>{video.title} </p>
-                    </div>
+                    <VideoOwner user={video.user} videoId={video.id} boostPoints={Number(boostPoints.boostPoints)} />
 
 
+                    {/*
                     <div className="flex flex-col sm:flex-row gap-4">
-                        {/* Channel Info Card */}
                         <VideoOwner user={video.user} videoId={video.id} boostPoints={Number(boostPoints.boostPoints)} />
 
 
-                        {/* Antiguo video owner descrption */}
-                        {/* <div className="flex items-center bg-white dark:bg-[#333333] rounded-2xl px-4 py-3 border border-gray-200 dark:border-gray-700 shadow-sm flex-1">
+                        <div className="flex items-center bg-white dark:bg-[#333333] rounded-2xl px-4 py-3 border border-gray-200 dark:border-gray-700 shadow-sm flex-1">
                             <div className="flex items-center gap-3">
                                 <UserAvatar size="lg" imageUrl={video.user.imageUrl} name={video.user.name} className="ring-2 ring-white shadow-sm" />
                                 <div className="flex-1">
@@ -290,22 +307,21 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
                                     )}
                                 </div>
                             </div>
-                        </div> */}
+                        </div>
 
-                        {/* XP Progress Card */}
 
                     </div>
+*/}
                 </div>
 
 
-                <div className="flex items-start gap-2">
+                <div className="flex items-start gap-5">
 
                     <div className="inline-flex items-center gap-2 bg-white dark:bg-[#333333] border border-gray-300 dark:border-gray-600 px-3 py-1.5 rounded-full text-gray-700 dark:text-gray-300">
                         <Eye className="h-4 w-4" /><span className="font-medium">{compactNumber(video.videoViews)}</span>
                     </div>
-                    <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} viewerRating={video.user.viewerRating} />
+                    <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} viewerRating={video.user.viewerRating} small />
                     <div className='ml-1'>
-
                         <VideoMenu variant='secondary' videoId={video.id} />
                     </div>
                 </div>
@@ -316,18 +332,12 @@ export const VideoSectionSuspense = ({ videoId }: Props) => {
 
             {/* COMMENTS PANEL */}
             <motion.div
-                className="comments-panel rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#333333] backdrop-blur-md overflow-hidden shadow-sm"
+                className="flex-initial rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#333333] backdrop-blur-md overflow-hidden shadow-sm"
                 initial={false}
                 animate={{ height: commentsOpen ? '45vh' : collapsedPx }}
                 transition={{ duration: 0.35, ease: 'easeInOut' }}
             >
-                {commentsOpen ? (
-                    <style>{`
-                        @media (max-width: 768px){
-                            .comments-panel{ height: 50vh !important; }
-                        }
-                    `}</style>
-                ) : null}
+
 
                 <CommentsSection
                     home
