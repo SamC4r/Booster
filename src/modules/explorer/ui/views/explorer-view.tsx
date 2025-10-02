@@ -128,7 +128,8 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
   const videos = useMemo(() => data ? data.pages.flatMap(p => p.items) : [], [data]);
   const featuredVideo = videos.find(v => v.isFeatured);
 
- 
+
+  console.log("V",videos)
 
 
   return (

@@ -46,6 +46,7 @@ import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import { ThumbnailUploadModal} from "../components/thumbnail-upload-modal";
 import { format } from "date-fns";
+import { BunnyEmbed } from "@/modules/videos/ui/views/BunnyEmbed";
 
 interface PageProps {
     videoId: string;
@@ -413,10 +414,11 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                             <div className="flex flex-col gap-4 bg-white dark:bg-[#333333] rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm h-fit">
                                 <h3 className="font-semibold text-gray-800 dark:text-white text-lg">Video Preview</h3>
                                 <div className="aspect-video relative rounded-xl overflow-hidden shadow-md min-w-0 w-full">
-                                    <VideoPlayer
+                                    {/* <VideoPlayer
                                         playbackId={video.muxPlaybackId}
                                         thumbnailUrl={video.thumbnailUrl}
-                                    />
+                                    /> */}
+                                    <BunnyEmbed libraryId={video.bunnyLibraryId} videoId={video.bunnyVideoId} />
                                 </div>
                                 
                                 {/* Video Stats */}
@@ -481,10 +483,10 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Video Status</p>
                                             <div className="flex items-center">
                                                 <div className={`h-2 w-2 rounded-full mr-2 ${
-                                                    video.muxStatus === 'ready' ? 'bg-green-500' : 
-                                                    video.muxStatus === 'preparing' ? 'bg-yellow-500' : 'bg-gray-500'
+                                                    video.bunnyStatus === 'finished' ? 'bg-green-500' : 
+                                                    video.bunnyStatus === 'processing' ? 'bg-yellow-500' : 'bg-gray-500'
                                                 }`}></div>
-                                                <p className="text-sm font-medium text-gray-900 dark:text-white">{snakeCaseToTitle(video.muxStatus || "Preparing")}</p>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-white">{snakeCaseToTitle(video.bunnyStatus || "Preparing")}</p>
                                             </div>
                                         </div>
                                         
@@ -492,10 +494,10 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Subtitles Status</p>
                                             <div className="flex items-center">
                                                 <div className={`h-2 w-2 rounded-full mr-2 ${
-                                                    video.muxTrackStatus === 'ready' ? 'bg-green-500' : 
-                                                    video.muxTrackStatus === 'preparing' ? 'bg-yellow-500' : 'bg-gray-500'
+                                                    video.bunnyStatus === 'resolution_finished' ? 'bg-green-500' : 
+                                                    video.bunnyStatus !== 'finished' ? 'bg-yellow-500' : 'bg-gray-500'
                                                 }`}></div>
-                                                <p className="text-sm font-medium text-gray-900 dark:text-white">{snakeCaseToTitle(video.muxTrackStatus || "No Subtitles")}</p>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-white">{"No Subtitles"}</p>
                                             </div>
                                         </div>
                                     </div>

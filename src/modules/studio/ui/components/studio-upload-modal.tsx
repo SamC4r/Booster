@@ -4,7 +4,8 @@ import { ResponsiveModal } from '@/components/responsive-modal';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/trpc/client';
 import { Loader2Icon, PlusIcon } from 'lucide-react';
-import { StudioUploader } from './studio-uploader';
+import { StudioUploader } from './studio-uploader-mux';
+import { StudioBunnyUploader } from './studio-bunny-uploader';
 
 export const StudioUploadModal = () => {
 
@@ -50,7 +51,7 @@ export const StudioUploadModal = () => {
 
   return (
     <>
-      <ResponsiveModal open={open} onOpenChange={setOpen} title="">
+      {/* <ResponsiveModal open={open} onOpenChange={setOpen} title="">
         {!endpoint ? (
           <Loader2Icon className="animate-spin" />
         ) : (
@@ -58,12 +59,16 @@ export const StudioUploadModal = () => {
               throw new Error(`Function not implemented.${e}`);
             } } />
         )}
-      </ResponsiveModal>
+      </ResponsiveModal> */}
 
       <Button variant="secondary" onClick={handleOpen}>
         {pending ? <Loader2Icon className="animate-spin" /> : <PlusIcon />}
         Create
       </Button>
+
+      <ResponsiveModal open={open} title='Upload video' onOpenChange={setOpen}>
+        <StudioBunnyUploader />
+      </ResponsiveModal>
     </>
   );
 };

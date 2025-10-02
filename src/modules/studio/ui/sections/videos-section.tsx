@@ -155,12 +155,12 @@ export const VideosSectionSuspense = () => {
                         <VideoThumbnail 
                           duration={video.duration || 0} 
                           title={video.title} 
-                          imageUrl={video.thumbnailUrl} 
+                          imageUrl={video.thumbnailUrl}
                           previewUrl={video.previewUrl} 
                         />
-                        <div className="absolute bottom-1 right-1 bg-background/90 px-1.5 py-0.5 rounded text-xs font-medium">
+                        {/* <div className="absolute bottom-1 right-1 bg-background/90 px-1.5 py-0.5 rounded text-xs font-medium">
                           {formatDuration(video.duration)}
-                        </div>
+                        </div> */}
                       </div>
                       <div className='flex flex-col gap-y-1 max-w-sm'>
                         <span className='text-sm font-medium line-clamp-1 truncate'>{video.title}</span>
@@ -181,11 +181,11 @@ export const VideosSectionSuspense = () => {
                   <TableCell className="py-4">
                     <div className="flex items-center">
                       <div className={`h-2 w-2 rounded-full mr-2 ${
-                        video.muxStatus === 'ready' ? 'bg-green-500' : 
-                        video.muxStatus === 'processing' ? 'bg-amber-500' : 
+                        (video.bunnyStatus === "resolution_finished" || video.bunnyStatus === 'finished') ? 'bg-green-500' : 
+                        video.bunnyStatus === 'processing' ? 'bg-amber-500' : 
                         'bg-destructive'
                       }`} />
-                      <span className="text-sm">{snakeCaseToTitle(video.muxStatus || "Error")}</span>
+                      <span className="text-sm">{snakeCaseToTitle(video.bunnyStatus || "Error")}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-sm py-4">

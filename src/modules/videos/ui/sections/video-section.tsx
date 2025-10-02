@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Eye, Clock, Loader2 } from "lucide-react";
 import { DEFAULT_LIMIT } from "@/constants";
+import { BunnyEmbed } from "../views/BunnyEmbed";
 
 interface VideoSectionProps {
     videoId: string;
@@ -124,14 +125,15 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
 
             <div className={cn(
                 "relative aspect-video rounded-xl overflow-hidden  backdrop-blur-md",
-                video.muxStatus !== "ready" && "rounded-b-none",
+                video.bunnyStatus !== "finished" && "rounded-b-none",
             )}
             >
                 {/* Glassmorphism overlay */}
                 {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" /> */}
 
                 {/* Status indicator */}
-                {video.muxStatus !== "ready" && (
+                {video.bunnyStatus !== "finished" && video.bunnyStatus != "resolution_finished" && (
+
                     <div className="absolute top-4 right-4 z-20">
                         <div className="px-3 py-1.5 bg-black/70 backdrop-blur-md rounded-full flex items-center gap-2">
                             <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
@@ -168,14 +170,15 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
 
                 {/* Video layer */}
                 <div className="relative z-10 w-full h-full overflow-hidden rounded-3xl">
-                    <VideoPlayer
+                    {/* <VideoPlayer
                         ref={videoPlayerRef}
                         autoPlay={isPlaying}
                         onPause={handlePause}
                         onPlay={handlePlay}
                         playbackId={video.muxPlaybackId}
                         thumbnailUrl={video.thumbnailUrl}
-                    />
+                    /> */}
+                    <BunnyEmbed libraryId={video.bunnyLibraryId} videoId={video.bunnyVideoId} />
                 </div>
 
                 {/* Play button overlay */}
@@ -200,7 +203,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
                 </AnimatePresence>
             </div>
 
-            <VideoBanner status={video.muxStatus} />
+            <VideoBanner status={video.bunnyStatus || "processing"} />
             <VideoTopRow video={video} onRate={onRate} boostPoints={Number(boostPoints.boostPoints)} />
         </div>
     )

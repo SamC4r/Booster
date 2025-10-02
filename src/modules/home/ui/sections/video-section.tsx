@@ -18,6 +18,7 @@ import { VideoMenu } from '@/modules/videos/ui/components/video-menu';
 import { VideoOwner } from '@/modules/videos/ui/components/video-owner';
 import { ErrorBoundary } from 'react-error-boundary';
 import { UserAvatar } from '@/components/user-avatar';
+import { BunnyEmbed } from '@/modules/videos/ui/views/BunnyEmbed';
 
 
 interface Props {
@@ -237,7 +238,7 @@ export const VideoSectionSuspense = ({ videoId, next,prev }: Props) => {
                 {/* Player fills container */}
                 <div className="absolute inset-0"
                 >
-                    <VideoPlayer
+                    {/* <VideoPlayer
                         ref={videoPlayerRef}
                         autoPlay={isPlaying}
                         onPlay={handlePlay}
@@ -245,7 +246,8 @@ export const VideoSectionSuspense = ({ videoId, next,prev }: Props) => {
                         playbackId={video.muxPlaybackId}
                         thumbnailUrl={video.thumbnailUrl}
 
-                    />
+                    /> */}
+                    <BunnyEmbed libraryId={video.bunnyLibraryId} videoId={video.bunnyVideoId} />
 
                     {/* Play button overlay */}
                     <AnimatePresence>
