@@ -12,7 +12,7 @@ export const SearchInput = () => {
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const url = new URL("/search",  process.env.VERCEL_URL ?? "http://localhost:3000")
+        const url = new URL("/search",  process.env.VERCEL_URL! ?? "http://localhost:3000")
         const newQuery = value.trim();
 
 

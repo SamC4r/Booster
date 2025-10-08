@@ -90,8 +90,6 @@
     "recharts": "^2.15.4",
     "rsuite": "^5.83.3",
     "server-only": "^0.0.1",
-    "shaka-player": "^4.16.3",
-    "shaka-player-react": "^1.1.5",
     "sonner": "^2.0.7",
     "stripe": "^18.5.0",
     "superjson": "2.2.2",
