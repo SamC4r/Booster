@@ -1,44 +1,60 @@
 // app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 import { TRPCProvider } from "@/trpc/client";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-    title: "Booster",
+    metadataBase: new URL("https://www.booster.example"), // <-- your canonical origin
+    title: {
+        default: "Booster",
+        template: "%s | Booster",
+    },
     description: "Video platform oriented for creators and users",
-    icons: [{ rel: "icon", url: "/favicon.ico" }],
+    alternates: {
+        canonical: "/",
+    },
+    openGraph: {
+        type: "website",
+        url: "https://www.booster.example/",
+        siteName: "Booster",
+        title: "Booster",
+        description: "Video platform oriented for creators and users",
+        images: [{ url: "/og-default.jpg", width: 1200, height: 630 }],
+    },
+    twitter: {
+        card: "summary_large_image",
+        site: "@your_handle",
+    },
+    icons: [
+        { rel: "icon", url: "/favicon.ico" },
+        { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+    ],
 };
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export const viewport: Viewport = {
+    themeColor: [{ media: "(prefers-color-scheme: dark)", color: "#0b0b0b" }, { color: "#ffffff" }],
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <ClerkProvider>
             <html lang="en" suppressHydrationWarning>
                 <head>
-                    {/* Preconnects to speed up LCP */}
-                    <link rel="preconnect" href="https://image.mux.com" crossOrigin="" />
-                    <link rel="preconnect" href="https://stream.mux.com" crossOrigin="" />
-                    <link rel="preconnect" href="https://cdn.mux.com" crossOrigin="" />
-                    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+                    {/* Preconnect to critical origins (keep this short and justified) */}
+                    <link rel="preconnect" href="https://vitals.vercel-analytics.com" crossOrigin="" />
+                    {/* If you serve images/video from a dedicated domain/CDN, preconnect it too */}
+                    {/* <link rel="preconnect" href="https://cdn.booster.example" crossOrigin="" /> */}
                 </head>
                 <body className={inter.className}>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
+                    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                         <TRPCProvider>
                             {children}
                             <Toaster richColors closeButton />
@@ -50,3 +66,4 @@ export default function RootLayout({
         </ClerkProvider>
     );
 }
+

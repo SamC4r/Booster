@@ -13,9 +13,9 @@ export const dynamic = 'force-dynamic'; //disable static rendering for this page
 //   //with that you populate data cache on server side, so when client component is rendered, it can use the cached data -> faster
 
 //   // const data = await trpc.hello({text: 'sammas24'}); //fetch from server component --> more efficient but lose interactivity --> search for hybrid solution
-  
 
-  
+
+
 //   return (
 //     <div>
 //       <HydrateClient>
@@ -31,28 +31,30 @@ export const dynamic = 'force-dynamic'; //disable static rendering for this page
 //   );
 // }
 
-interface PageProps{
-  searchParams: Promise<{
-    categoryId?:string;
-  }>
+interface PageProps {
+    searchParams: Promise<{
+        categoryId?: string;
+    }>
 }
 
 
-const Page = async ({}: PageProps) => { //destructure searchParams
-  void trpc.categories.getMany.prefetch();
-  void trpc.home.getMany.prefetchInfinite({limit:DEFAULT_LIMIT});
-  // const { categoryId } = await searchParams; //await the promise to get the actual search params
-  
-  return (
-    // <HydrateClient>
-    //   {/* <ExplorerView categoryId={categoryId}/> */}
-    //   <p>A</p>
-    // </HydrateClient>
+const Page = async ({ }: PageProps) => { //destructure searchParams
+    void trpc.categories.getMany.prefetch();
+    void trpc.home.getMany.prefetchInfinite({ limit: DEFAULT_LIMIT });
+    // const { categoryId } = await searchParams; //await the promise to get the actual search params
 
-    <HydrateClient>
-      <HomeView />
-    </HydrateClient>
-  )
+    return (
+        // <HydrateClient>
+        //   {/* <ExplorerView categoryId={categoryId}/> */}
+        //   <p>A</p>
+        // </HydrateClient>
+
+        <main>
+            <HydrateClient>
+                <HomeView />
+            </HydrateClient>
+        </main>
+    )
 
 }
 
