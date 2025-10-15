@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
-import { Analytics } from "@vercel/analytics"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 
 import { TRPCProvider } from "@/trpc/client";
