@@ -8,7 +8,7 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
-export const StudioBunnyUploader = () => {
+export const StudioUploader = () => {
     const [state, setState] = useState<{ file: File | null; progress: number; uploading: boolean }>({
         file: null, progress: 0, uploading: false
     });
@@ -52,11 +52,24 @@ export const StudioBunnyUploader = () => {
 
     const handleUpload = async (file: File) => {
 
-        setState({ file, progress: 0, uploading: true });
+        const video = document.createElement("video");
+        video.preload= "metadata";
+        video.src = URL.createObjectURL(file);
 
-        createAfterUpload.mutate({ title: file.name })
+        video.onloadedmetadata = async () => {
+            URL.revokeObjectURL(video.src);
+            const duration = video.duration;
+            if(duration > 300){
+                toast.error('Video must be under 5 minutes');
+                return;
+            }
 
-        setState({ file, progress: 50, uploading: true });
+            setState({ file, progress: 0, uploading: true });
+
+            createAfterUpload.mutate({ title: file.name })
+
+            setState({ file, progress: 50, uploading: true });
+        }
     };
 
     const onPick = (e: ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +111,7 @@ export const StudioBunnyUploader = () => {
                             <p className="pl-1">to upload</p>
                         </div>
                         <p className="text-sm pt-4 font-bold">Select a .mp4 file</p>
+                        <p className='text-red-300 text-xs pt-4'>Video should be under 5 minutes</p>
                     </div>
                 </div>
 
@@ -110,14 +124,14 @@ export const StudioBunnyUploader = () => {
                 {file && (
                     <div className="mt-4">
                         <div className="flex justify-between text-xs mb-1">
-                            <span className="truncate">{file.name}</span>
+                            <span className="truncate min-w-0">{file.name}</span>
                             <span>{progress}%</span>
                         </div>
                         <div className="flex flex-col gap-2 text-center">
 
                             {progress < 100 && (<Spinner variant="circle" />)}
 
-                            <span className="text-muted-foreground text-xs">You can close this and edit the metadata while the video is processing</span>
+                            <span className="text-muted-foreground text-xs">You can close this and edit the data while the video is processing</span>
                         </div>
                     </div>
                 )}

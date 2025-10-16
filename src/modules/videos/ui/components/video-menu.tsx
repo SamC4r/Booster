@@ -5,7 +5,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { MoreVerticalIcon, MousePointerClick, Share2, ThumbsDown, TrashIcon } from "lucide-react";
+import { MoreVerticalIcon, MousePointerClick, Share2, Sparkle, ThumbsDown, TrashIcon } from "lucide-react";
 import { toast } from "sonner";
 
 interface VideoMenuProps {
@@ -41,6 +41,15 @@ export const VideoMenu = ({
                         Share
                     </Button>
                 </DropdownMenuItem>
+
+                <DropdownMenuItem>
+                    <Button className='flex items-center bg-red-300 w-full' >
+                        <MousePointerClick className='size-4' />
+                        <p>Report AI</p>
+                        <Sparkle className='size-4' />
+                    </Button>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem>
                     <Button className='flex items-center justify-between bg-red-300 w-full'
 

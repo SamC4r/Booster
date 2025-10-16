@@ -24,3 +24,5 @@ export const compactNumber = (commentLikes: number) => {
     notation: "compact"
   }).format(commentLikes)
 }
+
+

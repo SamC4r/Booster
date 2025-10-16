@@ -81,16 +81,16 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
 
     useEffect(() => {
         setShouldPlay(true);
-    }, [videoId]);
+    }, []);
 
 
-    
+
     // const followingList = []
 
     const createRating = trpc.videoRatings.create.useMutation({
         onSuccess: () => {
             utils.videos.getOne.invalidate({ id: videoId })
-            utils.home.getMany.invalidate({ limit:DEFAULT_LIMIT })
+            utils.home.getMany.invalidate({ limit: DEFAULT_LIMIT })
         },
         onError: (error) => {
             if (error.message === "limit") toast.error("Wait a bit before rating again!")
@@ -99,9 +99,9 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
 
     useEffect(() => {
         setIsPlaying(true)
-        if(!isSignedIn) return;
-        createView.mutate({videoId})
-    },[]);
+        if (!isSignedIn) return;
+        createView.mutate({ videoId })
+    }, []);
 
     const handlePlayButtonClick = () => {
         videoPlayerRef.current?.play()
@@ -192,7 +192,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
                             exit={{ opacity: 0, scale: 0.8 }}
                             className="absolute inset-0 z-20 flex items-center justify-center -m-20 pointer-events-none group"
                         >
-                            <div 
+                            <div
                                 className="w-20 h-20 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300 pointer-events-auto cursor-pointer hover:bg-black/60 "
                                 onClick={handlePlayButtonClick}
                             >
@@ -206,7 +206,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
             </div>
 
             <VideoBanner status={video.status || "processing"} />
-            <VideoTopRow video={video} onRate={onRate}  />
+            <VideoTopRow video={video} onRate={onRate} />
         </div>
     )
 }

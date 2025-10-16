@@ -2,19 +2,22 @@ import DashVideo from 'dash-video-element/react';
 import 'media-chrome/react';
 import 'media-chrome/react/menu';
 import { MediaTheme } from 'media-chrome/react/media-theme';
-import { MediaLoadingIndicator } from 'media-chrome/react';
+import { MediaLoadingIndicator, MediaPreviewThumbnail } from 'media-chrome/react';
+import { THUMBNAIL_FALLBACK } from '../../constants';
 
-interface Props{
+interface Props {
     src: string | null;
     autoPlay?: boolean
+    thumbnailUrl?: string;
 }
 
-export default function Player ({src,autoPlay}:Props) {
-  return (
-    <>
-      <template
-        id="media-theme-yt"
-        dangerouslySetInnerHTML={{ __html: `
+export default function Player({ src, autoPlay, thumbnailUrl }: Props) {
+    return (
+        <>
+            <template
+                id="media-theme-yt"
+                dangerouslySetInnerHTML={{
+                    __html: `
           <style>
             media-controller {
               font-size: 13px;
@@ -447,7 +450,7 @@ export default function Player ({src,autoPlay}:Props) {
                 }
               </style>
               <media-settings-menu-button class="yt-button">
-               <svg slot="icon" id="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-icon lucide-settings"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="1"/></svg>
+               <svg slot="icon" id="settings-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings-icon lucide-settings"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="16" cy="16" r="1"/></svg>
               </media-settings-menu-button>
 
               <!-- PIP/Mini Player Button -->
@@ -611,24 +614,27 @@ export default function Player ({src,autoPlay}:Props) {
            
             </div>
           </media-controller>` }}
-      />
+            />
 
-      <MediaTheme
-        template="media-theme-yt"
-            className='w-full h-full'
-       >
-        
-        <DashVideo
-          slot="media"
-          className='w-full h-full'
-          src={src || ""}
-          playsInline
-          crossOrigin="anonymous"
-                  autoplay={autoPlay}
-        ></DashVideo>
+            <MediaTheme
+                template="media-theme-yt"
+                className='w-full h-full'
+            >
 
-        <MediaLoadingIndicator noAutohide slot='centered-chrome'></MediaLoadingIndicator>
-      </MediaTheme>
-    </>
-  );
+                <DashVideo
+                    slot="media"
+                    className='w-full h-full'
+                    src={src || ""}
+                    playsInline
+                    loop
+                    crossOrigin="anonymous"
+                    autoplay={autoPlay}
+                    controls={false}
+                ></DashVideo>
+
+                <MediaLoadingIndicator noAutohide slot='centered-chrome'></MediaLoadingIndicator>
+                <MediaPreviewThumbnail mediaPreviewImage={thumbnailUrl ?? THUMBNAIL_FALLBACK} slot='slot' />
+            </MediaTheme>
+        </>
+    );
 }

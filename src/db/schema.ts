@@ -12,7 +12,7 @@ export const users = pgTable("users", {
     name: text().notNull(),
     imageUrl: text("image_url").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(), 
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
     about: text("about"),
     xp: integer("xp").default(0), // THis is the virtual currency to trade and boost a channel
     boostPoints: integer("boost_points").default(0), // to measure the amount of boost given to the channel (amount of XP given to the channel). Can only be done with xp
@@ -180,7 +180,7 @@ export const comments = pgTable("comments", {
 
 export const commentReactions = pgTable("comment_reactions", {
     commentId: uuid("comment_id").references(() => comments.commentId, { onDelete: "cascade" }).notNull(),
-    userId: uuid("user_id").references(() => users.id).notNull(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
@@ -193,8 +193,8 @@ export const commentReactions = pgTable("comment_reactions", {
 
 export const boostTransactions = pgTable("boost_transactions", {
     boostId: uuid().primaryKey().defaultRandom(),
-    creatorId: uuid("creator_id").references(() => users.id).notNull(),
-    boosterId: uuid("booster_id").references(() => users.id).notNull(),
+    creatorId: uuid("creator_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    boosterId: uuid("booster_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     xp: integer("xp").notNull(),
 })
 

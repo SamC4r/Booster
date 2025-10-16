@@ -5,7 +5,7 @@ import { trpc } from "@/trpc/client";
 import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
-import {  z } from "zod"
+import { z } from "zod"
 
 import {
     DropdownMenu,
@@ -43,7 +43,7 @@ import { formatDuration, snakeCaseToTitle } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
-import { ThumbnailUploadModal} from "../components/thumbnail-upload-modal";
+import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
 import { format } from "date-fns";
 import Player from "@/modules/videos/ui/sections/Player";
 
@@ -135,8 +135,8 @@ const FormErrorFallback = () => {
             </div>
             <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-2">Something went wrong</h3>
             <p className="text-gray-600 dark:text-gray-300 mb-6">We couldn&apost load the video details. Please try again.</p>
-            <Button 
-                onClick={() => window.location.reload()} 
+            <Button
+                onClick={() => window.location.reload()}
                 className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
             >
                 Try Again
@@ -178,7 +178,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
     const restoreThumbnail = trpc.videos.restoreThumbnail.useMutation({
         onSuccess: () => {
             utils.studio.getMany.invalidate();
-            utils.studio.getOne.invalidate({id: videoId});
+            utils.studio.getOne.invalidate({ id: videoId });
             toast.success("Thumbnail restored to original");
         },
         onError: () => {
@@ -221,8 +221,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage and update your video information</p>
                         </div>
                         <div className="flex items-center gap-x-3">
-                            <Button 
-                                type='submit' 
+                            <Button
+                                type='submit'
                                 disabled={update.isPending}
                                 className="bg-gradient-to-r from-primary to-orange-400 hover:from-amber-700 hover:to-amber-600 transition-all duration-200 shadow-md hover:shadow-lg text-white px-6 py-3 rounded-xl"
                             >
@@ -235,8 +235,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                             </Button>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button 
-                                        variant='outline' 
+                                    <Button
+                                        variant='outline'
                                         size='icon'
                                         className="border-gray-200 hover:bg-gray-50 rounded-xl h-11 w-11"
                                     >
@@ -244,8 +244,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align='end' className="w-48 rounded-xl shadow-lg border border-gray-200 bg-white p-2">
-                                    <DropdownMenuItem 
-                                        onClick={() => remove.mutate({id: videoId})}
+                                    <DropdownMenuItem
+                                        onClick={() => remove.mutate({ id: videoId })}
                                         className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer px-4 py-3 flex items-center rounded-lg"
                                     >
                                         <TrashIcon className="h-4 w-4 mr-2" />
@@ -255,7 +255,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                             </DropdownMenu>
                         </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 lg:grid-cols-5 justify-between">
                         <div className="space-y-6 lg:col-span-3 mr-44">
                             {/* Title Field */}
@@ -267,10 +267,10 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                         <FormItem>
                                             <FormLabel className="text-base font-medium text-gray-800 dark:text-white flex items-center justify-between">
                                                 Title
-                                                <Button 
-                                                    type="button" 
-                                                    variant="ghost" 
-                                                    size="sm" 
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
                                                     className="h-8 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg"
                                                 >
                                                     <SparklesIcon className="h-3.5 w-3.5 mr-1" />
@@ -289,7 +289,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                     )}
                                 />
                             </div>
-                            
+
                             {/* Description Field */}
                             <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                                 <FormField
@@ -299,10 +299,10 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                         <FormItem>
                                             <FormLabel className="text-base font-medium text-gray-800 dark:text-white flex items-center justify-between">
                                                 Description
-                                                <Button 
-                                                    type="button" 
-                                                    variant="ghost" 
-                                                    size="sm" 
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
                                                     className="h-8 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg"
                                                 >
                                                     <SparklesIcon className="h-3.5 w-3.5 mr-1" />
@@ -323,13 +323,13 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                     )}
                                 />
                             </div>
-                            
+
                             {/* Thumbnail Field */}
                             <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                                 <FormLabel className="text-base font-medium text-gray-800 dark:text-white">Thumbnail</FormLabel>
                                 <div className="mt-4">
                                     <div className="relative h-[180px] w-full max-w-[320px] group rounded-xl overflow-hidden border-2 border-dashed border-gray-200 hover:border-blue-400 transition-all duration-300">
-                                        <Image 
+                                        <Image
                                             src={video.thumbnailUrl ?? THUMBNAIL_FALLBACK}
                                             className="object-cover"
                                             fill
@@ -338,15 +338,15 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button 
-                                                        type='button' 
+                                                    <Button
+                                                        type='button'
                                                         className="bg-white text-gray-800 hover:bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-md rounded-full h-11 w-11 absolute top-3 right-3"
                                                     >
                                                         <MoreVerticalIcon className="h-5 w-5" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align='start' side='right' className="rounded-xl shadow-lg border border-gray-200 w-44 bg-white dark:bg-[#333333]">
-                                                    <DropdownMenuItem 
+                                                    <DropdownMenuItem
                                                         onClick={() => setThumbnailModalOpen(true)}
                                                         className="cursor-pointer px-4 py-3 flex items-center rounded-lg dark:hover:bg-blue-900"
                                                     >
@@ -357,8 +357,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                                         <SparklesIcon className="h-4 w-4 mr-2" />
                                                         AI-generated
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem 
-                                                        onClick={() => restoreThumbnail.mutate({id:videoId})}
+                                                    <DropdownMenuItem
+                                                        onClick={() => restoreThumbnail.mutate({ id: videoId })}
                                                         className="cursor-pointer px-4 py-3 flex items-center rounded-lg dark:hover:bg-blue-900"
                                                     >
                                                         <RotateCcwIcon className="h-4 w-4 mr-2" />
@@ -371,7 +371,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Recommended: 1280×720 pixels (16:9 ratio)</p>
                                 </div>
                             </div>
-                            
+
                             {/* Category Field */}
                             <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                                 <FormField
@@ -391,8 +391,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                                 </FormControl>
                                                 <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-whitea dark:bg-[#333333]">
                                                     {categories.map((category) => (
-                                                        <SelectItem 
-                                                            key={category.id} 
+                                                        <SelectItem
+                                                            key={category.id}
                                                             value={category.id}
                                                             className="rounded-lg px-4 py-3 focus:bg-blue-50 dark:focus:bg-slate-700 transition-colors duration-200"
                                                         >
@@ -407,7 +407,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                 />
                             </div>
                         </div>
-                        
+
                         <div className="flex flex-col gap-y-6 lg:col-span-2 -pl-24">
                             {/* Video Preview Card */}
                             <div className="flex flex-col gap-4 bg-white dark:bg-[#333333] rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm h-fit">
@@ -418,9 +418,9 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                         thumbnailUrl={video.thumbnailUrl}
                                     /> */}
                                     {/* <BunnyEmbed libraryId={video.bunnyLibraryId} videoId={video.bunnyVideoId} /> */}
-                                    <Player src={video.playbackUrl} />
+                                    <Player src={video.playbackUrl} thumbnailUrl={video.thumbnailUrl ?? THUMBNAIL_FALLBACK} />
                                 </div>
-                                
+
                                 {/* Video Stats */}
                                 <div className="grid grid-cols-3 gap-3 mt-2">
                                     <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg flex items-center">
@@ -447,7 +447,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="p-2 flex flex-col gap-y-5">
                                     <div className="flex justify-between items-center gap-x-2">
                                         <div className="flex flex-col gap-y-1 flex-1">
@@ -459,7 +459,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                                     href={`/explorer/videos/${video.id}`}
                                                     className="line-clamp-1 text-sm text-blue-600 hover:text-blue-700 flex-1"
                                                 >
-                                                    {fullUrl} 
+                                                    {fullUrl}
                                                 </Link>
                                                 <Button
                                                     type='button'
@@ -469,34 +469,32 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                                     onClick={onCopy}
                                                     disabled={isCopied}
                                                 >
-                                                    {isCopied ? 
-                                                        <CopyCheckIcon className="h-4 w-4 text-green-600" /> : 
+                                                    {isCopied ?
+                                                        <CopyCheckIcon className="h-4 w-4 text-green-600" /> :
                                                         <CopyIcon className="h-4 w-4" />
                                                     }
                                                 </Button>
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
                                             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Video Status</p>
                                             <div className="flex items-center">
-                                                <div className={`h-2 w-2 rounded-full mr-2 ${
-                                                    video.status === 'completed' ? 'bg-green-500' : 
+                                                <div className={`h-2 w-2 rounded-full mr-2 ${video.status === 'completed' ? 'bg-green-500' :
                                                     video.status === 'processing' ? 'bg-yellow-500' : 'bg-gray-500'
-                                                }`}></div>
+                                                    }`}></div>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-white">{snakeCaseToTitle(video.status || "Preparing")}</p>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
                                             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">Subtitles Status</p>
                                             <div className="flex items-center">
-                                                <div className={`h-2 w-2 rounded-full mr-2 ${
-                                                    video.status === 'completed' ? 'bg-green-500' : 
+                                                <div className={`h-2 w-2 rounded-full mr-2 ${video.status === 'completed' ? 'bg-green-500' :
                                                     video.status === 'processing' ? 'bg-yellow-500' : 'bg-gray-500'
-                                                }`}></div>
+                                                    }`}></div>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-white">{"No Subtitles"}</p>
                                             </div>
                                         </div>
@@ -524,14 +522,14 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                                 <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-white dark:focus:bg-slate-700 dark:bg-[#333333]">
                                                     <SelectItem value="public" className="rounded-lg px-4 py-3 focus:bg-blue-50 dark:focus:bg-slate-700 transition-colors duration-200">
                                                         <div className="flex items-center">
-                                                            <Globe2Icon className="h-4 w-4 mr-2 text-blue-600" /> 
+                                                            <Globe2Icon className="h-4 w-4 mr-2 text-blue-600" />
                                                             <span>Public</span>
                                                             <span className="ml-5 text-sm text-gray-500 dark:text-white">Anyone can view</span>
                                                         </div>
                                                     </SelectItem>
                                                     <SelectItem value="private" className="rounded-lg px-4 py-3 focus:bg-blue-50 dark:focus:bg-slate-700 transition-colors duration-200">
                                                         <div className="flex items-center">
-                                                            <LockIcon className="h-4 w-4 mr-2 text-gray-600"/>
+                                                            <LockIcon className="h-4 w-4 mr-2 text-gray-600" />
                                                             <span>Private</span>
                                                             <span className="ml-4 text-sm text-gray-500 dark:text-white">Only you can view</span>
                                                         </div>
