@@ -225,6 +225,7 @@ export const videosRouter = createTRPCRouter({
                     categoryId: input.categoryId,
                     visibility: (input.visibility === "private" || input.visibility === "public") ? input.visibility : undefined,
                     updatedAt: new Date(),
+                    isAi: input.isAi,
                 })
                 .where(and(
                     eq(videos.id, input.id),

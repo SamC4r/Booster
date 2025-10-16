@@ -9,7 +9,7 @@ import { CommentOutput } from "@/modules/videos/types";
 import { trpc } from "@/trpc/client";
 import { useClerk, useAuth } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, MessageCircle, MoreHorizontal, ChevronDown, ChevronUp,  } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, ChevronDown, ChevronUp, } from "lucide-react";
 import { useMemo, useState, useCallback } from "react";
 import { useClampDetector } from "../../hooks/resize-hook";
 import { CommentReplyInput } from "./comment-reply-input";
@@ -235,12 +235,12 @@ export const Comment = ({ parentComment, videoId, viewer, depth, maxDepth }: Com
 
                 <div className="flex-1 min-w-0 overflow-hidden">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <UserInfo size="xs" name={parentComment.user.name?.replace(/\s*null\s*$/i, "")} />
+                        <UserInfo size="xs" name={parentComment.user.name?.replace(/\s*null\s*$/i, "")} userId={parentComment.userId} />
 
 
                         {/* Icon between username and timestamp */}
                         <div className="flex gap-2 items-center">
-                            {getUserIcons(parentComment.user.id,4)}
+                            {getUserIcons(parentComment.user.id, 4)}
                             <span className="text-xs text-gray-500 dark:text-gray-400">
                                 {compactDate(parentComment.createdAt) ?? ""}
                             </span>

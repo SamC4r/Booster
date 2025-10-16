@@ -380,8 +380,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                                             <Play className="w-5 h-5" />
                                             Watch Featured Video
                                             <ArrowRight className="w-4 h-4" />
-                                        </motion.button>
-                                    </Link>
+                                        </motion.button> </Link>
 
                                     <motion.button
                                         whileHover={{ scale: 1.05 }}

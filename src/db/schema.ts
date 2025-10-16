@@ -91,6 +91,8 @@ export const videos = pgTable("videos", {
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+
+    isAi: boolean("is_ai").notNull().default(false),
 })
 
 export const videoInsertSchema = createInsertSchema(videos);

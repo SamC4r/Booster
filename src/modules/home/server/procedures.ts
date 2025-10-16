@@ -140,11 +140,14 @@ export const homeRouter = createTRPCRouter({
 
             //TODO: add time factor -> older videos get subtracted? Or recent are more valuable
             const scoreExpr = sql<number>`
-                POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 2)
-                + COALESCE(${viewsAgg.viewCount}, 0) * PI()
-                + TANH(COALESCE(${ratingsAgg.avgRating}, 0) - 3.5) * LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
-                + LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
-                + LN(GREATEST(COALESCE(${commentsAgg.commentCount}, 0), 1))
+                    LN(
+                        POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 1)
+                        + LN(GREATEST(COALESCE(${viewsAgg.viewCount}, 0), 1))
+                        + TANH(COALESCE(${ratingsAgg.avgRating}, 0) - 3.5) 
+                        * LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
+                        + LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
+                        + LN(GREATEST(COALESCE(${commentsAgg.commentCount}, 0), 1))
+                    )   * COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0)
                     `;
 
             const whereParts: any[] = [and(eq(videos.visibility, "public"), not(eq(videos.status, "processing")))]
@@ -164,12 +167,15 @@ export const homeRouter = createTRPCRouter({
                     id: videos.id,
                     updatedAt: videos.updatedAt,
                     score: sql<number>`
-                        POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 2)
-                        + ${viewsAgg.viewCount} * PI()
+                    LN(
+                        POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 1)
+                        + LN(GREATEST(COALESCE(${viewsAgg.viewCount}, 0), 1))
                         + TANH(COALESCE(${ratingsAgg.avgRating}, 0) - 3.5) 
                         * LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
                         + LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
                         + LN(GREATEST(COALESCE(${commentsAgg.commentCount}, 0), 1))
+                    )   * COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0)
+
                         `.as("score"),
                 })
                 .from(videos)

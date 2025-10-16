@@ -12,7 +12,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://www.boostervideos.net"), 
+    metadataBase: new URL("https://www.boostervideos.net"),
     title: {
         default: "Booster",
         template: "%s | Booster",

@@ -70,11 +70,14 @@ export const explorerRouter = createTRPCRouter({
 
             //TODO: add time factor -> older videos get subtracted? Or recent are more valuable
             const scoreExpr = sql<number>`
-                POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 2)
-                + COALESCE(${videoViewsStats.viewCount}, 0) * PI()
-                + TANH(COALESCE(${ratingStats.averageRating}, 0) - 3.5) * LN(GREATEST(COALESCE(${ratingStats.ratingCount}, 0), 1))
-                + LN(GREATEST(COALESCE(${ratingStats.ratingCount}, 0), 1))
-                + LN(GREATEST(COALESCE(${commentsAgg.commentCount}, 0), 1))
+                            LN(
+                                POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 2)  
+                                + COALESCE(${videoViewsStats.viewCount}, 0) 
+                                + TANH(COALESCE(${ratingStats.averageRating}, 0) - 3.5)
+                                * LN(GREATEST(COALESCE(${ratingStats.ratingCount}, 0), 1))
+                                + LN(GREATEST(COALESCE(${ratingStats.ratingCount}, 0), 1))
+                                + LN(GREATEST(COALESCE(${commentsAgg.commentCount}, 0), 1))
+                            )   * COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0)
                     `;
 
             const whereParts: any[] = [and(eq(videos.visibility, "public"), not(eq(videos.status, "processing")))]
@@ -100,10 +103,14 @@ export const explorerRouter = createTRPCRouter({
                         videoCount: sql<number>`(SELECT COUNT(*) FROM ${videos} WHERE ${videos.userId} = ${users.id})`.mapWith(Number),
                         viewerRating: (userId ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(Number) : sql<number>`(NULL)`.mapWith(Number)),
                         score: sql<number>`
-                                POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 2) + COALESCE(${videoViewsStats.viewCount}, 0) * PI()
-                                + TANH(COALESCE(${ratingStats.averageRating}, 0) - 3.5) * LN(GREATEST(COALESCE(${ratingStats.ratingCount}, 0), 1))
+                            LN(
+                                POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 2)  
+                                + COALESCE(${videoViewsStats.viewCount}, 0) 
+                                + TANH(COALESCE(${ratingStats.averageRating}, 0) - 3.5)
+                                * LN(GREATEST(COALESCE(${ratingStats.ratingCount}, 0), 1))
                                 + LN(GREATEST(COALESCE(${ratingStats.ratingCount}, 0), 1))
                                 + LN(GREATEST(COALESCE(${commentsAgg.commentCount}, 0), 1))
+                            )   * COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0)
                                 `.as('score'),
 
 

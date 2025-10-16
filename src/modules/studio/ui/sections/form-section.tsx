@@ -46,6 +46,8 @@ import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
 import { format } from "date-fns";
 import Player from "@/modules/videos/ui/sections/Player";
+import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@radix-ui/react-checkbox";
 
 interface PageProps {
     videoId: string;
@@ -192,6 +194,8 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
     });
 
     const onSubmit = async (data: z.infer<typeof videoUpdateSchema>) => {
+        console.log("DATA", data)
+
         update.mutateAsync(data);
     }
 
@@ -325,9 +329,9 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                             </div>
 
                             {/* Thumbnail Field */}
-                            <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                                <FormLabel className="text-base font-medium text-gray-800 dark:text-white">Thumbnail</FormLabel>
-                                <div className="mt-4">
+                            <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-start justify-start gap-3">
+                                <div className="">
+                                    <FormLabel className="text-base font-medium text-gray-800 dark:text-white">Thumbnail</FormLabel>
                                     <div className="relative h-[180px] w-full max-w-[320px] group rounded-xl overflow-hidden border-2 border-dashed border-gray-200 hover:border-blue-400 transition-all duration-300">
                                         <Image
                                             src={video.thumbnailUrl ?? THUMBNAIL_FALLBACK}
@@ -370,7 +374,42 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                     </div>
                                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Recommended: 1280×720 pixels (16:9 ratio)</p>
                                 </div>
+
+                                {/* AI Field */}
+                                <div className="bg-white dark:bg-[#333333] p-2 rounded-2xl border  shadow-sm">
+                                    <FormField
+                                        control={form.control}
+                                        name="isAi"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-3">
+                                                <FormLabel className="text-base font-medium text-gray-800 dark:text-white">
+                                                    AI Content
+                                                </FormLabel>
+                                                <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            id="is_ai"
+                                                            checked={!!field.value}
+                                                            onCheckedChange={field.onChange}
+                                                            ref={field.ref}
+                                                        />
+                                                    </FormControl>
+                                                    <div>
+                                                        <label className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
+                                                            Made with AI
+                                                        </label>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                            This video was mostly created using AI
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <FormMessage className="text-red-500 text-sm" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
+
 
                             {/* Category Field */}
                             <div className="bg-white dark:bg-[#333333] p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">

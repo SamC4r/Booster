@@ -180,7 +180,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
                         thumbnailUrl={video.thumbnailUrl}
                     /> */}
                     {/* <BunnyEmbed libraryId={video.bunnyLibraryId} videoId={video.bunnyVideoId} /> */}
-                    <Player src={video.playbackUrl} autoPlay={shouldPlay} />
+                    <Player src={video.playbackUrl} autoPlay={shouldPlay} isAI={video.isAi} />
                 </div>
 
                 {/* Play button overlay */}

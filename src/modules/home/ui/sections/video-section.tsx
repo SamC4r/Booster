@@ -113,6 +113,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
 
     const [shouldPlay, setShouldPlay] = useState(false);
 
+
     useEffect(() => {
         setShouldPlay(true);
     }, [videoId]);
@@ -244,7 +245,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
                 >
 
 
-                    <Player src={video.playbackUrl} autoPlay={shouldPlay} />
+                    <Player src={video.playbackUrl} autoPlay={shouldPlay} isAI={video.isAi} />
 
                     {/* Play button overlay */}
                     <AnimatePresence>

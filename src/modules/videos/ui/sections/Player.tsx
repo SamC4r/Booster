@@ -4,14 +4,23 @@ import 'media-chrome/react/menu';
 import { MediaTheme } from 'media-chrome/react/media-theme';
 import { MediaLoadingIndicator, MediaPreviewThumbnail } from 'media-chrome/react';
 import { THUMBNAIL_FALLBACK } from '../../constants';
+import { useState } from 'react';
+import { SparklesIcon } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface Props {
     src: string | null;
     autoPlay?: boolean
     thumbnailUrl?: string;
+    isAI?: boolean;
 }
 
-export default function Player({ src, autoPlay, thumbnailUrl }: Props) {
+export default function Player({ src, autoPlay, thumbnailUrl, isAI }: Props) {
+    const [isHovering, setIsHovering] = useState(false);
+    const [showControls, setShowControls] = useState(true);
+
+
+    const shouldShowBadge = isHovering && showControls;
     return (
         <>
             <template
@@ -616,25 +625,69 @@ export default function Player({ src, autoPlay, thumbnailUrl }: Props) {
           </media-controller>` }}
             />
 
-            <MediaTheme
-                template="media-theme-yt"
-                className='w-full h-full'
-            >
 
-                <DashVideo
-                    slot="media"
+
+            <div className='relative w-full h-full' onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => { setIsHovering(false); setShowControls(true) }}>
+                <MediaTheme
+                    template="media-theme-yt"
                     className='w-full h-full'
-                    src={src || ""}
-                    playsInline
-                    loop
-                    crossOrigin="anonymous"
-                    autoplay={autoPlay}
-                    controls={false}
-                ></DashVideo>
+                >
 
-                <MediaLoadingIndicator noAutohide slot='centered-chrome'></MediaLoadingIndicator>
-                <MediaPreviewThumbnail mediaPreviewImage={thumbnailUrl ?? THUMBNAIL_FALLBACK} slot='slot' />
-            </MediaTheme>
+
+                    <DashVideo
+                        slot="media"
+                        className='w-full h-full'
+                        src={src || ""}
+                        playsInline
+                        loop
+                        crossOrigin="anonymous"
+                        autoplay={autoPlay}
+                        controls={false}
+                    ></DashVideo>
+
+                    <MediaLoadingIndicator noAutohide slot='centered-chrome'></MediaLoadingIndicator>
+                    <MediaPreviewThumbnail mediaPreviewImage={thumbnailUrl ?? THUMBNAIL_FALLBACK} slot='slot' />
+                </MediaTheme>
+
+                <AnimatePresence>
+                    {isAI && shouldShowBadge && (
+                        <motion.div
+                            className='absolute top-3 right-3 z-50'
+                            initial={{ opacity: 0, scale: 0.8, y: -10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                            onClick={() => setShowControls(false)}
+                            transition={{
+                                type: "spring",
+                                stiffness: 500,
+                                damping: 30,
+                                duration: 0.3
+                            }}
+                        >
+                            <motion.div
+                                className='bg-gradient-to-r from-yellow-600 via-amber-600 to-orange-600 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm flex items-center gap-1.5 border border-white border-opacity-20'
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <motion.div
+                                    animate={{
+                                        rotate: [0, 10, -10, 0],
+                                        scale: [1, 1.2, 1]
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        repeatType: "reverse"
+                                    }}
+                                >
+                                    <SparklesIcon className='h-3 w-3' />
+                                </motion.div>
+                                Made with AI
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         </>
     );
 }
