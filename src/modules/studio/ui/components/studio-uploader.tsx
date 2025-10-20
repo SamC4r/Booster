@@ -56,6 +56,11 @@ export const StudioUploader = () => {
         video.preload= "metadata";
         video.src = URL.createObjectURL(file);
 
+        if(file.type !== "video/mp4"){
+            toast.error("Please upload an mp4 file :)")
+            return; 
+        }
+
         video.onloadedmetadata = async () => {
             URL.revokeObjectURL(video.src);
             const duration = video.duration;
