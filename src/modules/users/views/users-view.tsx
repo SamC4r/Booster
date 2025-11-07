@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { UserAvatar } from "@/components/user-avatar";
 import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
@@ -50,9 +50,9 @@ export const UsersView = ({ userId }: Props) => {
 
   const utils = trpc.useUtils();
 
-  const prefetchRankings = () => {
+  const prefetchRankings = useCallback(() => {
     utils.xp.getBoostersByCreatorId.prefetch({ creatorId: userId });
-  };
+  }, [utils, userId]);
 
   const [showXpPopup, setShowXpPopup] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -97,7 +97,7 @@ export const UsersView = ({ userId }: Props) => {
       updateLevelChange.mutate({ userId });
     }
     previousLevelRef.current = channelLevel;
-  }, [channelLevel, isInitialLoad]);
+  }, [channelLevel, isInitialLoad, userId]); // Removed functions that cause re-renders
 
   //TODO: implement community rankings
 

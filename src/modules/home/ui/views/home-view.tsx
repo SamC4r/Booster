@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { trpc } from "@/trpc/client";
 import { VideoSection } from "../sections/video-section";
 import { motion, AnimatePresence } from "framer-motion";
@@ -62,19 +62,19 @@ export const HomeViewSuspense = () => {
         };
     }, []);
 
-    const goToNextVideo = () => {
+    const goToNextVideo = useCallback(() => {
         console.log("NEXT")
         setDirection(1);
         if (videoIndex + 1 >= videos.length && !query.isFetchingNextPage) {
             query.fetchNextPage();
         }
         setVideoIndex((i) => Math.min(i + 1, videos.length));
-    }
+    }, [videoIndex, videos.length, query])
 
-    const goToPrevVideo = () => {
+    const goToPrevVideo = useCallback(() => {
         setDirection(-1);
         setVideoIndex((i) => Math.max(0, i - 1));
-    }
+    }, []);
 
     // Keyboard navigation
     useEffect(() => {
@@ -88,7 +88,7 @@ export const HomeViewSuspense = () => {
         };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
-    }, [videoIndex, videos.length, query]);
+    }, [goToNextVideo, goToPrevVideo]);
 
     const variants = {
         enter: (direction: number) => ({

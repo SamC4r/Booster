@@ -18,7 +18,6 @@ export function BunnyEmbed({
   onVideoEnd,
   onVideoPlay,
   onVideoPause,
-  onVideoReady,
 }: {
   libraryId: string | null;
   videoId: string | null;
@@ -29,7 +28,6 @@ export function BunnyEmbed({
   onVideoEnd?: () => void;
   onVideoPlay?: () => void;
   onVideoPause?: () => void;
-  onVideoReady?: (duration: number) => void;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<any>(null);

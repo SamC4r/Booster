@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { boostTransactions, userAssets, users, videos, videoViews } from "@/db/schema";
+import { boostTransactions, userAssets, users, videos } from "@/db/schema";
 import { stripe } from "@/lib/stripe";
 import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";

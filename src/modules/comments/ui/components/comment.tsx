@@ -67,7 +67,7 @@ export const Comment = ({ parentComment, videoId, viewer, depth, maxDepth }: Com
     const prefetchReplies = useCallback(() => {
         if (isTemp) return;
         utils.comments.getReplies.prefetchInfinite({ commentId: parentComment.commentId, videoId, limit: COMMENT_REPLIES_SIZE });
-    }, [utils, parentComment.commentId, videoId]);
+    }, [utils, parentComment.commentId, videoId, isTemp]);
 
     const listKey = { commentId: parentComment.parentId, videoId, limit: COMMENT_REPLIES_SIZE };
 

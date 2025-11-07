@@ -172,7 +172,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
         
         // Create view for all videos
         createView.mutate({ videoId: video.id });
-    }, [video.id, isSignedIn])
+    }, [video.id, isSignedIn]) // Removed createView from dependencies
 
     const createRating = trpc.videoRatings.create.useMutation({
         onSuccess: () => {
