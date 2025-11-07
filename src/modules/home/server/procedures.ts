@@ -46,7 +46,8 @@ export const homeRouter = createTRPCRouter({
                         ...getTableColumns(users),
                         followsCount: sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(Number),
                         viewerIsFollowing: isNotNull(viewerFollow.userId).mapWith(Boolean),
-                        videoCount: sql<number>`(SELECT COUNT(*) FROM ${videos} WHERE ${videos.userId} = ${users.id})`.mapWith(Number)
+                        videoCount: sql<number>`(SELECT COUNT(*) FROM ${videos} WHERE ${videos.userId} = ${users.id})`.mapWith(Number),
+                        viewerRating : (userId ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(Number) : sql<number>`(NULL)`.mapWith(Number)),
                     },
                     videoRatings: db.$count(videoRatings, eq(videoRatings.videoId, videos.id)), //inefficient?
                 })
@@ -135,10 +136,8 @@ export const homeRouter = createTRPCRouter({
                 .groupBy(videoViews.videoId)
                 .as("vv")
 
-
-
-
             //TODO: add time factor -> older videos get subtracted? Or recent are more valuable
+            // Give featured videos a boost in the score calculation
             const scoreExpr = sql<number>`
                     LN(
                         POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 1)
@@ -147,6 +146,7 @@ export const homeRouter = createTRPCRouter({
                         * LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
                         + LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
                         + LN(GREATEST(COALESCE(${commentsAgg.commentCount}, 0), 1))
+                        + CASE WHEN ${videos.isFeatured} = true THEN 5.0 ELSE 0.0 END
                     )   * COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0)
                     `;
 
@@ -166,6 +166,7 @@ export const homeRouter = createTRPCRouter({
                 .select({
                     id: videos.id,
                     updatedAt: videos.updatedAt,
+                    isFeatured: videos.isFeatured,
                     score: sql<number>`
                     LN(
                         POWER(COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0) + 1, 1)
@@ -174,6 +175,7 @@ export const homeRouter = createTRPCRouter({
                         * LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
                         + LN(GREATEST(COALESCE(${ratingsAgg.ratingCount}, 0), 1))
                         + LN(GREATEST(COALESCE(${commentsAgg.commentCount}, 0), 1))
+                        + CASE WHEN ${videos.isFeatured} = true THEN 5.0 ELSE 0.0 END
                     )   * COALESCE(SQRT(${users.boostPoints} * 1000) / 1000, 0)
 
                         `.as("score"),

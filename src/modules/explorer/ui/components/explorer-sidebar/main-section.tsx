@@ -29,11 +29,6 @@ const items = [
         icon: FlameIcon,
     }, 
     {
-        title: "Rewards",
-        url: "/explorer/rewards",
-        icon: BoxesIcon,
-    },
-    {
         title: "Market",
         url: "/market",
         icon: ShoppingCart,

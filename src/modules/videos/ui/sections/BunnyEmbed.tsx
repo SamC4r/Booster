@@ -139,7 +139,7 @@ export function BunnyEmbed({
         }
       }
     };
-  }, [autoplay, muted, onVideoEnd, onVideoPlay, onVideoPause, onVideoReady]);
+  }, [libraryId, videoId, autoplay, muted]); // Removed callback dependencies to prevent re-initialization
 
   // // Methods to control the player
   // const play = () => {

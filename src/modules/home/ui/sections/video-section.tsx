@@ -1,10 +1,10 @@
 'use client';
 
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { cn, compactNumber } from '@/lib/utils';
 
 import { CommentsSection } from '@/modules/videos/ui/sections/comments-section';
-import { ChevronLeft, ChevronRight, Eye, Play, } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, Play, Coins } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 ;
 import { useAuth } from '@clerk/nextjs';
@@ -119,12 +119,41 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
     // }, [videoId]);
 
     const [commentsOpen, setCommentsOpen] = useState(false);
-    const { isSignedIn } = useAuth();
+    const { isSignedIn, userId: clerkUserId } = useAuth();
     const [showTitle, setShowTitle] = useState(true);
     const [isPlaying, setIsPlaying] = useState(true);
+    const [hasRewarded, setHasRewarded] = useState(false); // Prevent multiple XP rewards
+    const isRewardingRef = useRef(false); // Synchronous flag to prevent race conditions
     const videoPlayerRef = useRef<{ play: () => void; pause: () => void }>(null);
 
     const utils = trpc.useUtils();
+
+    // Add user data query for XP rewards
+    const { data: user } = trpc.users.getByClerkId.useQuery({
+        clerkId: clerkUserId,
+    });
+    const userId = user?.id;
+
+    // Add XP reward mutation for featured videos
+    const { mutate: rewardXp } = trpc.xp.rewardXp.useMutation({
+        onSuccess: (data) => {
+            utils.xp.getXpByUserId.invalidate({ userId });
+            // Show success message for XP reward
+            toast.success(`🎉 You earned ${data.xpAdded} XP for watching this featured video to the end!`);
+        },
+        onError: (error) => {
+            console.error("Failed to reward XP:", error);
+            toast.error("Failed to award XP. Please try again later.");
+            setHasRewarded(false); // Reset on error so user can try again
+            isRewardingRef.current = false; // Reset ref flag on error
+        }
+    });
+
+    // Reset reward flag when video changes
+    useEffect(() => {
+        setHasRewarded(false);
+        isRewardingRef.current = false;
+    }, [video.id]);
 
     useEffect(() => {
         const t = setTimeout(() => setShowTitle(false), 4000);
@@ -140,8 +169,10 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
     useEffect(() => {
         setIsPlaying(true)
         if (!isSignedIn) return;
-        createView.mutate({ videoId: video.id })
-    }, [])
+        
+        // Create view for all videos
+        createView.mutate({ videoId: video.id });
+    }, [video.id, isSignedIn])
 
     const createRating = trpc.videoRatings.create.useMutation({
         onSuccess: () => {
@@ -162,6 +193,29 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
         })
         return true;
     }
+
+    // Handle video end for featured videos - give XP when video is watched to completion
+    const handleVideoEnd = useCallback(() => {
+        console.log("Video ended for video:", video.id, "isFeatured:", video.isFeatured, "isSignedIn:", isSignedIn, "userId:", userId, "hasRewarded:", hasRewarded, "isRewarding:", isRewardingRef.current);
+        
+        // Prevent multiple executions with synchronous flag
+        if (hasRewarded || isRewardingRef.current) {
+            console.log("XP already rewarded or currently rewarding for this video, skipping");
+            return;
+        }
+        
+        if (video.isFeatured && isSignedIn && userId) {
+            console.log("Awarding XP for featured video completion");
+            isRewardingRef.current = true; // Set synchronous flag immediately
+            setHasRewarded(true); // Set state flag
+            rewardXp({
+                amount: 20,
+                videoId: video.id
+            });
+        } else {
+            console.log("XP not awarded - conditions not met");
+        }
+    }, [video.isFeatured, video.id, isSignedIn, userId, hasRewarded, rewardXp]);
 
     return (
         <div className="h-full w-full flex flex-col overflow-hidden">
@@ -195,12 +249,18 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
-                                    transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
+                                    transition={{ duration: 0.3, ease: 'easeOut' }}
                                     className="absolute top-6 left-6 z-30"
                                 >
                                     <div className='flex items-center gap-2 text-center justify-start'>
                                         <UserAvatar imageUrl={video.user.imageUrl} name={video.user.name} userId={video.user.id} />
                                         <Eye className="h-4 w-4" /><span className="font-medium">{compactNumber(video.videoViews)}</span>
+                                        {video.isFeatured && (
+                                            <div className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 px-2 py-1 rounded-full text-xs font-semibold shadow-lg backdrop-blur-sm animate-pulse">
+                                                <Coins className="h-3 w-3" />
+                                                <span>+20 XP</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
 
@@ -246,7 +306,12 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
 
 
                     {/* <Player src={video.playbackUrl} autoPlay={shouldPlay} isAI={video.isAi} /> */}
-                    <BunnyEmbed libraryId={video.bunnyLibraryId} videoId={video.bunnyVideoId} autoplay/> 
+                    <BunnyEmbed 
+                        libraryId={video.bunnyLibraryId} 
+                        videoId={video.bunnyVideoId} 
+                        autoplay
+                        onVideoEnd={video.isFeatured ? handleVideoEnd : undefined}
+                    /> 
 
                     {/* Play button overlay */}
                     <AnimatePresence>
@@ -295,6 +360,12 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
                         <div className="inline-flex items-center gap-2 bg-white dark:bg-[#333333] border border-gray-300 dark:border-gray-600 px-3 py-1.5 rounded-full text-gray-700 dark:text-gray-300 flex-shrink-0">
                             <Eye className="h-4 w-4" /><span className="font-medium">{compactNumber(video.videoViews)}</span>
                         </div>
+                        {video.isFeatured && (
+                            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-sm animate-pulse flex-shrink-0">
+                                <Coins className="h-4 w-4" />
+                                <span>Watch for 35 XP</span>
+                            </div>
+                        )}
                         <VideoReactions avgRating={video.averageRating} videoRatings={video.videoRatings} onRate={onRate} viewerRating={video.user.viewerRating} small />
                         <div className='ml-1 flex-shrink-0'>
                             <VideoMenu variant='secondary' videoId={video.id} />

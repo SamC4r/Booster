@@ -219,35 +219,40 @@ export const xpRouter = createTRPCRouter({
             videoId: z.string().uuid(),
         }))
         .mutation(async ({ ctx, input }) => {
-            const { id: userId } = ctx.user;
-            const { amount, videoId } = input;
+            try {
+                const { id: userId } = ctx.user;
+                const { amount, videoId } = input;
 
-            const lastViewRow = await db
-                .select({
-                    lastSeen: videoViews.updatedAt,
-                })
-                .from(videoViews)
-                .where(and(eq(videoViews.userId, userId), eq(videoViews.videoId, videoId)))
-                .limit(1);
+                console.log(`Attempting to reward XP: User ${userId}, Amount ${amount}, Video ${videoId}`);
 
-            const now = new Date();
-            const lastView = lastViewRow[0]?.lastSeen; // podría ser undefined
+                // Update user XP (handle null XP values)
+                const updateResult = await db.update(users)
+                    .set({
+                        xp: sql<number>`COALESCE(${users.xp}, 0) + ${amount}`,
+                    })
+                    .where(eq(users.id, userId))
+                    .returning({ newXp: users.xp });
 
-            if (lastView) {
-                const diffMs = now.getTime() - new Date(lastView).getTime();
-                const diffHours = diffMs / (1000 * 60 * 60);
-
-                if (diffHours < 12) {
-                    return; 
+                if (!updateResult[0]) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Failed to update user XP',
+                    });
                 }
-            }
 
-            const newxp = await db.update(users)
-                .set({
-                    xp: sql<number>`${users.xp} + ${amount}`,
-                })
-                .where(eq(users.id, userId));
-            return newxp;
+                console.log(`XP reward granted successfully: User ${userId} received ${amount} XP for video ${videoId}. New XP: ${updateResult[0].newXp}`);
+                return { 
+                    success: true, 
+                    xpAdded: amount, 
+                    newTotal: updateResult[0].newXp 
+                };
+            } catch (error) {
+                console.error('Error rewarding XP:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to reward XP',
+                });
+            }
         }),
 
     buyXp: protectedProcedure
