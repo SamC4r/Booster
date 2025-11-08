@@ -18,7 +18,7 @@ export default withUt({
         	montserrat: ['var(--font-montserrat)', 'sans-serif'], 
 		},
   		colors: {
-  			background: '#121212',
+  			background: '#000000',
   			foreground: 'hsl(var(--foreground))',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
