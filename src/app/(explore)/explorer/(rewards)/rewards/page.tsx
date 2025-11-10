@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Home, Coins } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 const Page = () => {
     const router = useRouter();
 

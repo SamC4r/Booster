@@ -43,7 +43,8 @@ interface UserAvatarProps extends VariantProps<typeof avatarVariants> {
     className?: string;
     onClick?: () => void; //optional event
     userId: string | undefined;
-    badgeSize?: number
+    badgeSize?: number;
+    disableLink?: boolean; // Prevent nested <a> tags
 }
 
 export const UserAvatar = ({
@@ -53,15 +54,23 @@ export const UserAvatar = ({
     onClick,
     size, //because it extends VariantProps
     userId,
+    disableLink = false,
 }: UserAvatarProps) => {
+    const avatar = (
+        <Avatar className={cn(avatarVariants({ size, className }), '')} onClick={onClick}>
+            <AvatarImage src={imageUrl} alt={name} />   
+        </Avatar>
+    );
 
     return (
         <div className="relative ">
-            <Link href={`/users/${userId}`}>
-                <Avatar className={cn(avatarVariants({ size, className }), '')} onClick={onClick}>
-                    <AvatarImage src={imageUrl} alt={name} />   
-                </Avatar>
-            </Link>
+            {disableLink ? (
+                avatar
+            ) : (
+                <Link href={`/users/${userId}`}>
+                    {avatar}
+                </Link>
+            )}
         </div>
     )
 }

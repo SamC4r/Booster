@@ -13,7 +13,29 @@ import { NoVideosEmptyState } from "../components/no-more-videos";
 export const HomeView = () => {
     return (
         <Suspense fallback={<HomeViewSkeleton />}>
-            <ErrorBoundary fallback={<p>Failed to load video :(</p>}>
+            <ErrorBoundary 
+                fallback={
+                    <div className="h-dvh w-full flex flex-col items-center justify-center bg-background p-6">
+                        <div className="max-w-md text-center space-y-4">
+                            <h2 className="text-2xl font-bold text-red-500">Failed to load videos</h2>
+                            <p className="text-gray-600 dark:text-gray-400">
+                                There was an error loading the video feed. This might be because:
+                            </p>
+                            <ul className="text-left text-sm text-gray-600 dark:text-gray-400 space-y-2 list-disc pl-6">
+                                <li>No videos are available yet</li>
+                                <li>All videos are still processing</li>
+                                <li>There&apos;s a database connection issue</li>
+                            </ul>
+                            <button 
+                                onClick={() => window.location.reload()} 
+                                className="mt-4 px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:shadow-lg transition-all"
+                            >
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                }
+            >
                 <HomeViewSuspense />
             </ErrorBoundary>
         </Suspense>
@@ -36,9 +58,13 @@ export const HomeViewSuspense = () => {
     const videos = useMemo(() => {
         if (!data) return [];
         return data.pages.flatMap(
-            (page) => Object.values(page.items).filter((item) => item)
+            (page) => page.items.filter((item) => item)
         );
     }, [data]);
+
+    console.log("HomeViewSuspense - Data:", data);
+    console.log("HomeViewSuspense - Videos:", videos);
+    console.log("HomeViewSuspense - Videos length:", videos.length);
 
     const [videoIndex, setVideoIndex] = useState(0);
     const [direction, setDirection] = useState(0);
@@ -112,6 +138,17 @@ export const HomeViewSuspense = () => {
 
     console.log("VIDEO INDEX", videoIndex, "VIDEOS:", videos)
 
+    // Show empty state if no videos are available
+    if (videos.length === 0) {
+        return (
+            <div className="h-dvh w-full flex flex-col overflow-hidden bg-background">
+                <div className="flex-1 flex items-center justify-center">
+                    <NoVideosEmptyState />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div {...handlers} className="h-dvh w-full flex flex-col overflow-hidden bg-background">
             {/* Main content */}
@@ -132,7 +169,7 @@ export const HomeViewSuspense = () => {
                                     transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
                                     className="w-full h-full absolute inset-0"
                                 >
-                                    {videoIndex < videos.length ? (
+                                    {videoIndex < videos.length && videos[videoIndex]?.id ? (
                                         <VideoSection videoId={videos[videoIndex].id} next={goToNextVideo} prev={goToPrevVideo} key={videos[videoIndex].id} />
                                     ) : (
                                         <NoVideosEmptyState />

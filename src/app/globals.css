@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
 }

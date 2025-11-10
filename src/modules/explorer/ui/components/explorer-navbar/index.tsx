@@ -91,7 +91,7 @@ export const ExplorerNavBar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 h-16 bg-background backdrop-blur-md flex items-center px-4 z-50 border-b border-border/50 transition-all z-50 ${
+      className={`fixed top-0 left-0 right-0 h-16 bg-background backdrop-blur-md flex items-center px-4 border-b border-border/50 transition-all z-50 ${
         isScrolled ? "shadow-sm" : ""
       }`}
     >
@@ -123,7 +123,7 @@ export const ExplorerNavBar = () => {
         </div>
 
         {/* Search bar */}
-        <div className="flex-1 flex justify-center max-w-[600px] mx-4">
+        <div className="flex-1 flex justify-start max-w-[600px] mx-4 sm:ml-[12rem]">
           <SearchInput />
         </div>
 

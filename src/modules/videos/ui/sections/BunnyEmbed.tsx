@@ -126,14 +126,19 @@ export function BunnyEmbed({
       // Cleanup
       if (playerRef.current) {
         try {
-          playerRef.current.off('ready');
-          playerRef.current.off('play');
-          playerRef.current.off('pause');
-          playerRef.current.off('ended');
-          playerRef.current.off('error');
-          playerRef.current.off('timeupdate');
+          // Check if iframe still exists and has a valid contentWindow
+          const iframe = iframeRef.current;
+          if (iframe && iframe.contentWindow) {
+            playerRef.current.off('ready');
+            playerRef.current.off('play');
+            playerRef.current.off('pause');
+            playerRef.current.off('ended');
+            playerRef.current.off('error');
+            playerRef.current.off('timeupdate');
+          }
         } catch (error) {
-          console.error('Error cleaning up player:', error);
+          // Silently ignore cleanup errors as component is unmounting
+          console.debug('Player cleanup skipped:', error);
         }
       }
     };

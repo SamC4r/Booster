@@ -3,12 +3,12 @@
 import { useState, useEffect, Suspense } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import { Coins, ShoppingCart, Search, Filter, Crown, Palette, Sparkles, BadgeCheck, Zap, Star, Heart, Rocket, Lock, Check, Boxes, Box, Landmark, X, Video, CreditCard } from "lucide-react"
 import { XpIndicator } from "@/modules/xp/ui/components/xp-indicator"
 import { trpc } from "@/trpc/client"
 import { useAuth } from "@clerk/nextjs"
 import { AnimatedPlanetIcon } from "../components/assetIcons/animated-planet-icon"
-import { FloatingSparkles, SparkleEffect } from "../components/background/sparkles"
 import { ErrorBoundary } from "react-error-boundary"
 import { Spinner } from "@/components/ui/shadcn-io/spinner"
 
@@ -29,6 +29,7 @@ export const MarketSectionSuspense = () => {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [showXpPopup, setShowXpPopup] = useState(false)
+  const [rewardedAdsEnabled, setRewardedAdsEnabled] = useState(false)
 
   const { userId: clerkUserId } = useAuth();
   const { data: user } = trpc.users.getByClerkId.useQuery({
@@ -55,6 +56,28 @@ export const MarketSectionSuspense = () => {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesCategory && matchesSearch
   })
+
+  // Add dummy items for display purposes (3 rows = 12 items on 4-column grid)
+  const dummyItems = [
+    { assetId: "dummy-1", name: "Golden Crown", price: 850, category: "icons", iconNumber: 0, emoji: "👑" },
+    { assetId: "dummy-2", name: "Fire Effect", price: 1200, category: "effects", iconNumber: 0, emoji: "🔥" },
+    { assetId: "dummy-3", name: "Rainbow Badge", price: 650, category: "badges", iconNumber: 0, emoji: "🌈" },
+    { assetId: "dummy-4", name: "Neon Glow", price: 950, category: "effects", iconNumber: 0, emoji: "✨" },
+    { assetId: "dummy-5", name: "Diamond Frame", price: 1500, category: "frames", iconNumber: 0, emoji: "💎" },
+    { assetId: "dummy-6", name: "Purple Theme", price: 2000, category: "themes", iconNumber: 0, emoji: "💜" },
+    { assetId: "dummy-7", name: "Lightning Bolt", price: 750, category: "icons", iconNumber: 0, emoji: "⚡" },
+    { assetId: "dummy-8", name: "Sunset Background", price: 1800, category: "backgrounds", iconNumber: 0, emoji: "🌅" },
+    { assetId: "dummy-9", name: "VIP Badge", price: 3000, category: "badges", iconNumber: 0, emoji: "⭐" },
+    { assetId: "dummy-10", name: "Pink Color", price: 500, category: "colors", iconNumber: 0, emoji: "🩷" },
+    { assetId: "dummy-11", name: "Rocket Icon", price: 900, category: "icons", iconNumber: 0, emoji: "🚀" },
+    { assetId: "dummy-12", name: "Galaxy Theme", price: 2500, category: "themes", iconNumber: 0, emoji: "🌌" },
+  ].filter(item => {
+    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesCategory && matchesSearch
+  })
+
+  const allItems = [...filteredItems, ...dummyItems]
 
 
   // handle
@@ -148,45 +171,26 @@ export const MarketSectionSuspense = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#121212] to-[#1a1a1a] text-white p-6 ml-16 relative overflow-hidden">
-      {/* Background Animated Stars */}
-      <div className="fixed inset-0 pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute bg-white rounded-full animate-pulse"
-            style={{
-              width: Math.random() * 3 + 1,
-              height: Math.random() * 3 + 1,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${3 + Math.random() * 4}s`,
-              opacity: 0.3 + Math.random() * 0.4,
-            }}
-          />
-        ))}
-      </div>
+      
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div className="relative">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#ffca55] to-[#FFA100] bg-clip-text text-transparent animate-pulse-slow">
-              Customization Marketplace
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#ffca55] to-[#FFA100] bg-clip-text text-transparent">
+              Marketplace
             </h1>
             <p className="text-gray-400 mt-2">Personalize your profile with exclusive items</p>
-            <SparkleEffect className="top-0 -right-6" />
           </div>
 
           <div className="flex items-center gap-4 mt-4 md:mt-0 relative">
             <XpIndicator xp={userCoins} />
             <Button
-              className="flex rounded-full bg-gradient-to-r from-[#ffca55] to-[#FFA100] text-gray-900 font-semibold hover:opacity-90 hover:scale-105 transition-transform duration-200 group relative overflow-hidden"
+              className="flex rounded-full bg-gradient-to-r from-[#ffca55] to-[#FFA100] text-gray-900 font-semibold hover:opacity-90"
               onClick={() => setShowXpPopup(true)}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-              <Landmark className="h-4 w-4 mr-2 relative z-10" />
-              <span className="relative z-10">Get More XP</span>
+              <Landmark className="h-4 w-4 mr-2" />
+              <span>Get More XP</span>
             </Button>
           </div>
         </div>
@@ -195,7 +199,6 @@ export const MarketSectionSuspense = () => {
         {showXpPopup && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
             <div className="bg-[#1e1e1e] rounded-2xl border border-gray-700 max-w-md w-full max-h-[90vh] overflow-y-auto relative overflow-hidden">
-              <FloatingSparkles />
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-700 relative">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-[#ffca55] to-[#FFA100] bg-clip-text text-transparent">
@@ -215,7 +218,7 @@ export const MarketSectionSuspense = () => {
               <div className="p-6 border-b border-gray-700">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Current Balance:</span>
-                  <div className="flex items-center gap-2 animate-pulse-slow">
+                  <div className="flex items-center gap-2">
                     <Boxes className="h-5 w-5 text-purple-500" />
                     <span className="text-xl font-bold">{Intl.NumberFormat("en").format(userCoins)} XP</span>
                   </div>
@@ -225,28 +228,36 @@ export const MarketSectionSuspense = () => {
               {/* Free Option - Rewarded Ads */}
               <div className="p-6 border-b border-gray-700">
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                  <Video className="h-5 w-5 text-blue-400 animate-pulse" />
+                  <Video className="h-5 w-5 text-blue-400" />
                   Free XP - Watch Ads
                 </h3>
                 <p className="text-gray-400 text-sm mb-4">
-                  Watch a short video ad to earn 35 XP for free!
+                  Watch an ad to earn XP for free!
                 </p>
-                <Button
-                  // onClick={handleWatchAd}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 hover:scale-105 transition-transform duration-200 relative overflow-hidden group"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                  <div className="flex items-center gap-2 relative z-10">
-                    <Video className="h-5 w-5" />
-                    Watch Ad & Get 100 XP
+                <div className="flex items-center justify-between p-5 bg-[#252525] rounded-xl border-2 border-gray-700 hover:border-blue-500 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-600/20 rounded-lg">
+                      <Video className="h-6 w-6 text-blue-400" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-white text-base">Rewarded Ads</div>
+                      <div className="text-sm text-gray-400">
+                        {rewardedAdsEnabled ? "✓ Ads are active" : "Enable to watch ads"}
+                      </div>
+                    </div>
                   </div>
-                </Button>
+                  <Switch
+                    checked={rewardedAdsEnabled}
+                    onCheckedChange={setRewardedAdsEnabled}
+                    className="data-[state=checked]:bg-blue-600 scale-125"
+                  />
+                </div>
               </div>
 
               {/* Paid Options */}
               <div className="p-6">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-green-400 animate-pulse" />
+                  <CreditCard className="h-5 w-5 text-green-400" />
                   Buy XP Packages
                 </h3>
                 <p className="text-gray-400 text-sm mb-4">
@@ -257,7 +268,7 @@ export const MarketSectionSuspense = () => {
                   {xpPackages.map((pkg, index) => (
                     <div
                       key={index}
-                      className={`relative p-4 rounded-xl border-2 transition-all hover:scale-105 cursor-pointer group overflow-hidden ${pkg.popular
+                      className={`relative p-4 rounded-xl border-2 cursor-pointer ${pkg.popular
                         ? "border-purple-500 bg-gradient-to-r from-purple-700/10 to-purple-100/10"
                         : "border-gray-600 bg-[#252525] hover:border-gray-500"
                         }`}
@@ -265,7 +276,7 @@ export const MarketSectionSuspense = () => {
                     >
                       {pkg.popular && (
                         <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                          <span className="bg-purple-500 text-gray-900 text-xs px-2 py-1 rounded-full font-semibold animate-pulse">
+                          <span className="bg-purple-500 text-gray-900 text-xs px-2 py-1 rounded-full font-semibold">
                             MOST POPULAR
                           </span>
                         </div>
@@ -273,7 +284,7 @@ export const MarketSectionSuspense = () => {
 
                       <div className="flex items-center justify-between relative z-10">
                         <div className="flex items-center gap-3">
-                          <Boxes className="h-6 w-6 text-purple-500 group-hover:scale-110 transition-transform duration-200" />
+                          <Boxes className="h-6 w-6 text-purple-500" />
                           <div>
                             <div className="font-semibold text-lg">{pkg.amount.toLocaleString()} XP</div>
                             <div className="text-gray-400 text-sm">Instant delivery</div>
@@ -305,7 +316,6 @@ export const MarketSectionSuspense = () => {
         {/* Rest of your existing JSX remains the same, just add animation classes */}
         {/* Search and Filter Section */}
         <div className="bg-[#1e1e1e] rounded-xl border border-gray-800 p-4 mb-8 relative overflow-hidden">
-          <FloatingSparkles />
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -339,7 +349,7 @@ export const MarketSectionSuspense = () => {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all hover:scale-105 ${selectedCategory === category.id
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm ${selectedCategory === category.id
                   ? "bg-gradient-to-r from-[#ffca55] to-[#FFA100] text-gray-900"
                   : "bg-[#252525] text-gray-300 hover:bg-[#2d2d2d]"
                   }`}
@@ -353,26 +363,26 @@ export const MarketSectionSuspense = () => {
 
         {/* Marketplace Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredItems.map((item) => {
+          {allItems.map((item) => {
             const isOwned = owned(item.assetId);
+            const isDummy = item.assetId.startsWith('dummy-');
 
 
             return (
               <Card
                 key={item.assetId}
-                className="bg-[#1e1e1e] border border-gray-800 overflow-hidden transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#ffca55]/10 group relative"
+                className="bg-[#1e1e1e] border border-gray-800 overflow-hidden group relative"
               >
-                <FloatingSparkles />
                 <CardContent className="p-0">
                   {/* Item Image */}
                   <div className="h-40 flex items-center justify-center bg-gradient-to-b from-[#2a2a2a] to-[#1e1e1e] relative">
-                    <span className="text-5xl transform group-hover:scale-110 transition-transform duration-300">
-                      {assetIcon.get(item.iconNumber)}
+                    <span className="text-5xl">
+                      {isDummy ? (item as any).emoji : assetIcon.get(item.iconNumber)}
                     </span>
 
                     {/* Owned Badge */}
                     {isOwned && (
-                      <div className="absolute top-3 left-3 bg-green-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 animate-pulse">
+                      <div className="absolute top-3 left-3 bg-green-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
                         <Check className="h-3 w-3" />
                         Owned
                       </div>
@@ -381,15 +391,15 @@ export const MarketSectionSuspense = () => {
 
                   {/* Item Details */}
                   <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-2 group-hover:text-[#ffca55] transition-colors duration-300">
+                    <h3 className="font-semibold text-lg mb-2">
                       {item.name}
                     </h3>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         {item.price < 500 ? (
-                          <Box className="h-4 w-4 text-purple-400 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                          <Box className="h-4 w-4 text-purple-400 mr-1" />
                         ) : (
-                          <Boxes className="h-5 w-5 text-purple-600 mr-1 group-hover:scale-110 transition-transform duration-300" />
+                          <Boxes className="h-5 w-5 text-purple-600 mr-1" />
                         )}
                         <span className="font-semibold">{item.price}</span>
                       </div>
@@ -410,12 +420,11 @@ export const MarketSectionSuspense = () => {
                             </Button>
                           ) : (
                             <Button
-                              className="rounded-full bg-gradient-to-r from-[#ffca55] to-[#FFA100] text-gray-900 text-sm hover:opacity-90 hover:scale-105 transition-all duration-300 group relative overflow-hidden"
+                              className="rounded-full bg-gradient-to-r from-[#ffca55] to-[#FFA100] text-gray-900 text-sm hover:opacity-90"
                               onClick={() => handlePurchase(item.assetId, item.price)}
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                              <ShoppingCart className="h-4 w-4 mr-1 relative z-10" />
-                              <span className="relative z-10">Buy Now</span>
+                              <ShoppingCart className="h-4 w-4 mr-1" />
+                              <span>Buy Now</span>
                             </Button>
                           )}
                         </>
@@ -430,9 +439,9 @@ export const MarketSectionSuspense = () => {
 
         {/* Empty State */}
         {
-          filteredItems.length === 0 && (
+          allItems.length === 0 && (
             <div className="text-center py-16">
-              <Search className="h-16 w-16 mx-auto mb-4 text-gray-400 animate-bounce" />
+              <Search className="h-16 w-16 mx-auto mb-4 text-gray-400" />
               <h3 className="text-xl font-semibold text-gray-300">No items found</h3>
               <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
             </div>
@@ -441,22 +450,21 @@ export const MarketSectionSuspense = () => {
 
         {/* Featured Section */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 animate-pulse-slow">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
             <Crown className="h-6 w-6 text-[#ffca55]" />
             Featured Items
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl border border-purple-800 p-6 flex flex-col md:flex-row items-center gap-6 hover:scale-105 transition-transform duration-300 group relative overflow-hidden">
-              <FloatingSparkles />
-              <div className="text-6xl group-hover:scale-110 transition-transform duration-300">🌟</div>
+            <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl border border-purple-800 p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+              <div className="text-6xl">🌟</div>
               <div>
                 <h3 className="text-xl font-bold">Premium Creator Pack</h3>
                 <p className="text-gray-300 mt-2">Get access to exclusive items and special features</p>
                 <div className="flex items-center mt-4">
-                  <Coins className="h-5 w-5 text-[#ffca55] mr-2 group-hover:scale-110 transition-transform duration-300" />
+                  <Coins className="h-5 w-5 text-[#ffca55] mr-2" />
                   <span className="font-semibold">2,500</span>
-                  <Button className="ml-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 hover:scale-105 transition-all duration-300">
+                  <Button className="ml-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90">
                     <Rocket className="h-4 w-4 mr-2" />
                     Unlock Now
                   </Button>
@@ -464,17 +472,16 @@ export const MarketSectionSuspense = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 rounded-xl border border-blue-800 p-6 flex flex-col md:flex-row items-center gap-6 hover:scale-105 transition-transform duration-300 group relative overflow-hidden">
-              <FloatingSparkles />
-              <div className="text-6xl group-hover:scale-110 transition-transform duration-300">⚡</div>
+            <div className="bg-gradient-to-r from-blue-900/30 to-cyan-900/30 rounded-xl border border-blue-800 p-6 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+              <div className="text-6xl">⚡</div>
               <div>
                 <h3 className="text-xl font-bold">Weekly Special Offer</h3>
                 <p className="text-gray-300 mt-2">Limited time offer - 50% off on all effects</p>
                 <div className="flex items-center mt-4">
-                  <Boxes className="h-5 w-5 text-[#ffca55] mr-2 group-hover:scale-110 transition-transform duration-300" />
+                  <Boxes className="h-5 w-5 text-[#ffca55] mr-2" />
                   <span className="font-semibold line-through text-gray-400">1,500</span>
                   <span className="font-semibold ml-2">750</span>
-                  <Button className="ml-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:opacity-90 hover:scale-105 transition-all duration-300">
+                  <Button className="ml-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:opacity-90">
                     <Zap className="h-4 w-4 mr-2" />
                     Claim Offer
                   </Button>

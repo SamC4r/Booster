@@ -15,7 +15,6 @@ import { toast } from 'sonner';
 
 import { VideoMenu } from '@/modules/videos/ui/components/video-menu';
 import { VideoOwner } from '@/modules/videos/ui/components/video-owner';
-import { ErrorBoundary } from 'react-error-boundary';
 import { UserAvatar } from '@/components/user-avatar';
 import { BunnyEmbed } from '@/modules/videos/ui/sections/BunnyEmbed';
 
@@ -31,9 +30,7 @@ interface Props {
 export const VideoSection = ({ videoId, next, prev }: Props) => {
     return (
         <Suspense fallback={<VideoSectionSkeleton />}>
-            <ErrorBoundary fallback={<p>Failed to load video :(</p>}>
-                <VideoSectionSuspense videoId={videoId} next={next} prev={prev} />
-            </ErrorBoundary>
+            <VideoSectionSuspense videoId={videoId} next={next} prev={prev} />
         </Suspense>
     )
 }
@@ -172,7 +169,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
         
         // Create view for all videos
         createView.mutate({ videoId: video.id });
-    }, [video.id, isSignedIn, createView])
+    }, [video.id, isSignedIn])
 
     const createRating = trpc.videoRatings.create.useMutation({
         onSuccess: () => {
