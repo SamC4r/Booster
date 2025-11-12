@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { userFollows, users, videoRatings, videos, videoViews } from "@/db/schema";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
-import { and, avg, count, desc, eq, getTableColumns, ilike,  lt, or, sql, sum } from "drizzle-orm";
+import { and, avg, count, desc, eq, getTableColumns, ilike, lt, or, sql, sum } from "drizzle-orm";
 import z from "zod";
 
 export const searchRouter = createTRPCRouter({
@@ -18,6 +18,10 @@ export const searchRouter = createTRPCRouter({
         .query(async ({  input }) => {
 
             const { cursor, limit, query } = input;
+
+            // Create search query with PostgreSQL full-text search
+            const searchQuery = query ? query.trim().split(/\s+/).join(' & ') : '';
+            const useFullTextSearch = searchQuery.length > 0;
 
             const videoViewsStats = db.$with("video_views_stats").as(
                 db
@@ -52,12 +56,35 @@ export const searchRouter = createTRPCRouter({
                     videoRatings: ratingStats.ratingCount,
                     averageRating: ratingStats.averageRating,
                     videoViews: videoViewsStats.viewCount,
+                    // Add relevance score for ranking
+                    relevanceScore: useFullTextSearch 
+                        ? sql<number>`
+                            -- Title match (highest weight)
+                            (CASE WHEN to_tsvector('english', ${videos.title}) @@ to_tsquery('english', ${searchQuery}) THEN 10 ELSE 0 END) +
+                            -- Description match (medium weight)
+                            (CASE WHEN to_tsvector('english', COALESCE(${videos.description}, '')) @@ to_tsquery('english', ${searchQuery}) THEN 5 ELSE 0 END) +
+                            -- Partial title match (lower weight)
+                            (CASE WHEN ${videos.title} ILIKE ${`%${query}%`} THEN 3 ELSE 0 END) +
+                            -- Boost by popularity
+                            (COALESCE(${videoViewsStats.viewCount}, 0)::float / 1000.0) +
+                            (COALESCE(${ratingStats.averageRating}, 0)::float)
+                        `.mapWith(Number)
+                        : sql<number>`0`.mapWith(Number),
                 }).from(videos)
                 .innerJoin(users, eq(videos.userId, users.id))
                 .leftJoin(ratingStats, eq(ratingStats.videoId, videos.id))
                 .leftJoin(videoViewsStats, eq(videoViewsStats.videoId, videos.id))
                 .where(and(
-                    ilike(videos.title, `%${query}%`),
+                    useFullTextSearch 
+                        ? or(
+                            // Full-text search on title
+                            sql`to_tsvector('english', ${videos.title}) @@ to_tsquery('english', ${searchQuery})`,
+                            // Full-text search on description
+                            sql`to_tsvector('english', COALESCE(${videos.description}, '')) @@ to_tsquery('english', ${searchQuery})`,
+                            // Fallback to partial match
+                            ilike(videos.title, `%${query}%`)
+                        )
+                        : undefined,
                     eq(videos.visibility, 'public'),
                     cursor ?
                         or(
@@ -66,7 +93,12 @@ export const searchRouter = createTRPCRouter({
                                 eq(videos.updatedAt, cursor.updatedAt),
                                 lt(videos.id, cursor.id)
                             ))
-                        : undefined)).orderBy(desc(videos.updatedAt), desc(videos.id)).limit(limit + 1); //ad 1 to limit to check if there's more data
+                        : undefined))
+                .orderBy(
+                    useFullTextSearch ? desc(sql`relevance_score`) : desc(videos.updatedAt), 
+                    desc(videos.id)
+                )
+                .limit(limit + 1); //ad 1 to limit to check if there's more data
 
             const hasMore = data.length > limit;
 
