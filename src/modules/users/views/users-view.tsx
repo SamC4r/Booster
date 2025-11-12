@@ -84,6 +84,14 @@ export const UsersView = ({ userId }: Props) => {
 
   const [activeTab, setActiveTab] = useState("videos");
 
+  // Handle navigation to specific tab via URL hash
+  useEffect(() => {
+    const hash = window.location.hash.substring(1); // Remove the # symbol
+    if (hash === "community" || hash === "about") {
+      setActiveTab(hash);
+    }
+  }, []);
+
   const channelLevel = Math.floor(
     Math.floor(Math.sqrt(boostPoints.boostPoints * 1000)) / 1000
   );
@@ -182,11 +190,11 @@ export const UsersView = ({ userId }: Props) => {
                     {user?.name || "Unknown User"}
                   </h1>
                 </div>
-                  {/* <PlanetIcon className="text-yellow-600 ml-2 shadow-red-100/50 bg-transparent size-8 flex-shrink-0" /> */}
-                  <div className="mt-1" key={equippedAsset?.assetId || 'no-asset'}>
+                {/* <PlanetIcon className="text-yellow-600 ml-2 shadow-red-100/50 bg-transparent size-8 flex-shrink-0" /> */}
+                <div className="mt-1" key={equippedAsset?.assetId || 'no-asset'}>
 
-                  {getUserIcons(user.id,10)}
-                  </div>
+                  {getUserIcons(user.id, 10)}
+                </div>
 
 
 
@@ -412,9 +420,9 @@ export const UsersView = ({ userId }: Props) => {
       </div>
 
       {/* Personalize Modal */}
-      <PersonalizeModal 
-        isOpen={showPersonalizeModal} 
-        onClose={() => setShowPersonalizeModal(false)} 
+      <PersonalizeModal
+        isOpen={showPersonalizeModal}
+        onClose={() => setShowPersonalizeModal(false)}
       />
     </div>
   );

@@ -5,13 +5,14 @@ import { SubButton } from "@/modules/subscriptions/ui/components/sub-button";
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { UserInfo } from "@/modules/users/ui/components/user-info";
-import { UsersIcon, Edit3Icon, ZapIcon, RocketIcon, } from "lucide-react";
+import { UsersIcon, Edit3Icon, ZapIcon, RocketIcon, TrendingUpIcon } from "lucide-react";
 import { useState } from "react";
 import { useFollow } from "@/modules/follows/hooks/follow-hook";
 import { XpCard } from "@/modules/home/ui/components/xp-card";
 import { AnimatePresence } from "framer-motion";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { getUserIcons } from "@/modules/market/components/assetIcons/functions/get-user-icons";
+import { useRouter } from "next/navigation";
 
 type User = {
     followsCount: number;
@@ -43,11 +44,14 @@ const f = (x: number) => {
 
 export const VideoOwner = ({ user, videoId, boostPoints }: Props) => {
     const { userId } = useAuth();
+    const router = useRouter();
     const [showAddXpModal, setShowAddXpModal] = useState(false);
 
     //WHERE IS THE PREFETCH? -- TODO: getBoostByVideoId -> userId -> boost points
     // const [boostPoints] = trpc.xp.getBoostByUserId.useSuspenseQuery({userId:user.id})
 
+    // Check if the current user is the video owner
+    const isVideoOwner = userId === user.clerkId;
 
     const channelLevel = Math.floor(
         Math.floor(Math.sqrt(boostPoints * 1000)) / 1000
@@ -60,6 +64,10 @@ export const VideoOwner = ({ user, videoId, boostPoints }: Props) => {
     const progressPercentage = Math.max(0, Math.min(100, ((boostPoints - xpOnCurrentLevel) / (xpForNextLevel - xpOnCurrentLevel)) * 100)
     );
 
+    const handleRankingClick = () => {
+        // Navigate to the user's channel with community tab (which shows rankings)
+        router.push(`/users/${user.id}#community`);
+    };
 
     const { onClick, isPending } = useFollow({
         //ignore xd?
@@ -161,13 +169,23 @@ export const VideoOwner = ({ user, videoId, boostPoints }: Props) => {
                         <span className="text-sm font-semibold text-gray-900 dark:text-white">Level {channelLevel}</span>
                     </div>
 
-                    <button
-                        onClick={() => setShowAddXpModal(true)}
-                        className="flex items-center gap-1 text-xs bg-amber-500 hover:bg-amber-600 text-white py-1 px-2 rounded-lg transition-colors"
-                    >
-                        <RocketIcon className="w-3 h-3" />
-                        <span>Boost</span>
-                    </button>
+                    {isVideoOwner ? (
+                        <button
+                            onClick={handleRankingClick}
+                            className="flex items-center gap-1 text-xs bg-gradient-to-r from-[#ffca55] to-[#ffa100] hover:from-[#f5c042] hover:to-[#e89600] text-white py-1 px-2 rounded-lg transition-colors"
+                        >
+                            <TrendingUpIcon className="w-3 h-3" />
+                            <span>Ranking</span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => setShowAddXpModal(true)}
+                            className="flex items-center gap-1 text-xs bg-amber-500 hover:bg-amber-600 text-white py-1 px-2 rounded-lg transition-colors"
+                        >
+                            <RocketIcon className="w-3 h-3" />
+                            <span>Boost</span>
+                        </button>
+                    )}
                 </div>
 
                 <div className="mb-2">
