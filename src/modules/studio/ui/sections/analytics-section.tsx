@@ -34,8 +34,8 @@ import { useAuth } from "@clerk/nextjs";
 
 export const AnalyticsSection = () => {
     return (
-        <div className="bg-background rounded-xl p-6 shadow-sm">
-            <div className="flex justify-between items-center mb-6">
+        <div className="w-full max-w-6xl bg-background rounded-xl p-3 sm:p-6 shadow-sm overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
                 <div>
                     <h2 className="text-2xl font-semibold text-foreground flex items-center gap-2">
                         <BarChart3 className="h-6 w-6" />
@@ -239,7 +239,7 @@ export const AnalyticsSectionSuspense = () => {
     return (
         <div className="space-y-6">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Views</CardTitle>
@@ -294,7 +294,7 @@ export const AnalyticsSectionSuspense = () => {
             </div>
 
             {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full overflow-hidden">
                 {/* Views Chart */}
                 <Card>
                     <CardHeader>

@@ -123,7 +123,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
     const [selectedCategory, setSelectedCategory] = useState(categoryId);
     console.log("categoryId", categoryId)
     const [data, query] = trpc.explorer.getMany.useSuspenseInfiniteQuery(
-        { limit: DEFAULT_LIMIT * 2 ,categoryId},
+        { limit: DEFAULT_LIMIT * 2, categoryId },
         { getNextPageParam: (lastPage) => lastPage.nextCursor }
     );
 
@@ -142,31 +142,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="relative text-center mb-8"
             >
-                {/* Background Elements */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <motion.div
-                        animate={{
-                            rotate: 360,
-                            scale: [1, 1.2, 1]
-                        }}
-                        transition={{
-                            rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                            scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }
-                        }}
-                        className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-full blur-3xl"
-                    />
-                    <motion.div
-                        animate={{
-                            rotate: -360,
-                            scale: [1.2, 1, 1.2]
-                        }}
-                        transition={{
-                            rotate: { duration: 25, repeat: Infinity, ease: "linear" },
-                            scale: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-                        }}
-                        className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"
-                    />
-                </div>
+
 
                 <div className="relative z-10">
                     <motion.h1
@@ -205,7 +181,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                 >
                     {/* Animated Background Glow - Outside container */}
                     <div className="absolute inset-0 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 bg-[#ffca55] transition-opacity duration-500 pointer-events-none -z-10" />
-                    
+
                     <div className="relative bg-[#212121] rounded-3xl p-10 shadow-2xl overflow-hidden">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-6">
@@ -503,7 +479,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                     <Link href="/" className="relative group">
                         {/* Hover glow effect */}
                         <div className="absolute inset-0 rounded-xl blur-lg opacity-0 group-hover:opacity-100 bg-[#ffca55] transition-opacity duration-500 pointer-events-none -z-10" />
-                        
+
                         <motion.button
                             whileHover={{ x: 5, scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -523,7 +499,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4 }}
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 space-y-8 items-end "
+                        className="grid grid-cols-1 lg:grid-cols-2 gap-6 space-y-8 items-end "
                     >
                         {videos.filter(v => !v.isFeatured).map((video, index) => (
                             <motion.div
@@ -537,7 +513,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                                     {/* Enhanced Hover Glow */}
                                     <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-orange-400/20 rounded-2xl blur-md opacity-0 " />
 
-                                    <div className="relative bg-transparent  rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border">
+                                    <div className="relative bg-transparent  rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl">
                                         {/* Video Thumbnail */}
                                         <div className="relative aspect-video overflow-hidden ">
                                             <VideoThumbnail

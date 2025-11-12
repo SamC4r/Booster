@@ -1,7 +1,7 @@
 'use client'
 import { UserAvatar } from "@/components/user-avatar";
 import { trpc } from "@/trpc/client"
-import { Users,   Crown,Search,  UserPlus,  Zap, ArrowRight  } from "lucide-react";
+import { Users, Crown, Search, UserPlus, Zap, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,14 +10,14 @@ export const FollowList = () => {
     const [followList] = trpc.follows.getMany.useSuspenseQuery();
     const [searchQuery, setSearchQuery] = useState("");
 
-    const filteredUsers = followList.filter(user => 
+    const filteredUsers = followList.filter(user =>
         user.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="max-w-6xl mx-auto">
+        <div className="min-h-screen bg-background ml-4 md:ml-16 lg:ml-20 mr-4 md:mr-6">
+            <div className="max-w-6xl mx-auto p-4 md:p-6">
                 {/* Enhanced Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -25,34 +25,10 @@ export const FollowList = () => {
                     transition={{ duration: 0.03 }}
                     className="text-center mb-12 relative"
                 >
-                    {/* Background Elements */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <motion.div
-                            animate={{ 
-                                rotate: 360,
-                                scale: [1, 1.1, 1]
-                            }}
-                            transition={{ 
-                                rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                                scale: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-                            }}
-                            className="absolute -top-20 left-1/4 w-32 h-32 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-full blur-3xl"
-                        />
-                        <motion.div
-                            animate={{ 
-                                rotate: -360,
-                                scale: [1.1, 1, 1.1]
-                            }}
-                            transition={{ 
-                                rotate: { duration: 25, repeat: Infinity, ease: "linear" },
-                                scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }
-                            }}
-                            className="absolute -top-20 right-1/4 w-32 h-32 bg-gradient-to-r from-yellow-500/10 to-amber-500/10 rounded-full blur-3xl"
-                        />
-                    </div>
+
 
                     <div className="relative z-10">
-                       
+
 
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
@@ -82,7 +58,7 @@ export const FollowList = () => {
                     className="relative mb-8"
                 >
                     <div className="absolute inset-0 rounded-2xl blur-xl transform scale-105" />
-                    
+
                     <div className="relative bg-[#212121] backdrop-blur-md rounded-2xl p-6 shadow-xl">
                         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
                             {/* Enhanced Search */}
@@ -99,7 +75,7 @@ export const FollowList = () => {
                                     />
                                 </div>
                             </div>
-                            
+
                             {/* Enhanced Stats */}
                             <div className="flex flex-wrap gap-6">
                                 <motion.div
@@ -117,9 +93,9 @@ export const FollowList = () => {
                                     </div>
                                 </motion.div>
 
-                               
 
-                                
+
+
                             </div>
                         </div>
                     </div>
@@ -133,9 +109,9 @@ export const FollowList = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.4 }}
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+                        className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
                     >
-                        {filteredUsers.map((user ) => (
+                        {filteredUsers.map((user) => (
                             <motion.div
                                 key={user.user?.id}
                                 initial={{ opacity: 0, y: 30, scale: 0.9 }}
@@ -189,11 +165,11 @@ export const FollowList = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                       
+
+
                                     </div>
-                                    
-                                   
+
+
 
                                     {/* Action Buttons */}
                                     <div className="flex gap-3 pt-4 border-t border-gray-500">
@@ -228,11 +204,11 @@ export const FollowList = () => {
                         {/* Background Elements */}
                         <div className="absolute inset-0 overflow-hidden pointer-events-none">
                             <motion.div
-                                animate={{ 
+                                animate={{
                                     rotate: 360,
                                     scale: [1, 1.2, 1]
                                 }}
-                                transition={{ 
+                                transition={{
                                     rotate: { duration: 20, repeat: Infinity, ease: "linear" },
                                     scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }
                                 }}
@@ -249,7 +225,7 @@ export const FollowList = () => {
                             >
                                 <Users className="h-12 w-12 text-amber-500" />
                             </motion.div>
-                            
+
                             <motion.h3
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -258,25 +234,25 @@ export const FollowList = () => {
                             >
                                 {searchQuery ? "No matches found" : "Your community awaits"}
                             </motion.h3>
-                            
+
                             <motion.p
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
                                 className="text-amber-600 dark:text-amber-400 max-w-md mx-auto mb-6 text-lg leading-relaxed"
                             >
-                                {searchQuery 
+                                {searchQuery
                                     ? `No users found for "${searchQuery}". Try exploring our community to find amazing creators.`
                                     : "Start building your network by following creators who inspire you."
                                 }
                             </motion.p>
-                            
+
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.5 }}
                             >
-                                <Link 
+                                <Link
                                     href="/explorer"
                                     className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-amber-500/25 transition-all duration-300 group"
                                 >

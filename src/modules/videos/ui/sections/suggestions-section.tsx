@@ -46,7 +46,7 @@ export const SuggestionsSection = ({ videoId }: SuggestionsSectionProps) => {
                 </motion.div>
 
                 {/* Video grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-4">
                     {watchNext.map((video, index) => (
                         <motion.div
                             key={video.id}
@@ -55,7 +55,7 @@ export const SuggestionsSection = ({ videoId }: SuggestionsSectionProps) => {
                             transition={{ delay: index * 0.1 }}
                             className="group cursor-pointer"
                         >
-                            <div className="relative  rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 hover:border-amber-300 dark:hover:border-amber-600 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
+                            <div className="relative  rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
                                 {/* Thumbnail container */}
                                 <VideoThumbnail
                                     title={video.title}

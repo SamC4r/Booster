@@ -170,8 +170,8 @@ export const MarketSectionSuspense = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#121212] to-[#1a1a1a] text-white p-6 ml-16 relative overflow-hidden">
-      
+    <div className="min-h-screen bg-black text-white p-6 ml-16 relative overflow-hidden">
+
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
@@ -420,7 +420,7 @@ export const MarketSectionSuspense = () => {
                             </Button>
                           ) : (
                             <Button
-                              className="rounded-full bg-gradient-to-r from-[#ffca55] to-[#FFA100] text-gray-900 text-sm hover:opacity-90"
+                              className="rounded-xl bg-[#333333] text-white text-sm font-semibold shadow-lg hover:shadow-[#ffca55] transition-all duration-300 hover:scale-105 hover:-translate-y-0.5"
                               onClick={() => handlePurchase(item.assetId, item.price)}
                             >
                               <ShoppingCart className="h-4 w-4 mr-1" />

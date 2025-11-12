@@ -39,7 +39,7 @@ const VideoSectionSkeleton = () => {
     return (
         <div className="h-full w-full flex flex-col gap-4 overflow-hidden animate-pulse">
             {/* VIDEO AREA SKELETON */}
-            <div className="relative group flex-1 rounded-2xl overflow-hidden bg-gray-300 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="relative group flex-1 rounded-2xl overflow-hidden bg-gray-300 dark:bg-gray-700 shadow-sm">
                 {/* Play button skeleton */}
                 <div className="absolute inset-0 z-20 flex items-center justify-center -m-20">
                     <div className="w-20 h-20 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center">
@@ -166,7 +166,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
     useEffect(() => {
         setIsPlaying(true)
         if (!isSignedIn) return;
-        
+
         // Create view for all videos
         createView.mutate({ videoId: video.id });
     }, [video.id, isSignedIn])
@@ -194,13 +194,13 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
     // Handle video end for featured videos - give XP when video is watched to completion
     const handleVideoEnd = useCallback(() => {
         console.log("Video ended for video:", video.id, "isFeatured:", video.isFeatured, "isSignedIn:", isSignedIn, "userId:", userId, "hasRewarded:", hasRewarded, "isRewarding:", isRewardingRef.current);
-        
+
         // Prevent multiple executions with synchronous flag
         if (hasRewarded || isRewardingRef.current) {
             console.log("XP already rewarded or currently rewarding for this video, skipping");
             return;
         }
-        
+
         if (video.isFeatured && isSignedIn && userId) {
             console.log("Awarding XP for featured video completion");
             isRewardingRef.current = true; // Set synchronous flag immediately
@@ -303,12 +303,12 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
 
 
                     {/* <Player src={video.playbackUrl} autoPlay={shouldPlay} isAI={video.isAi} /> */}
-                    <BunnyEmbed 
-                        libraryId={video.bunnyLibraryId} 
-                        videoId={video.bunnyVideoId} 
+                    <BunnyEmbed
+                        libraryId={video.bunnyLibraryId}
+                        videoId={video.bunnyVideoId}
                         autoplay
                         onVideoEnd={video.isFeatured ? handleVideoEnd : undefined}
-                    /> 
+                    />
 
                     {/* Play button overlay */}
                     <AnimatePresence>
