@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, timestamp, uniqueIndex, integer, pgEnum, primaryKey, AnyPgColumn, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, timestamp, uniqueIndex, integer, pgEnum, primaryKey, AnyPgColumn, boolean, index } from "drizzle-orm/pg-core";
 
 import {
     createInsertSchema,
@@ -94,7 +94,13 @@ export const videos = pgTable("videos", {
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
     isAi: boolean("is_ai").notNull().default(false),
-})
+}, (t) => [
+    index("videos_user_idx").on(t.userId),
+    index("videos_category_idx").on(t.categoryId),
+    index("videos_visibility_status_idx").on(t.visibility, t.status),
+    index("videos_created_at_idx").on(t.createdAt),
+    index("videos_featured_idx").on(t.isFeatured),
+])
 
 export const videoInsertSchema = createInsertSchema(videos);
 export const videoUpdateSchema = createUpdateSchema(videos);
@@ -258,7 +264,11 @@ export const notifications = pgTable("notifications", {
     
     isRead: boolean("is_read").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-})
+}, (t) => [
+    index("notifications_user_idx").on(t.userId),
+    index("notifications_user_unread_idx").on(t.userId, t.isRead),
+    index("notifications_created_at_idx").on(t.createdAt),
+])
 
 export const messages = pgTable("messages", {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -268,7 +278,12 @@ export const messages = pgTable("messages", {
     isRead: boolean("is_read").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-})
+}, (t) => [
+    index("messages_sender_idx").on(t.senderId),
+    index("messages_receiver_idx").on(t.receiverId),
+    index("messages_created_at_idx").on(t.createdAt),
+    index("messages_receiver_unread_idx").on(t.receiverId, t.isRead),
+])
 
 export const messageInsertSchema = createInsertSchema(messages);
 export const messageSelectSchema = createSelectSchema(messages);
