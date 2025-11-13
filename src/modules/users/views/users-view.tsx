@@ -396,14 +396,14 @@ export const UsersView = ({ userId }: Props) => {
 
         {/* Video Grid */}
         {activeTab === "videos" && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {userVideos.userVideos.map((video) => (
               <Link
                 key={video.id}
-                className="bg-card border-border overflow-hidden  flex flex-col gap-12 transition-transform cursor-pointer rounded-2xl"
+                className="group bg-[#000000] rounded-2xl transition-transform hover:scale-[1.02] cursor-pointer"
                 href={`/explorer/videos/${video.id}`}
               >
-                <div className="h-56 relative">
+                <div className="relative overflow-hidden rounded-t-2xl">
                   <VideoThumbnail
                     duration={video.duration || 0}
                     title={video.title}
@@ -411,25 +411,24 @@ export const UsersView = ({ userId }: Props) => {
                     previewUrl={video.previewUrl}
                   />
                 </div>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold line-clamp-2 truncate">
-                    {video.title}{" "}
+                <div className="p-3">
+                  <h3 className="font-semibold line-clamp-2 mb-2">
+                    {video.title || "Untitled Video"}
                   </h3>
-
-                  <div className="flex justify-between text-muted-foreground text-sm mt-2">
+                  <div className="flex justify-between text-muted-foreground text-sm">
                     <div className="flex items-center gap-3">
                       <span className="flex items-center gap-1">
                         <EyeIcon className="size-4" />
-                        {video.videoViews}{" "}
+                        {compactNumber(Number(video.videoViews) || 0)}
                       </span>
                       <span className="flex items-center gap-1">
-                        <StarIcon className="size-4 text-yellow-300" />{" "}
-                        {Number(video.averageRating).toFixed(1)}{" "}
+                        <StarIcon className="size-4 text-yellow-300" />
+                        {(Number(video.averageRating) || 0).toFixed(1)}
                       </span>
                     </div>
                     <span>{compactDate(video.createdAt)}</span>
                   </div>
-                </CardContent>
+                </div>
               </Link>
             ))}
           </div>
