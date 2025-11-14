@@ -220,7 +220,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
             <motion.div
                 className={cn("flex-none relative rounded-2xl overflow-hidden shadow-sm min-h-[50%]")}
                 initial={false}
-                animate={{ height: commentsOpen ? '50%' : '77%' }}
+                animate={{ height: commentsOpen ? '62%' : '82%' }}
                 transition={{ duration: 0.35, ease: 'easeInOut' }}
                 onMouseEnter={() => setShowTitle(true)}
                 onMouseLeave={() => setShowTitle(false)}
@@ -372,7 +372,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
 
                 {/* COMMENTS PANEL */}
                 <motion.div
-                    className={cn("flex-1 min-h-0 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#212121] backdrop-blur-md shadow-sm ")}
+                    className={cn("flex-1 min-h-0 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#212121] backdrop-blur-md shadow-sm mt-[14px]")}
                     initial={false}
                     transition={{ duration: 0.35, ease: 'easeInOut' }}
                     onMouseEnter={() => setCommentsOpen(true)}
