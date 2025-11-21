@@ -3,7 +3,7 @@ import { db } from '@/db'
 import { videos } from '@/db/schema'
 import { desc, eq, and } from 'drizzle-orm'
 
-const SITE_URL = 'https://www.boostervideos.net'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.boostervideos.net'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const urls: MetadataRoute.Sitemap = [

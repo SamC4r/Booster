@@ -30,7 +30,7 @@ export default async function Head({ params }: Props) {
     .where(eq(videos.id, videoId))
     .limit(1)
 
-  const site = 'https://www.boostervideos.net'
+  const site = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.boostervideos.net'
   const pageUrl = `${site}/videos/${videoId}`
   const title = row?.title ? `${row.title} | Booster` : 'Booster'
   const description = truncate(row?.description ?? 'Watch this video on Booster', 160)

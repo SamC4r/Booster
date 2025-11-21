@@ -1,7 +1,7 @@
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar"
 import { MainSection } from "./main-section"
 import { Separator } from "@/components/ui/separator"
-import { PersonalSection } from "./personal-section"
+// import { PersonalSection } from "./personal-section"
 
 
 interface Props {
@@ -14,7 +14,7 @@ export const ExplorerSidebar = ({ collapsible, variant }: Props) => {
             <SidebarContent className='bg-white dark:bg-background overflow-hidden -ml-2' >
                 <MainSection />
                 <Separator />
-                <PersonalSection />
+                {/* <PersonalSection /> */}
             </SidebarContent>
         </Sidebar>
     )
