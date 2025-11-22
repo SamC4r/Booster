@@ -20,5 +20,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/studio`, changeFrequency: 'weekly', priority: 0.5 },
   ]
 
-  
+  return urls;
 }
