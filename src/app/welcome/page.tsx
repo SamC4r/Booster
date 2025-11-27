@@ -1,7 +1,7 @@
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { DiveInButton } from "./dive-in-button";
-import { Play, Upload, Zap, Users, TrendingUp, Shield, Boxes } from "lucide-react";
+import { Play, Upload, Zap, Users, TrendingUp, Shield, Boxes, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 export default function WelcomePage() {
@@ -39,9 +39,9 @@ export default function WelcomePage() {
 
         {/* How it works */}
         <section className="w-full py-20 bg-muted/30">
-            <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-[1600px] mx-auto px-4">
                 <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">How Booster Works</h2>
-                <div className="grid md:grid-cols-3 gap-10">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <FeatureCard 
                         icon={<Upload className="w-10 h-10 text-primary" />}
                         title="Upload & Share"
@@ -56,6 +56,11 @@ export default function WelcomePage() {
                         icon={<Users className="w-10 h-10 text-blue-500" />}
                         title="Join the Community"
                         description="Engage with creators, build your network, and grow together."
+                    />
+                    <FeatureCard 
+                        icon={<Sparkles className="w-10 h-10 text-purple-500" />}
+                        title="Search with AI"
+                        description="Change your algorithm and discover recommended videos tailored by AI."
                     />
                 </div>
             </div>
