@@ -1,18 +1,14 @@
 import { useMemo } from "react";
 import { VideoGetOneOutput } from "../../types";
-import { VideoDescription } from "./video-description";
 import { VideoMenu } from "./video-menu";
-import { VideoReactions } from "./video-reactions";
 
-import { format, formatDistanceToNow } from "date-fns"
 import { VideoViews } from "./video-views";
 
 interface Props {
     video: VideoGetOneOutput;
-    onRate: (value: number) => boolean;
 }
 
-export const VideoTopRow = ({ video, onRate }: Props) => {
+export const VideoTopRow = ({ video }: Props) => {
 
     const compactViews = useMemo(() => {
         return Intl.NumberFormat("en", {
@@ -24,17 +20,6 @@ export const VideoTopRow = ({ video, onRate }: Props) => {
             notation: "standard"
         }).format(video.videoViews)
     }, [video.videoViews])
-
-    //dont run functions directly when passing props to videodescription
-    const compactDate = useMemo(() => {
-        return formatDistanceToNow(video.createdAt, { addSuffix: true })
-    }, [video.createdAt])
-    const expandedDate = useMemo(() => {
-        return format(video.createdAt, "d MMM yyyy")
-    }, [video.createdAt])
-
-
-
 
     return (
         <div className="flex flex-col gap-3 mt-4">

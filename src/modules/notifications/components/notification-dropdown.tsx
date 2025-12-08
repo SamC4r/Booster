@@ -213,7 +213,7 @@ export const NotificationDropdown = ({ onClose, onNotificationRead }: Notificati
                                             {/* Comment Preview */}
                                             {notification.comment && (
                                                 <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                                    "{notification.comment.comment}"
+                                                    &quot;{notification.comment.comment}&quot;
                                                 </p>
                                             )}
                                             
@@ -236,7 +236,7 @@ export const NotificationDropdown = ({ onClose, onNotificationRead }: Notificati
                             <div className="p-8 text-center text-muted-foreground">
                                 <Mail className="size-12 mx-auto mb-2 opacity-50" />
                                 <p className="font-medium">No notifications yet</p>
-                                <p className="text-sm mt-1">When you get notifications, they'll show up here</p>
+                                <p className="text-sm mt-1">When you get notifications, they&apos;ll show up here</p>
                             </div>
                         )}
                     </ScrollArea>

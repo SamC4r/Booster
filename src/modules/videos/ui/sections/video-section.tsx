@@ -7,10 +7,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import { VideoBanner } from "../components/video-banner";
 import { VideoTopRow } from "../components/video-top-row";
 import { useAuth } from "@clerk/nextjs";
-import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Eye, Clock, Loader2 } from "lucide-react";
-import { DEFAULT_LIMIT } from "@/constants";
 import { BunnyEmbed } from "./BunnyEmbed";
 // import Player from "./Player";
 
@@ -90,16 +88,6 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
 
     // const followingList = []
 
-    const createRating = trpc.videoRatings.create.useMutation({
-        onSuccess: () => {
-            utils.videos.getOne.invalidate({ id: videoId })
-            utils.home.getMany.invalidate({ limit: DEFAULT_LIMIT })
-        },
-        onError: (error) => {
-            if (error.message === "limit") toast.error("Wait a bit before rating again!")
-        }
-    })
-
     useEffect(() => {
         setIsPlaying(true)
         if (!isSignedIn) return;
@@ -108,17 +96,6 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
 
     const handlePlayButtonClick = () => {
         videoPlayerRef.current?.play()
-    }
-
-    const onRate = (value: number) => {
-        if (!isSignedIn) return false; //TODO: Change to sign in option
-        if (!value) return false;
-
-        createRating.mutate({
-            videoId,
-            newRating: value
-        })
-        return true;
     }
 
     return (
@@ -209,7 +186,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
             </div>
 
             <VideoBanner status={video.status || "processing"} />
-            <VideoTopRow video={video} onRate={onRate} />
+            <VideoTopRow video={video} />
            
         </div>
     )

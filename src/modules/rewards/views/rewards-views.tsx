@@ -43,7 +43,7 @@ interface LevelCardProps {
     currentLevel: number;
 }
 
-const LevelCard = ({ level, reward, isUnlocked, isClaimed, currentLevel }: LevelCardProps) => {
+const LevelCard = ({ level, reward, isUnlocked, isClaimed }: LevelCardProps) => {
     const utils = trpc.useUtils();
     
     const claimReward = trpc.assets.claimReward.useMutation({

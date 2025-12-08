@@ -1,5 +1,3 @@
-import { CommentsSection } from "../sections/comments-section";
-import { SuggestionsSection } from "../sections/suggestions-section";
 import { VideoSection } from "../sections/video-section";
 import { VideoCreator } from "../components/video-creator";
 import { SectionSelector } from "../components/section-selector";

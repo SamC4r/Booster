@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { UserAvatar } from "@/components/user-avatar";
 import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
 import { compactDate, compactNumber } from "@/lib/utils";
 import {
   Check,
@@ -111,7 +110,7 @@ export const UsersView = ({ userId }: Props) => {
 
   const recentUpgrade = diff_time(user?.newLevelUpgrade) <= 72;
 
-  const updateLevelChange = trpc.xp.updateLevelChange.useMutation({
+  const { mutate: updateLevel } = trpc.xp.updateLevelChange.useMutation({
     onSuccess: () => {
       utils.users.getByUserId.invalidate({ userId });
     },
@@ -134,10 +133,10 @@ export const UsersView = ({ userId }: Props) => {
     ) {
       setNewLevel(channelLevel);
       setShowLevelUp(true);
-      updateLevelChange.mutate({ userId });
+      updateLevel({ userId });
     }
     previousLevelRef.current = channelLevel;
-  }, [channelLevel, isInitialLoad, userId]); // Removed prefetchRankings and updateLevelChange to prevent infinite loop
+  }, [channelLevel, isInitialLoad, userId, prefetchRankings, updateLevel]);
 
   //TODO: implement community rankings
 

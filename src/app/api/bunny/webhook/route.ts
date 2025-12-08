@@ -4,6 +4,7 @@ export const runtime = "nodejs";
 import { db } from "@/db";
 import { videos } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import Sightengine from "sightengine";
 
 const statusMap = new Map<string, string>([
   ["0", "queued"],
@@ -108,10 +109,10 @@ export async function POST(req: Request) {
 
     //MODERATION CHECK
 
-   // if you haven't already, install the SDK with "npm install sightengine --save"
+    // if you haven't already, install the SDK with "npm install sightengine --save"
     const videoUrl = `https://vz-cd04a7d4-494.b-cdn.net/${videoId}/play_360p.mp4`
-    var sightengine = require("sightengine")(process.env.SIGHTENGINE_API_USER, process.env.SIGHTENGINE_API_SECRET);
-    sightengine
+    const client = Sightengine(process.env.SIGHTENGINE_API_USER as string, process.env.SIGHTENGINE_API_SECRET as string);
+    client
       .check(["nudity-2.1", "violence","self-harm"])
       .video_sync(videoUrl)
       .then(function (result: string) {

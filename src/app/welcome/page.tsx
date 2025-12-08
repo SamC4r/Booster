@@ -29,7 +29,7 @@ export default function WelcomePage() {
                 Boost Your Creativity
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
-                The next-generation video platform where creators thrive and viewers decide what's next.
+                The next-generation video platform where creators thrive and viewers decide what&apos;s next.
             </p>
             <div className="pt-8 flex flex-col items-center">
                 <DiveInButton />

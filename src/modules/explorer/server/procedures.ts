@@ -18,7 +18,6 @@ import {
   inArray,
   isNotNull,
   lt,
-  gt,
   not,
   or,
   sql,
@@ -35,7 +34,7 @@ export const explorerRouter = createTRPCRouter({
         text: z.string().min(1),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
         const {text} = input;
         const embedding = await embedText(text);
         console.log("Embedding:", embedding);

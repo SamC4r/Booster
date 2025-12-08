@@ -1,18 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { trpc } from "@/trpc/client";
 import { SearchIcon, Stars, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { DEFAULT_LIMIT } from '@/constants';
 
 export const SearchInput = () => {
   const [value, setValue] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
   const [isStarMode, setIsStarMode] = useState(false);
   const router = useRouter();
-  const utils = trpc.useUtils();
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
 
@@ -71,8 +67,6 @@ export const SearchInput = () => {
             <input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
               type="text"
               placeholder="Search for anything..."
               className={`w-full pl-12 pr-16 py-2 rounded-full border-2 bg-background/95 backdrop-blur-sm transition-all duration-300 focus:outline-none text-foreground placeholder:text-muted-foreground
@@ -91,8 +85,6 @@ export const SearchInput = () => {
             <input
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
               type="text"
               placeholder="Ask AI..."
               className={`w-full pl-12 pr-16 py-2 rounded-full border-2 bg-background/95 backdrop-blur-sm transition-all duration-300 focus:outline-none text-foreground placeholder:text-muted-foreground

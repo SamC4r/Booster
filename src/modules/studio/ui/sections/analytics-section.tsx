@@ -24,7 +24,6 @@ import {
     Users,
     Star,
     Zap,
-    Calendar,
     BarChart3,
     Activity
 } from "lucide-react";
@@ -42,7 +41,7 @@ export const AnalyticsSection = () => {
                         Channel Analytics
                     </h2>
                     <p className="text-sm text-muted-foreground mt-1">
-                        Track your channel's performance and growth metrics
+                        Track your channel&apos;s performance and growth metrics
                     </p>
                 </div>
             </div>

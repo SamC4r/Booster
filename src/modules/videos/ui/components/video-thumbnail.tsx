@@ -9,7 +9,7 @@ interface VideoThumbnailProps {
     duration: number;
 }
 
-export const VideoThumbnail = ({imageUrl,title,previewUrl, duration}: VideoThumbnailProps) => {
+export const VideoThumbnail = ({imageUrl,previewUrl, duration}: VideoThumbnailProps) => {
     return (
         <div className="relative group">
             {/* thumbnail wrapper */}

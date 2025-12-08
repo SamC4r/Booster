@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "@clerk/nextjs";
 
 interface MessageViewProps {
     userId: string;
@@ -17,7 +16,6 @@ interface MessageViewProps {
 
 export const MessageView = ({ userId }: MessageViewProps) => {
     const [messageContent, setMessageContent] = useState("");
-    const { userId: clerkUserId } = useAuth();
     const scrollRef = useRef<HTMLDivElement>(null);
     const utils = trpc.useUtils();
 

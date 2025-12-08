@@ -1,7 +1,4 @@
 import type { MetadataRoute } from 'next'
-import { db } from '@/db'
-import { videos } from '@/db/schema'
-import { desc, eq, and } from 'drizzle-orm'
 
 const SITE_URL =  'https://www.boostervideos.net'
 

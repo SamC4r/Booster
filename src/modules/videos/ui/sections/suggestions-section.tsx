@@ -1,12 +1,10 @@
 'use client'
 import { InfiniteScroll } from "@/components/infinite-scroll";
 import { DEFAULT_LIMIT } from "@/constants";
-import { videos } from "@/db/schema";
 import { compactNumber } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import { motion } from "framer-motion";
-import { Eye, Star, Sparkles, RocketIcon, Trophy } from "lucide-react";
-import Image from "next/image";
+import { Eye, Star, RocketIcon, Trophy } from "lucide-react";
 import { useMemo } from "react";
 import { THUMBNAIL_FALLBACK } from "../../constants";
 import { VideoThumbnail } from "../components/video-thumbnail";

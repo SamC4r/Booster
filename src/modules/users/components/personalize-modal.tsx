@@ -7,17 +7,12 @@ import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@clerk/nextjs";
 import { 
     User, 
-    Rocket, 
     Gamepad, 
     Palette, 
     Code, 
-    Music, 
     Camera, 
     Star, 
     Heart, 
-    Globe, 
-    Gem, 
-    Crown,
     Sun,
     Moon,
     Check,
@@ -166,7 +161,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
     // Mutation to equip/unequip assets
     const equipAssetMutation = trpc.users.equipAsset.useMutation({
-        onSuccess: async (data) => {
+        onSuccess: async () => {
             toast.success('Icon updated successfully!');
             // Invalidate all queries to refresh the equipped asset display everywhere instantly
             if (currentUser?.id) {
@@ -457,7 +452,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     )}
                                                 </div>
                                                 <p className="text-xs text-muted-foreground mb-3">
-                                                    Select an icon to preview. Changes apply when you click "Save Changes".
+                                                    Select an icon to preview. Changes apply when you click &quot;Save Changes&quot;.
                                                 </p>
                                                 <div className="grid grid-cols-6 gap-2">
                                                     {loadingAssets ? (
