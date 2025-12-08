@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-    <!-- Background circle -->
-    <circle cx="64" cy="64" r="64" fill="#A9A9A9"/>
-    
-    <!-- Person silhouette -->
-    <path fill="#FFFFFF" d="M64 36c-7.2 0-13 5.8-13 13s5.8 13 13 13 13-5.8 13-13-5.8-13-13-13zm0 32c-8.7 0-26 4.3-26 13v7h52v-7c0-8.7-17.3-13-26-13z"/>
-</svg>
