@@ -14,6 +14,6 @@ export const VideoCreator = ({videoId}:Props) => {
     console.log(user)
 
     return (
-        <VideoOwner videoId={videoId} user={user} boostPoints={Number(boostPoints.boostPoints)}/>
+        <VideoOwner videoId={videoId} user={user} boostPoints={Number(boostPoints.boostPoints)} className="w-full" />
     )
 }

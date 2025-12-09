@@ -1,16 +1,15 @@
 import { trpc } from "@/trpc/client";
-import { AnimatedPlanetIcon } from "../animated-planet-icon";
 
-const assetIconSmall = new Map([
-    [0, <AnimatedPlanetIcon size={4} key={0}/>],
+const assetIconSmall = new Map<number, JSX.Element>([
+    // [0, <AnimatedPlanetIcon size={4} key={0}/>],
 ])
 
-const assetIconMedium = new Map([
-    [0, <AnimatedPlanetIcon size={6} key={0}/>],
+const assetIconMedium = new Map<number, JSX.Element>([
+    // [0, <AnimatedPlanetIcon size={6} key={0}/>],
 ])
 
-const assetIconBig = new Map([
-    [0, <AnimatedPlanetIcon size={10} key={0} />],
+const assetIconBig = new Map<number, JSX.Element>([
+    // [0, <AnimatedPlanetIcon size={10} key={0} />],
 ])
 
 

@@ -122,6 +122,43 @@ export const usersRouter = createTRPCRouter({
       return updatedUser;
     }),
 
+  // Equip a title (must be owned by user)
+  equipTitle: protectedProcedure
+    .input(z.object({ 
+      assetId: z.string().uuid().nullable() // null to unequip
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { assetId } = input;
+      const userId = ctx.user.id;
+
+      // If equipping a title, verify user owns it
+      if (assetId) {
+        const [ownership] = await db
+          .select()
+          .from(userAssets)
+          .where(and(
+            eq(userAssets.userId, userId),
+            eq(userAssets.assetId, assetId)
+          ));
+
+        if (!ownership) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You don't own this title"
+          });
+        }
+      }
+
+      // Update user's equipped title
+      const [updatedUser] = await db
+        .update(users)
+        .set({ equippedTitleId: assetId })
+        .where(eq(users.id, userId))
+        .returning();
+
+      return updatedUser;
+    }),
+
   // Get user's currently equipped asset
   getEquippedAsset: baseProcedure
     .input(z.object({ userId: z.string().uuid() }))
@@ -144,6 +181,32 @@ export const usersRouter = createTRPCRouter({
         .select()
         .from(assets)
         .where(eq(assets.assetId, user.equippedAssetId));
+
+      return asset || null;
+    }),
+
+  // Get user's currently equipped title
+  getEquippedTitle: baseProcedure
+    .input(z.object({ userId: z.string().uuid() }))
+    .query(async ({ input }) => {
+      const { userId } = input;
+
+      const [user] = await db
+        .select({
+          equippedTitleId: users.equippedTitleId
+        })
+        .from(users)
+        .where(eq(users.id, userId));
+
+      if (!user || !user.equippedTitleId) {
+        return null;
+      }
+
+      // Fetch the actual asset details
+      const [asset] = await db
+        .select()
+        .from(assets)
+        .where(eq(assets.assetId, user.equippedTitleId));
 
       return asset || null;
     }),

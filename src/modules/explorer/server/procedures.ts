@@ -6,6 +6,7 @@ import {
   videoRatings,
   videos,
   videoViews,
+  assets,
 } from "@/db/schema";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import {
@@ -155,6 +156,7 @@ export const explorerRouter = createTRPCRouter({
           ...getTableColumns(videos),
           user: {
             ...getTableColumns(users),
+            equippedTitle: assets.name,
             followsCount:
               sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(
                 Number
@@ -182,6 +184,7 @@ export const explorerRouter = createTRPCRouter({
         })
         .from(videos)
         .innerJoin(users, eq(videos.userId, users.id))
+        .leftJoin(assets, eq(users.equippedTitleId, assets.assetId))
         .leftJoin(viewerFollow, eq(viewerFollow.creatorId, users.id))
         .leftJoin(ratingStats, eq(ratingStats.videoId, videos.id))
         .leftJoin(videoViewsStats, eq(videoViewsStats.videoId, videos.id))
@@ -306,6 +309,7 @@ export const explorerRouter = createTRPCRouter({
           ...getTableColumns(videos),
           user: {
             ...getTableColumns(users),
+            equippedTitle: assets.name,
             followsCount:
               sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(
                 Number
@@ -342,6 +346,7 @@ export const explorerRouter = createTRPCRouter({
         })
         .from(videos)
         .innerJoin(users, eq(videos.userId, users.id))
+        .leftJoin(assets, eq(users.equippedTitleId, assets.assetId))
         .leftJoin(viewerFollow, eq(viewerFollow.creatorId, users.id))
         .leftJoin(ratingStats, eq(ratingStats.videoId, videos.id))
         .leftJoin(videoViewsStats, eq(videoViewsStats.videoId, videos.id))

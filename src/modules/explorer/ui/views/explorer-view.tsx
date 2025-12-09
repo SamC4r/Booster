@@ -5,8 +5,8 @@ import { Play, Eye, ArrowRight, StarIcon, Calendar1, RocketIcon, Trophy } from "
 import { useState, useMemo, Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { trpc } from "@/trpc/client";
-import { DEFAULT_LIMIT } from "@/constants";
-import { compactDate } from "@/lib/utils";
+import { DEFAULT_LIMIT, getTitleGradient } from "@/constants";
+import { compactDate, cn } from "@/lib/utils";
 import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 import { UserAvatar } from "@/components/user-avatar";
 import { InfiniteScroll } from "@/components/infinite-scroll";
@@ -230,7 +230,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                                     <motion.div
                                         className="w-3 h-10 bg-gradient-to-b from-primary to-secondary rounded-full shadow-lg"
                                     />
-                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Earn XP with Advertisement</h2>
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Earn free XP</h2>
                                 </div>
                             </div>
                         </div>
@@ -451,19 +451,18 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                                                     badgeSize={5}
                                                 />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                                                    <p className="font-medium text-gray-900 dark:text-white text-sm line-clamp-1 break-all">
                                                         {video.user?.name?.replace(/\s*null\s*$/i, "") || "Anonymous"}
                                                     </p>
                                                     {video.user?.name === "sammas24 null" ? (
                                                         <p className="flex items-center gap-2 text-orange-500 text-xs">
                                                             Founder & Developer <RocketIcon className="size-3" />
                                                         </p>
-                                                    ) : (
-                                                        <p className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-xs">
-                                                            Top Content Creator <Trophy className="size-3" />
-
+                                                    ) : video.user?.equippedTitle ? (
+                                                        <p className={cn("flex items-center gap-2 font-bold bg-clip-text text-transparent bg-gradient-to-r text-xs", getTitleGradient(video.user.equippedTitle))}>
+                                                            {video.user.equippedTitle}
                                                         </p>
-                                                    )}
+                                                    ) : null}
                                                 </div>
                                             </div>
 

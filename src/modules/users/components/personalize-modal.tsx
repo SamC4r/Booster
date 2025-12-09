@@ -25,30 +25,25 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/client";
-import { AnimatedPlanetIcon } from "@/modules/market/components/assetIcons/animated-planet-icon";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 
 // Default icons available to everyone (free)
 const DEFAULT_ICONS = [
     { iconNumber: -99, icon: X as LucideIcon, name: "remove", displayName: "Remove Icon", isLucideIcon: true as const, isRemoveOption: true },
-    { iconNumber: -1, icon: User as LucideIcon, name: "user", displayName: "User", isLucideIcon: true as const },
-    { iconNumber: -2, icon: Star as LucideIcon, name: "star", displayName: "Star", isLucideIcon: true as const },
-    { iconNumber: -3, icon: Heart as LucideIcon, name: "heart", displayName: "Heart", isLucideIcon: true as const },
 ];
 
-const ROLES = [
-    { id: 1, name: 'UX Designer', icon: Palette, color: 'bg-purple-500' },
-    { id: 2, name: 'Frontend Developer', icon: Code, color: 'bg-blue-500' },
-    { id: 3, name: 'Backend Developer', icon: Code, color: 'bg-green-500' },
-    { id: 4, name: 'Product Manager', icon: Star, color: 'bg-yellow-500' },
-    { id: 5, name: 'Content Creator', icon: Camera, color: 'bg-pink-500' },
-    { id: 6, name: 'Community Manager', icon: User, color: 'bg-indigo-500' },
-    { id: 7, name: 'Graphic Designer', icon: Palette, color: 'bg-red-500' },
-    { id: 8, name: 'Video Editor', icon: Camera, color: 'bg-teal-500' },
-    { id: 9, name: 'Game Developer', icon: Gamepad, color: 'bg-orange-500' },
-    { id: 10, name: 'Data Scientist', icon: Star, color: 'bg-cyan-500' }
+const TITLE_DEFINITIONS = [
+    { name: "CEO", gradient: "from-yellow-400 to-amber-600" },
+    { name: "BornToBoost", gradient: "from-blue-400 to-purple-600" },
+    { name: "President", gradient: "from-red-500 to-blue-600" },
+    { name: "Founder figure", gradient: "from-emerald-400 to-cyan-500" },
 ];
+
+const getTitleGradient = (titleName: string) => {
+    const def = TITLE_DEFINITIONS.find(t => t.name === titleName);
+    return def?.gradient || "from-gray-900 to-gray-600";
+};
 
 const ACCENT_COLORS = [
     { 
@@ -117,15 +112,16 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     const { userId: clerkUserId } = useAuth();
     const [activeTab, setActiveTab] = useState<'basic' | 'appearance'>('basic');
     const [previewIconIndex, setPreviewIconIndex] = useState<number | null>(null); // Preview state
-    const [selectedRoles, setSelectedRoles] = useState<number[]>([1, 2]);
-    const [showRoleModal, setShowRoleModal] = useState(false);
+    const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
+    const [showTitleModal, setShowTitleModal] = useState(false);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
-    const [roleSearch, setRoleSearch] = useState('');
     const { theme, setTheme } = useTheme();
     const [selectedAccent, setSelectedAccent] = useState(0);
 
     // Fetch user's owned assets from marketplace
     const { data: ownedAssets, isLoading: loadingAssets } = trpc.assets.getAssetsByUser.useQuery();
+    
+    const ownedTitles = ownedAssets?.filter(asset => asset.category === 'titles') || [];
     
     // Fetch current user information with actual Clerk ID
     const { data: currentUser } = trpc.users.getByClerkId.useQuery(
@@ -145,6 +141,19 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
         { enabled: !!currentUser?.id }
     );
 
+    // Fetch currently equipped title
+    const { data: equippedTitle } = trpc.users.getEquippedTitle.useQuery(
+        { userId: currentUser?.id || '' },
+        { enabled: !!currentUser?.id }
+    );
+
+    // Initialize selectedTitle with equippedTitle when loaded
+    React.useEffect(() => {
+        if (equippedTitle) {
+            setSelectedTitle(equippedTitle.name);
+        }
+    }, [equippedTitle]);
+
     // Calculate channel level and XP
     const channelLevel = currentUser && boostPoints 
         ? Math.floor(Math.floor(Math.sqrt(boostPoints.boostPoints * 1000)) / 1000)
@@ -162,14 +171,10 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     // Mutation to equip/unequip assets
     const equipAssetMutation = trpc.users.equipAsset.useMutation({
         onSuccess: async () => {
-            toast.success('Icon updated successfully!');
             // Invalidate all queries to refresh the equipped asset display everywhere instantly
             if (currentUser?.id) {
-                // Invalidate the equipped asset query for instant update
                 utils.users.getEquippedAsset.invalidate({ userId: currentUser.id });
-                // Also invalidate user data to refresh all components using user info
                 utils.users.getByUserId.invalidate({ userId: currentUser.id });
-                // Invalidate all instances of getEquippedAsset to update everywhere
                 utils.users.getEquippedAsset.invalidate();
             }
         },
@@ -178,27 +183,61 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
         }
     });
 
+    const equipTitleMutation = trpc.users.equipTitle.useMutation({
+        onSuccess: async () => {
+            if (currentUser?.id) {
+                utils.users.getEquippedTitle.invalidate({ userId: currentUser.id });
+                utils.users.getByUserId.invalidate({ userId: currentUser.id });
+            }
+        },
+        onError: (error) => {
+            toast.error(error.message || 'Failed to update title');
+        }
+    });
+
     // Map iconNumber to component (extensible for future icons)
     const getIconComponent = (iconNumber: number) => {
-        const iconMap = new Map([
-            [0, AnimatedPlanetIcon], // Founder Member Icon
+        const iconMap = new Map<number, React.ComponentType<any>>([
+            // [0, AnimatedPlanetIcon], // Founder Member Icon - Removed
             // Add more icons here as marketplace grows
         ]);
         return iconMap.get(iconNumber);
     };
 
-    // Combine default icons with purchased assets
+    // Process purchased icons to ensure uniqueness by iconNumber
+    // If multiple assets share the same iconNumber, prefer the one that is currently equipped
+    const purchasedIcons = ownedAssets?.filter(asset => asset.category === 'icons').map(asset => ({
+        iconNumber: asset.iconNumber,
+        icon: getIconComponent(asset.iconNumber),
+        name: asset.name.toLowerCase().replace(/\s+/g, '-'),
+        displayName: asset.name,
+        isPurchased: true,
+        isLucideIcon: false,
+        assetId: asset.assetId
+    })) || [];
+
+    // Deduplicate icons, preferring the equipped one
+    const uniquePurchasedIcons = purchasedIcons.reduce((acc, current) => {
+        const existingIndex = acc.findIndex(item => item.iconNumber === current.iconNumber);
+        
+        if (existingIndex === -1) {
+            // New icon number, add it
+            acc.push(current);
+        } else {
+            // Duplicate icon number found
+            // If the current one is equipped, replace the existing one
+            if (equippedAsset && current.assetId === equippedAsset.assetId) {
+                acc[existingIndex] = current;
+            }
+            // Otherwise keep the existing one (which might be equipped or just the first one found)
+        }
+        return acc;
+    }, [] as typeof purchasedIcons);
+
+    // Combine default icons with unique purchased assets
     const availableIcons = [
         ...DEFAULT_ICONS,
-        ...(ownedAssets?.map(asset => ({
-            iconNumber: asset.iconNumber,
-            icon: getIconComponent(asset.iconNumber),
-            name: asset.name.toLowerCase().replace(/\s+/g, '-'),
-            displayName: asset.name,
-            isPurchased: true,
-            isLucideIcon: false,
-            assetId: asset.assetId
-        })) || [])
+        ...uniquePurchasedIcons
     ];
 
     // Find the index of currently equipped asset
@@ -237,6 +276,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
         
+        let changesSaved = false;
+
         // Only save if there's a change to the icon
         if (previewIconIndex !== null) {
             const iconData = availableIcons[previewIconIndex];
@@ -252,9 +293,26 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                 // Unequip (default icons mean no asset equipped)
                 equipAssetMutation.mutate({ assetId: null });
             }
+            changesSaved = true;
+        }
+
+        // Save title if changed
+        if (selectedTitle !== (equippedTitle?.name || null)) {
+             if (selectedTitle) {
+                 const titleAsset = ownedTitles.find(t => t.name === selectedTitle);
+                 if (titleAsset) {
+                     equipTitleMutation.mutate({ assetId: titleAsset.assetId });
+                 }
+             } else {
+                 equipTitleMutation.mutate({ assetId: null });
+             }
+             changesSaved = true;
         }
         
-        toast.success('Profile updated successfully!');
+        if (changesSaved) {
+            toast.success('Profile updated successfully!');
+        }
+        
         setPreviewIconIndex(null); // Reset preview
         onClose();
     };
@@ -262,25 +320,11 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     const handleCancel = () => {
         if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
             setPreviewIconIndex(null); // Reset preview
-            setSelectedRoles([1, 2]);
+            setSelectedTitle(null);
             toast.info('Changes discarded');
             onClose();
         }
     };
-
-    const toggleRole = (roleId: number) => {
-        setSelectedRoles(prev => 
-            prev.includes(roleId) 
-                ? prev.filter(id => id !== roleId)
-                : [...prev, roleId]
-        );
-    };
-
-    const filteredRoles = ROLES.filter(role => 
-        role.name.toLowerCase().includes(roleSearch.toLowerCase())
-    );
-
-    const primaryRole = ROLES.find(role => role.id === selectedRoles[0]);
 
     if (!isOpen) return null;
 
@@ -330,7 +374,16 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                             </button>
                                         </div>
                                         <h2 className="text-2xl font-bold">{currentUser?.name || 'Loading...'}</h2>
-                                        <p className="text-muted-foreground">{primaryRole?.name || 'No role selected'}</p>
+                                        <p className="text-muted-foreground">
+                                            {selectedTitle ? (
+                                                <span className={cn(
+                                                    "font-bold bg-clip-text text-transparent bg-gradient-to-r",
+                                                    getTitleGradient(selectedTitle)
+                                                )}>
+                                                    {selectedTitle}
+                                                </span>
+                                            ) : 'No title selected'}
+                                        </p>
                                         
                                         {/* Icon Preview - Same as channel page */}
                                         <div className="mt-1 flex justify-center">
@@ -356,24 +409,22 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                         </div>
                                     </div>
 
-                                    {/* Selected Roles */}
+                                    {/* Selected Title */}
                                     <div className="mt-6">
-                                        <h3 className="font-medium mb-3">Selected Roles</h3>
+                                        <h3 className="font-medium mb-3">Selected Title</h3>
                                         <div className="flex flex-wrap gap-2">
-                                            {selectedRoles.map(roleId => {
-                                                const role = ROLES.find(r => r.id === roleId);
-                                                if (!role) return null;
-                                                const RoleIcon = role.icon;
-                                                return (
-                                                    <div 
-                                                        key={roleId}
-                                                        className={cn("inline-flex items-center px-3 py-1 rounded-full text-sm text-white", role.color)}
-                                                    >
-                                                        <RoleIcon className="w-3 h-3 mr-1" />
-                                                        <span>{role.name}</span>
-                                                    </div>
-                                                );
-                                            })}
+                                            {selectedTitle ? (
+                                                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-muted">
+                                                    <span className={cn(
+                                                        "font-bold bg-clip-text text-transparent bg-gradient-to-r",
+                                                        getTitleGradient(selectedTitle)
+                                                    )}>
+                                                        {selectedTitle}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-sm text-muted-foreground">No title selected</span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -428,17 +479,21 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                             </div>
 
                                             <div>
-                                                <label className="block text-sm font-bold mb-2">Display Role</label>
+                                                <label className="block text-sm font-bold mb-2">Select Title</label>
                                                 <Button 
                                                     type="button" 
                                                     variant="outline" 
-                                                    onClick={() => setShowRoleModal(true)} 
+                                                    onClick={() => setShowTitleModal(true)} 
                                                     className="w-full justify-start border-2 border-gray-300 dark:border-gray-600 hover:border-[#212121] dark:hover:border-[#212121]"
                                                 >
-                                                    {selectedRoles.length > 0 
-                                                        ? selectedRoles.map(id => ROLES.find(r => r.id === id)?.name).join(', ')
-                                                        : 'Select roles...'
-                                                    }
+                                                    {selectedTitle ? (
+                                                        <span className={cn(
+                                                            "font-bold bg-clip-text text-transparent bg-gradient-to-r",
+                                                            getTitleGradient(selectedTitle)
+                                                        )}>
+                                                            {selectedTitle}
+                                                        </span>
+                                                    ) : 'Select title...'}
                                                 </Button>
                                             </div>
 
@@ -496,10 +551,9 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                                 {/* Render appropriate icon component */}
                                                                 {(() => {
                                                                     if (isPurchased && iconData.icon) {
-                                                                        if (iconData.iconNumber === 0) {
-                                                                            return <AnimatedPlanetIcon size={4} />;
-                                                                        }
-                                                                        return <span className="text-xs">?</span>;
+                                                                        // Handle custom purchased icons
+                                                                        const CustomIcon = iconData.icon;
+                                                                        return <CustomIcon size={4} />;
                                                                     }
                                                                     if (isLucideIcon && iconData.icon) {
                                                                         const IconComponent = iconData.icon as LucideIcon;
@@ -657,63 +711,63 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                 </div>
             </div>
 
-            {/* Role Selector Sub-Modal */}
-            {showRoleModal && (
+            {/* Title Selector Sub-Modal */}
+            {showTitleModal && (
                 <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60] p-4">
                     <div className="bg-card rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold">Select Roles</h3>
-                            <button onClick={() => setShowRoleModal(false)} className="hover:bg-muted rounded-lg p-2">
+                            <h3 className="text-xl font-bold">Select Title</h3>
+                            <button onClick={() => setShowTitleModal(false)} className="hover:bg-muted rounded-lg p-2">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
-                        <div className="relative mb-4">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input 
-                                value={roleSearch} 
-                                onChange={(e) => setRoleSearch(e.target.value)} 
-                                placeholder="Search roles..." 
-                                className="pl-10 border-2 border-gray-300 dark:border-gray-600 focus:border-[#212121] dark:focus:border-[#212121]"
-                            />
-                        </div>
-
                         <div className="flex-1 overflow-y-auto space-y-2 mb-4">
-                            {filteredRoles.map(role => {
-                                const RoleIcon = role.icon;
-                                const isSelected = selectedRoles.includes(role.id);
-                                return (
-                                    <button 
-                                        key={role.id} 
-                                        onClick={() => toggleRole(role.id)} 
-                                        className={cn(
-                                            "w-full flex items-center p-3 rounded-lg border-2 transition-all", 
-                                            isSelected ? "" : "border-transparent hover:bg-muted"
-                                        )}
-                                        style={isSelected ? { 
-                                            borderColor: currentAccent.bgSolid,
-                                            backgroundColor: `${currentAccent.bgSolid}15`
-                                        } : {}}
-                                    >
-                                        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center text-white mr-3", role.color)}>
-                                            <RoleIcon className="w-5 h-5" />
-                                        </div>
-                                        <span className="flex-1 text-left font-medium">{role.name}</span>
-                                        {isSelected && (
-                                            <Check 
-                                                className="w-5 h-5" 
-                                                style={{ color: currentAccent.bgSolid }}
-                                            />
-                                        )}
-                                    </button>
-                                );
-                            })}
+                            {ownedTitles.length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <p>You don't own any titles yet.</p>
+                                    <Link href="/market" onClick={() => setShowTitleModal(false)}>
+                                        <Button variant="link" className="mt-2">Visit Marketplace</Button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                ownedTitles.map(title => {
+                                    const isSelected = selectedTitle === title.name;
+                                    return (
+                                        <button 
+                                            key={title.assetId} 
+                                            onClick={() => setSelectedTitle(isSelected ? null : title.name)} 
+                                            className={cn(
+                                                "w-full flex items-center p-3 rounded-lg border-2 transition-all", 
+                                                isSelected ? "" : "border-transparent hover:bg-muted"
+                                            )}
+                                            style={isSelected ? { 
+                                                borderColor: currentAccent.bgSolid,
+                                                backgroundColor: `${currentAccent.bgSolid}15`
+                                            } : {}}
+                                        >
+                                            <span className={cn(
+                                                "flex-1 text-left font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r",
+                                                getTitleGradient(title.name)
+                                            )}>
+                                                {title.name}
+                                            </span>
+                                            {isSelected && (
+                                                <Check 
+                                                    className="w-5 h-5" 
+                                                    style={{ color: currentAccent.bgSolid }}
+                                                />
+                                            )}
+                                        </button>
+                                    );
+                                })
+                            )}
                         </div>
 
                         <div className="flex justify-end space-x-3">
-                            <Button variant="outline" onClick={() => setShowRoleModal(false)}>Cancel</Button>
+                            <Button variant="outline" onClick={() => setShowTitleModal(false)}>Cancel</Button>
                             <Button 
-                                onClick={() => { setShowRoleModal(false); toast.success('Roles updated!'); }} 
+                                onClick={() => { setShowTitleModal(false); toast.success('Title updated!'); }} 
                                 className="text-white"
                                 style={{ background: currentAccent.bgSolid }}
                             >

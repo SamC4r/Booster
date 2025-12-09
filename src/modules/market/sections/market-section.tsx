@@ -8,7 +8,6 @@ import { Coins, ShoppingCart, Search, Filter, Crown, Palette, Sparkles, Zap, Sta
 import { XpIndicator } from "@/modules/xp/ui/components/xp-indicator"
 import { trpc } from "@/trpc/client"
 import { useAuth } from "@clerk/nextjs"
-import { AnimatedPlanetIcon } from "../components/assetIcons/animated-planet-icon"
 import { ErrorBoundary } from "react-error-boundary"
 import { Spinner } from "@/components/ui/shadcn-io/spinner"
 
@@ -26,7 +25,7 @@ export const MarketSection = () => {
 
 export const MarketSectionSuspense = () => {
   const [activeAssets] = trpc.assets.getMany.useSuspenseQuery();
-  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [selectedCategory, setSelectedCategory] = useState("icons")
   const [searchQuery, setSearchQuery] = useState("")
   const [showXpPopup, setShowXpPopup] = useState(false)
   const [rewardedAdsEnabled, setRewardedAdsEnabled] = useState(false)
@@ -47,8 +46,20 @@ export const MarketSectionSuspense = () => {
 
   const userCoins = myXp?.xp || 0;
 
-  const assetIcon = new Map([
-    [0, <AnimatedPlanetIcon size={24} key={0} />],
+  const TITLE_DEFINITIONS = [
+    { name: "CEO", gradient: "from-yellow-400 to-amber-600" },
+    { name: "BornToBoost", gradient: "from-blue-400 to-purple-600" },
+    { name: "President", gradient: "from-red-500 to-blue-600" },
+    { name: "Founder figure", gradient: "from-emerald-400 to-cyan-500" },
+  ];
+
+  const getTitleGradient = (titleName: string) => {
+    const def = TITLE_DEFINITIONS.find(t => t.name === titleName);
+    return def?.gradient || "from-gray-900 to-gray-600";
+  };
+
+  const assetIcon = new Map<number, JSX.Element>([
+    // [0, <AnimatedPlanetIcon size={24} key={0} />],
   ])
 
   const filteredItems = activeAssets.filter(item => {
@@ -61,18 +72,14 @@ export const MarketSectionSuspense = () => {
   const dummyItems = [
     { assetId: "dummy-1", name: "Golden Crown", price: 850, category: "icons", iconNumber: 0, emoji: "👑" },
     { assetId: "dummy-2", name: "Fire Effect", price: 1200, category: "effects", iconNumber: 0, emoji: "🔥" },
-    { assetId: "dummy-3", name: "CEO", price: 5000, category: "titles", iconNumber: 0, emoji: "👔" },
     { assetId: "dummy-4", name: "Neon Glow", price: 950, category: "effects", iconNumber: 0, emoji: "✨" },
     { assetId: "dummy-5", name: "Diamond Frame", price: 1500, category: "frames", iconNumber: 0, emoji: "💎" },
     { assetId: "dummy-6", name: "Purple Theme", price: 2000, category: "themes", iconNumber: 0, emoji: "💜" },
     { assetId: "dummy-7", name: "Lightning Bolt", price: 750, category: "icons", iconNumber: 0, emoji: "⚡" },
     { assetId: "dummy-8", name: "Sunset Background", price: 1800, category: "backgrounds", iconNumber: 0, emoji: "🌅" },
-    { assetId: "dummy-9", name: "BornToBoost", price: 3000, category: "titles", iconNumber: 0, emoji: "🚀" },
     { assetId: "dummy-10", name: "Pink Color", price: 500, category: "colors", iconNumber: 0, emoji: "🩷" },
     { assetId: "dummy-11", name: "Rocket Icon", price: 900, category: "icons", iconNumber: 0, emoji: "🚀" },
     { assetId: "dummy-12", name: "Galaxy Theme", price: 2500, category: "themes", iconNumber: 0, emoji: "🌌" },
-    { assetId: "dummy-13", name: "President", price: 10000, category: "titles", iconNumber: 0, emoji: "🏛️" },
-    { assetId: "dummy-14", name: "Founder figure", price: 8000, category: "titles", iconNumber: 0, emoji: "💡" },
   ].filter(item => {
     const matchesCategory = selectedCategory === "all" || item.category === selectedCategory
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -118,7 +125,6 @@ export const MarketSectionSuspense = () => {
   ]
 
   const categories = [
-    { id: "all", name: "All Items", icon: <Sparkles className="h-4 w-4" /> },
     { id: "icons", name: "Icons", icon: <Star className="h-4 w-4" /> },
     { id: "titles", name: "Titles", icon: <Crown className="h-4 w-4" /> },
     { id: "backgrounds", name: "Backgrounds", icon: <Palette className="h-4 w-4" /> },
@@ -368,7 +374,7 @@ export const MarketSectionSuspense = () => {
           {allItems.map((item) => {
             const isOwned = owned(item.assetId);
             const isDummy = item.assetId.startsWith('dummy-');
-
+            const isTitle = item.category === "titles";
 
             return (
               <Card
@@ -378,8 +384,8 @@ export const MarketSectionSuspense = () => {
                 <CardContent className="p-0">
                   {/* Item Image */}
                   <div className="h-40 flex items-center justify-center bg-gradient-to-b from-muted/50 to-card relative">
-                    <span className="text-5xl">
-                      {isDummy ? (item as any).emoji : assetIcon.get(item.iconNumber)}
+                    <span className={isTitle ? `text-2xl font-bold text-center px-4 bg-gradient-to-r ${getTitleGradient(item.name)} bg-clip-text text-transparent` : "text-5xl"}>
+                      {isTitle ? item.name : (isDummy ? (item as any).emoji : assetIcon.get(item.iconNumber))}
                     </span>
 
                     {/* Owned Badge */}

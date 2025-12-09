@@ -8,6 +8,7 @@ import { UserInfo } from "@/modules/users/ui/components/user-info";
 import { UsersIcon, Edit3Icon, ZapIcon, RocketIcon, TrendingUpIcon } from "lucide-react";
 import { useState } from "react";
 import { useFollow } from "@/modules/follows/hooks/follow-hook";
+import { cn } from "@/lib/utils";
 import { XpCard } from "@/modules/home/ui/components/xp-card";
 import { AnimatePresence } from "framer-motion";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
@@ -34,7 +35,8 @@ type User = {
 interface Props {
     user: User,
     videoId: string;
-    boostPoints: number
+    boostPoints: number;
+    className?: string;
 }
 
 const f = (x: number) => {
@@ -42,7 +44,7 @@ const f = (x: number) => {
 };
 
 
-export const VideoOwner = ({ user, videoId, boostPoints }: Props) => {
+export const VideoOwner = ({ user, videoId, boostPoints, className }: Props) => {
     const { userId } = useAuth();
     const router = useRouter();
     const [showAddXpModal, setShowAddXpModal] = useState(false);
@@ -78,8 +80,8 @@ export const VideoOwner = ({ user, videoId, boostPoints }: Props) => {
 
 
     return (
-        <div className="flex items-center gap-2">
-            <div className="flex flex-col pt-2 pr-2 pl-2 bg-card rounded-xl sm:rounded-2xl border border-border shadow-sm w-[50%] max-w-full min-w-0">                {/* Add XP Modal */}
+        <div className={cn("flex items-center gap-2 w-full", className)}>
+            <div className="flex flex-col pt-2 pr-2 pl-2 bg-card rounded-xl sm:rounded-2xl border border-border shadow-sm w-auto">                {/* Add XP Modal */}
                 <AnimatePresence>
                     {showAddXpModal && (
                         <XpCard user={user} setShowAddXpModal={setShowAddXpModal} videoId={videoId} />
@@ -104,7 +106,10 @@ export const VideoOwner = ({ user, videoId, boostPoints }: Props) => {
                                 <div className="flex items-center gap-2">
                                     <UserInfo
                                         size="lg"
-                                        name={user.name?.replace(/\s*null\s*$/i, "")}
+                                        name={(() => {
+                                            const cleanName = user.name?.replace(/\s*null\s*$/i, "") || "";
+                                            return cleanName.length > 16 ? `${cleanName.substring(0, 16)}...` : cleanName;
+                                        })()}
                                         className="font-semibold text-foreground text-base sm:text-lg"
                                         userId={user.id}
                                     />

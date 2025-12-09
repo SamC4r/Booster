@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { UserAvatar } from "@/components/user-avatar";
 import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
-import { compactDate, compactNumber } from "@/lib/utils";
+import { compactDate, compactNumber, cn } from "@/lib/utils";
+import { getTitleGradient } from "@/constants";
 import {
   Check,
   EyeIcon,
@@ -57,6 +58,15 @@ export const UsersView = ({ userId }: Props) => {
 
   // Fetch equipped asset to trigger re-renders when it changes
   const { data: equippedAsset } = trpc.users.getEquippedAsset.useQuery(
+    { userId },
+    {
+      refetchOnMount: true,
+      staleTime: 0,
+    }
+  );
+
+  // Fetch equipped title
+  const { data: equippedTitle } = trpc.users.getEquippedTitle.useQuery(
     { userId },
     {
       refetchOnMount: true,
@@ -199,6 +209,14 @@ export const UsersView = ({ userId }: Props) => {
                     {user?.name || "Unknown User"}
                   </h1>
                 </div>
+                
+                {/* Title Display */}
+                {equippedTitle && (
+                    <div className={cn("mt-1 font-bold bg-clip-text text-transparent bg-gradient-to-r text-sm", getTitleGradient(equippedTitle.name))}>
+                        {equippedTitle.name}
+                    </div>
+                )}
+
                 {/* <PlanetIcon className="text-yellow-600 ml-2 shadow-red-100/50 bg-transparent size-8 flex-shrink-0" /> */}
                 <div className="mt-1" key={equippedAsset?.assetId || 'no-asset'}>
 

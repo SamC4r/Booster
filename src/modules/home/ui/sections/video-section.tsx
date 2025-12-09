@@ -350,7 +350,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
                                 {video.title}
                             </p>
                         </motion.div>
-                        <VideoOwner user={video.user} videoId={video.id} boostPoints={Number(boostPoints.boostPoints)} />
+                        <VideoOwner user={video.user} videoId={video.id} boostPoints={Number(boostPoints.boostPoints)} className="w-[30%]" />
                     </div>
 
                     <div className="flex items-start gap-5 mt-3 mr-5 flex-shrink-0">

@@ -1,7 +1,7 @@
 'use client'
 import { InfiniteScroll } from "@/components/infinite-scroll";
-import { DEFAULT_LIMIT } from "@/constants";
-import { compactNumber } from "@/lib/utils";
+import { DEFAULT_LIMIT, getTitleGradient } from "@/constants";
+import { compactNumber, cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import { motion } from "framer-motion";
 import { Eye, Star, RocketIcon, Trophy } from "lucide-react";
@@ -55,7 +55,7 @@ export const SuggestionsSection = ({ videoId }: SuggestionsSectionProps) => {
                             <Link href={`/videos/${video.id}`}>
                                 <div className="flex items-start rounded-2xl transition-all duration-300 hover:shadow-2xl overflow-hidden relative">
                                     {/* Left: fixed thumbnail */}
-                                    <div className="relative w-64 h-36">
+                                    <div className="relative w-44 h-24 flex-shrink-0">
                                         <VideoThumbnail
                                             previewUrl={video.previewUrl ?? video.thumbnailUrl ?? THUMBNAIL_FALLBACK}
                                             duration={video.duration}
@@ -64,30 +64,35 @@ export const SuggestionsSection = ({ videoId }: SuggestionsSectionProps) => {
                                     </div>
 
                                     {/* Right: content */}
-                                    <div className="p-3 flex-1 flex flex-col justify-between">
+                                    <div className="p-2 flex-1 flex flex-col justify-between min-w-0">
                                         <div>
-                                            <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                                            <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 mb-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                                                 {video.title}
                                             </h3>
 
-                                            <div className="flex items-center gap-2 mb-3">
+                                            <div className="flex items-center gap-2 mb-2">
                                                 <UserAvatar
-                                                    size="sm"
+                                                    size="xs"
                                                     imageUrl={video.user?.imageUrl || "/public-user.png"}
                                                     name={video.user?.name || "Anonymous"}
                                                     userId={video.user?.id}
-                                                    badgeSize={4}
+                                                    badgeSize={3}
                                                 />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                                                        {video.user?.name?.replace(/\s*null\s*$/i, "") || "Anonymous"}
+                                                    <p className="font-medium text-gray-900 dark:text-white text-xs leading-tight">
+                                                        {(() => {
+                                                            const name = video.user?.name?.replace(/\s*null\s*$/i, "") || "Anonymous";
+                                                            return name.length > 16 ? `${name.substring(0, 16)}...` : name;
+                                                        })()}
                                                     </p>
-                                                    <p className="text-gray-500 dark:text-gray-400 text-xs">
+                                                    <p className="text-gray-500 dark:text-gray-400 text-[10px]">
                                                         {video.user?.name === "sammas24 null" ? (
                                                             <span className="flex items-center gap-1 text-orange-500">Founder & Developer <RocketIcon className="size-3" /></span>
-                                                        ) : (
-                                                            <span className="flex items-center gap-1">Top Content Creator <Trophy className="size-3" /></span>
-                                                        )}
+                                                        ) : video.user?.equippedTitle ? (
+                                                            <span className={cn("flex items-center gap-1 font-bold bg-clip-text text-transparent bg-gradient-to-r", getTitleGradient(video.user.equippedTitle))}>
+                                                                {video.user.equippedTitle}
+                                                            </span>
+                                                        ) : null}
                                                     </p>
                                                 </div>
                                             </div>

@@ -8,6 +8,7 @@ import {
   videos,
   videoUpdateSchema,
   videoViews,
+  assets,
 } from "@/db/schema";
 import {
   createTRPCRouter,
@@ -96,6 +97,7 @@ export const videosRouter = createTRPCRouter({
           ...getTableColumns(videos), //instead of ...videos
           user: {
             ...getTableColumns(users),
+            equippedTitle: assets.name,
             followsCount:
               sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(
                 Number
@@ -119,6 +121,7 @@ export const videosRouter = createTRPCRouter({
         })
         .from(videos)
         .innerJoin(users, eq(videos.userId, users.id))
+        .leftJoin(assets, eq(users.equippedTitleId, assets.assetId))
         .leftJoin(viewerFollow, eq(viewerFollow.creatorId, users.id))
         .where(eq(videos.id, input.id));
       //inner join to get data of user
@@ -248,6 +251,7 @@ export const videosRouter = createTRPCRouter({
           ...getTableColumns(videos),
           user: {
             ...getTableColumns(users),
+            equippedTitle: assets.name,
             followsCount:
               sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(
                 Number
@@ -280,6 +284,7 @@ export const videosRouter = createTRPCRouter({
         })
         .from(videos)
         .innerJoin(users, eq(videos.userId, users.id))
+        .leftJoin(assets, eq(users.equippedTitleId, assets.assetId))
         .leftJoin(viewerFollow, eq(viewerFollow.creatorId, users.id))
         .leftJoin(ratingStats, eq(ratingStats.videoId, videos.id))
         .leftJoin(videoViewsStats, eq(videoViewsStats.videoId, videos.id))
