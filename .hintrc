@@ -16,5 +16,11 @@
       }
     ],
     "apple-touch-icons": "off"
-  }
+  },
+  "browserslist": [
+    "defaults",
+    "not ie 11",
+    "not firefox <= 144",
+    "not safari <= 26"
+  ]
 }

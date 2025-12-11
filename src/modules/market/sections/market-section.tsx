@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from "react"
+import React, { useState, useEffect, Suspense, JSX } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"

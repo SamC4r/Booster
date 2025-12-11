@@ -132,6 +132,7 @@ export const XpCard = ({ user,setShowAddXpModal,videoId }: Props) => {
                       setSelectedXp(xpOptions[parseInt(e.target.value)])
                     }
                     className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                    title="Select XP amount to boost"
                   />
                   <div className="absolute top-3 left-0 right-0 flex justify-between pointer-events-none">
                     {xpOptions.map((value, index) => (
