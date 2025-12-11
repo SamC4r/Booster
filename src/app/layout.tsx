@@ -28,6 +28,17 @@ export const metadata: Metadata = {
     },
     description: "Video platform oriented for creators and users",
     keywords: ['video', 'creators', 'video platform', 'shorts', 'longform', 'streaming', 'uploader', 'booster videos'],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
     alternates: {
         canonical: "/",
     },

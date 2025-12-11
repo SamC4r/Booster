@@ -9,6 +9,10 @@ const isProtectedRoute = createRouteMatcher([
 const isRootRoute = createRouteMatcher(["/"]);
 const isWelcomeRoute = createRouteMatcher(["/welcome"]);
 
+const isBot = (userAgent: string) => {
+    return /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|facebookexternalhit|twitterbot|linkedinbot|embedly|quora link preview|pinterest|pinterestbot/i.test(userAgent.toLowerCase());
+}
+
 export default clerkMiddleware(async (auth, req) => {
     const { userId } = await auth();
 
@@ -20,7 +24,10 @@ export default clerkMiddleware(async (auth, req) => {
     // If user is NOT logged in and on home page
     if (!userId && isRootRoute(req)) {
         const isGuest = req.cookies.get('booster-guest');
-        if (!isGuest) {
+        const userAgent = req.headers.get('user-agent') || '';
+        
+        // Allow bots to bypass the welcome redirect to index the home page
+        if (!isGuest && !isBot(userAgent)) {
             return NextResponse.redirect(new URL('/welcome', req.url));
         }
     }
@@ -31,7 +38,7 @@ export default clerkMiddleware(async (auth, req) => {
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest|xml)).*)',
     // Always run for API routes
     '/(api|trpc)(.*)',
 
