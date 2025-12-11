@@ -35,10 +35,8 @@ import {
   CopyCheckIcon,
   CopyIcon,
   Globe2Icon,
-  ImagePlusIcon,
   LockIcon,
   MoreVerticalIcon,
-  RotateCcwIcon,
   SparklesIcon,
   TrashIcon,
   Loader2,
@@ -56,8 +54,6 @@ import Link from "next/link";
 import { formatDuration, snakeCaseToTitle } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
-import { ThumbnailUploadModal } from "../components/thumbnail-upload-modal";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BunnyEmbed } from "@/modules/videos/ui/sections/BunnyEmbed";
@@ -183,7 +179,6 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
   const router = useRouter();
   const utils = trpc.useUtils();
 
-  const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false);
   const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
 
@@ -209,17 +204,6 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
     },
     onError: () => {
       toast.error("Something went wrong while deleting.");
-    },
-  });
-
-  const restoreThumbnail = trpc.videos.restoreThumbnail.useMutation({
-    onSuccess: () => {
-      utils.studio.getMany.invalidate();
-      utils.studio.getOne.invalidate({ id: videoId });
-      toast.success("Thumbnail restored to original");
-    },
-    onError: () => {
-      toast.error("Something went wrong while restoring thumbnail.");
     },
   });
 
@@ -249,11 +233,6 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
 
   return (
     <>
-      <ThumbnailUploadModal
-        open={thumbnailModalOpen}
-        onOpenChange={setThumbnailModalOpen}
-        videoId={videoId}
-      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
@@ -374,98 +353,6 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                 />
               </div>
 
-              {/* Thumbnail Field */}
-              <div className="bg-card p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-start justify-start gap-3">
-                <div className="">
-                  <FormLabel className="text-base font-medium text-gray-800 dark:text-white">
-                    Thumbnail
-                  </FormLabel>
-                  <div className="relative h-[180px] w-full max-w-[320px] group rounded-xl overflow-hidden border-2 border-dashed border-gray-200 hover:border-blue-400 transition-all duration-300">
-                    <Image
-                      src={video.thumbnailUrl ?? THUMBNAIL_FALLBACK}
-                      className="object-cover"
-                      fill
-                      alt="Video thumbnail"
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            type="button"
-                            className="bg-white text-gray-800 hover:bg-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-md rounded-full h-11 w-11 absolute top-3 right-3"
-                          >
-                            <MoreVerticalIcon className="h-5 w-5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="start"
-                          side="right"
-                          className="rounded-xl shadow-lg border border-gray-200 w-44 bg-card"
-                        >
-                          <DropdownMenuItem
-                            onClick={() => setThumbnailModalOpen(true)}
-                            className="cursor-pointer px-4 py-3 flex items-center rounded-lg dark:hover:bg-blue-900"
-                          >
-                            <ImagePlusIcon className="h-4 w-4 mr-2 " />
-                            Change
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="cursor-pointer px-4 py-3 flex items-center rounded-lg dark:hover:bg-blue-900">
-                            <SparklesIcon className="h-4 w-4 mr-2" />
-                            AI-generated
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              restoreThumbnail.mutate({ id: videoId })
-                            }
-                            className="cursor-pointer px-4 py-3 flex items-center rounded-lg dark:hover:bg-blue-900"
-                          >
-                            <RotateCcwIcon className="h-4 w-4 mr-2" />
-                            Restore
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
-                    Recommended: 1280×720 pixels (16:9 ratio)
-                  </p>
-                </div>
-
-                {/* AI Field */}
-                <div className="bg-card p-2 rounded-2xl border  shadow-sm">
-                  <FormField
-                    control={form.control}
-                    name="isAi"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel className="text-base font-medium text-gray-800 dark:text-white">
-                          AI Content
-                        </FormLabel>
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <FormControl>
-                            <Checkbox
-                              id="is_ai"
-                              checked={!!field.value}
-                              onCheckedChange={field.onChange}
-                              ref={field.ref}
-                            />
-                          </FormControl>
-                          <div>
-                            <label className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
-                              Made with AI
-                            </label>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              This video was mostly created using AI
-                            </p>
-                          </div>
-                        </div>
-                        <FormMessage className="text-red-500 text-sm" />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
               {/* Category Field */}
               <div className="bg-card p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                 <FormField
@@ -505,6 +392,177 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                     </FormItem>
                   )}
                 />
+              </div>
+
+              {/* Video Settings Section (Including AI) */}
+              <div className="bg-card p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-6">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  Video Settings - (Future Implementation)
+                </h3>
+
+                {/* AI Field */}
+                <div className="bg-card p-2 rounded-2xl border shadow-sm w-full">
+                  <FormField
+                    control={form.control}
+                    name="isAi"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel className="text-base font-medium text-gray-800 dark:text-white">
+                          AI Content
+                        </FormLabel>
+                        <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          <FormControl>
+                            <Checkbox
+                              id="is_ai"
+                              checked={!!field.value}
+                              onCheckedChange={field.onChange}
+                              ref={field.ref}
+                            />
+                          </FormControl>
+                          <div>
+                            <label className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
+                              Made with AI
+                            </label>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              This video was mostly created using AI
+                            </p>
+                          </div>
+                        </div>
+                        <FormMessage className="text-red-500 text-sm" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Tags */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-800 dark:text-white">
+                    Tags
+                  </label>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Tags can be useful if content in your video is commonly misspelled. Otherwise, tags play a minimal role in helping viewers find your video.
+                  </p>
+                  <Input
+                    placeholder="Add tags (comma separated)"
+                    className="h-12 rounded-xl border-gray-200"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Video Language */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-800 dark:text-white">
+                      Video Language
+                    </label>
+                    <Select defaultValue="en">
+                      <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                        <SelectValue placeholder="Select language" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-card">
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="es">Spanish</SelectItem>
+                        <SelectItem value="fr">French</SelectItem>
+                        <SelectItem value="de">German</SelectItem>
+                        <SelectItem value="pt">Portuguese</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Caption Certification */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-800 dark:text-white">
+                      Caption Certification
+                    </label>
+                    <Select defaultValue="none">
+                      <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                        <SelectValue placeholder="Select certification" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-card">
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="us_tv">This content has never aired on television in the U.S.</SelectItem>
+                        <SelectItem value="us_tv_no_captions">This content has only aired on television in the U.S. without captions</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Distribution */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-800 dark:text-white">
+                      Distribution
+                    </label>
+                    <Select defaultValue="everywhere">
+                      <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                        <SelectValue placeholder="Select distribution" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-card">
+                        <SelectItem value="everywhere">Everywhere</SelectItem>
+                        <SelectItem value="monetized">Make this video available only on monetized platforms</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Comments */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-800 dark:text-white">
+                      Comments
+                    </label>
+                    <Select defaultValue="on">
+                      <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                        <SelectValue placeholder="Select setting" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-card">
+                        <SelectItem value="on">On</SelectItem>
+                        <SelectItem value="off">Off</SelectItem>
+                        <SelectItem value="hold">Hold for review</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Sort by */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-800 dark:text-white">
+                      Sort by
+                    </label>
+                    <Select defaultValue="top">
+                      <SelectTrigger className="h-12 rounded-xl border-gray-200">
+                        <SelectValue placeholder="Select sort order" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border border-gray-200 shadow-lg bg-card">
+                        <SelectItem value="top">Top</SelectItem>
+                        <SelectItem value="newest">Newest</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Shorts Remixing */}
+                <div className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                  <Checkbox id="remixing" defaultChecked />
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="remixing"
+                      className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer"
+                    >
+                      Allow Shorts remixing
+                    </label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Let others create Shorts using content from this video
+                    </p>
+                  </div>
+                </div>
+
+                {/* Show how many viewers like this video */}
+                <div className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                  <Checkbox id="show_likes" defaultChecked />
+                  <div className="space-y-1">
+                    <label
+                      htmlFor="show_likes"
+                      className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer"
+                    >
+                      Show how many viewers like this video
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
 
