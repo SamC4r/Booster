@@ -41,6 +41,24 @@ export const xpRouter = createTRPCRouter({
             return xp ?? { xp: 0 };
         }),
 
+    getTopRanked: baseProcedure
+        .input(z.object({ limit: z.number().min(1).max(100).default(100) }))
+        .query(async ({ input }) => {
+            const { limit } = input;
+            const topUsers = await db
+                .select({
+                    id: users.id,
+                    name: users.name,
+                    imageUrl: users.imageUrl,
+                    boostPoints: users.boostPoints,
+                    clerkId: users.clerkId,
+                })
+                .from(users)
+                .orderBy(desc(users.boostPoints))
+                .limit(limit);
+            return topUsers;
+        }),
+
     buyById: protectedProcedure
         .input(
             z.object({

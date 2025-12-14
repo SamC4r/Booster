@@ -179,7 +179,15 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
   const router = useRouter();
   const utils = trpc.useUtils();
 
-  const [video] = trpc.studio.getOne.useSuspenseQuery({ id: videoId });
+  const [video] = trpc.studio.getOne.useSuspenseQuery(
+    { id: videoId },
+    {
+      refetchInterval: (query) => {
+        const status = query.state.data?.status;
+        return status === "processing" || status === "waiting" || !status ? 3000 : false;
+      },
+    }
+  );
   const [categories] = trpc.categories.getMany.useSuspenseQuery();
 
 

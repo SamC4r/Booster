@@ -33,12 +33,21 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
   });
   const xhrRef = useRef<XMLHttpRequest | null>(null);
 
+  const { data: video } = trpc.studio.getOne.useQuery(
+    { id: videoIdRef.current ?? "" },
+    { 
+      enabled: !!videoIdRef.current && state.progress === 100,
+      refetchInterval: (data) => {
+        return !data || (data.status !== 'completed' && data.status !== 'error') ? 1000 : false;
+      }
+    }
+  );
+
 
   const tusUploader = async (file: File) => {
     try {
 
       setState({ file, progress: 0, uploading: true });
-      console.log('starting')
       const createRes = await fetch("/api/bunny/create", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -82,7 +91,6 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
         },
         onProgress: (bytesUploaded, bytesTotal) => {
           const pct = Math.min(99, Math.round((bytesUploaded / bytesTotal) * 100));
-          console.log(pct)
           setState((s) => ({ ...s, progress: pct,}));
         },
         onSuccess: async () => {
@@ -172,7 +180,6 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
   };
 
   const onPick = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log('pick')
     const f = e.target.files?.[0]; if (f) void tusUploader(f);
   };
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -184,7 +191,37 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
 
   if (file) {
     return (
-      <div className="flex flex-col h-full w-full">
+      <div className="flex flex-col h-full w-full min-h-0">
+        {progress < 100 && (
+            <div className="flex flex-col items-center justify-center gap-2 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+                <div className="relative h-12 w-12 flex items-center justify-center bg-primary/5 rounded-full">
+                    <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+                    <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                    <Upload className="h-5 w-5 text-primary animate-bounce" />
+                </div>
+                <div className="text-center">
+                    <p className="text-sm font-medium truncate max-w-xs">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                        {progress}% Uploading...
+                    </p>
+                </div>
+            </div>
+        )}
+        {progress === 100 && (!video || (video.status !== 'completed' && video.status !== 'error')) && (
+            <div className="flex flex-col items-center justify-center gap-2 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+                <div className="relative h-12 w-12 flex items-center justify-center bg-primary/5 rounded-full">
+                    <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+                    <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                    <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                </div>
+                <div className="text-center">
+                    <p className="text-sm font-medium truncate max-w-xs">Processing video...</p>
+                    <p className="text-xs text-muted-foreground">
+                        This might take a moment
+                    </p>
+                </div>
+            </div>
+        )}
         <div className="flex-1 overflow-y-auto p-4">
           {children || (
             <div className="flex flex-col items-center justify-center h-full space-y-4">
@@ -192,18 +229,6 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
               <p className="text-muted-foreground">Preparing your video...</p>
             </div>
           )}
-        </div>
-        <div className="p-4 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky bottom-0 z-10">
-          <div className="flex justify-between text-xs mb-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium truncate max-w-[200px]">{file.name}</span>
-              <span className="text-muted-foreground">
-                {progress === 100 ? "Processing..." : "Uploading..."}
-              </span>
-            </div>
-            <span className="font-medium">{progress}%</span>
-          </div>
-          <Progress value={progress} className="h-2" />
         </div>
       </div>
     );

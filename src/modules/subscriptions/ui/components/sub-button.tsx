@@ -12,11 +12,13 @@ export const SubButton = ({
     onClick,
     isSubscribed,
     className,
-    size
+    size,
+    disabled
 }:Props) => {
     return (
         <Button
             size={size}
+            disabled={disabled}
             variant={isSubscribed ? "destructive" : "default"}
             className={cn(
                 `rounded-full`,

@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { trpc } from "@/trpc/client";
 import { DEFAULT_LIMIT } from "@/constants";
 import { useRouter } from "next/navigation";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 export const StudioUploader = () => {
     const [state, setState] = useState<{ file: File | null; progress: number; uploading: boolean }>({
@@ -94,6 +93,20 @@ export const StudioUploader = () => {
     return (
         <div className="flex items-center justify-center p-3 w-full max-w-lg h-full z-50">
             <form className="w-full" onSubmit={(e) => e.preventDefault()}>
+                {file && (
+                    <div className="flex flex-col items-center justify-center gap-2 mb-6">
+                        <div className="relative h-16 w-16 flex items-center justify-center bg-primary/5 rounded-full">
+                            <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+                            <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                            <Upload className="h-6 w-6 text-primary animate-bounce" />
+                        </div>
+                        <div className="text-center">
+                            <p className="text-sm font-medium truncate max-w-xs">{file.name}</p>
+                            <p className="text-xs text-muted-foreground">{progress}% Uploading...</p>
+                        </div>
+                    </div>
+                )}
+
                 <div
                     className="flex justify-center rounded-md border mt-2 border-dashed border-input px-6 py-12"
                     onDragOver={(e) => e.preventDefault()}
@@ -128,21 +141,6 @@ export const StudioUploader = () => {
                         By default, videos will be private <LockIcon className="size-4" />
                     </span>
                 </p>
-
-                {file && (
-                    <div className="mt-4">
-                        <div className="flex justify-between text-xs mb-1">
-                            <span className="truncate min-w-0">{file.name}</span>
-                            <span>{progress}%</span>
-                        </div>
-                        <div className="flex flex-col gap-2 text-center">
-
-                            {progress < 100 && (<Spinner variant="circle" />)}
-
-                            <span className="text-muted-foreground text-xs">You can close this and edit the data while the video is processing</span>
-                        </div>
-                    </div>
-                )}
             </form>
         </div>
     );

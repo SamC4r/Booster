@@ -15,6 +15,7 @@ import {
   StarIcon,
   Settings,
   MessageSquare,
+  Clapperboard,
 } from "lucide-react";
 import { XpCard } from "@/modules/home/ui/components/xp-card";
 import { VideoThumbnail } from "@/modules/videos/ui/components/video-thumbnail";
@@ -311,14 +312,22 @@ export const UsersView = ({ userId }: Props) => {
 
                 {isOwnProfile ? (
                   // Show "Personalize Channel" button for own profile
-                  <Button
-                    onClick={() => setShowPersonalizeModal(true)}
-                    // className="rounded-full p-4 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
-                    className="rounded-full shadow-sm hover:from-amber-400 hover:to-orange-400"
-                  >
-                    <Settings className="size-4 mr-2" />
-                    Personalize Channel
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setShowPersonalizeModal(true)}
+                      // className="rounded-full p-4 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
+                      className="rounded-full shadow-sm hover:from-amber-400 hover:to-orange-400"
+                    >
+                      <Settings className="size-4 mr-2" />
+                      Personalize Channel
+                    </Button>
+                    <Link href="/studio">
+                      <Button className="rounded-full shadow-sm border-gray-200 dark:border-gray-700" variant="outline">
+                        <Clapperboard className="size-4 mr-2" />
+                        Studio
+                      </Button>
+                    </Link>
+                  </div>
                 ) : (
                   // Show Follow button for other users
                   <>
