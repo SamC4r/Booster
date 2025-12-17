@@ -16,8 +16,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { NotificationProvider } from "@/contexts/notification-context";
 import UnreadTitleUpdater from '@/components/unread-title-updater'
 
-const montserrat = Montserrat({ 
-    subsets: ["latin"], 
+const montserrat = Montserrat({
+    subsets: ["latin"],
     display: "swap",
     weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
     style: ['normal', 'italic'],
@@ -58,13 +58,12 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-                site: "@BoosterVideos",
-                creator: "@BoosterVideos",
+        site: "@BoosterVideos",
+        creator: "@BoosterVideos",
     },
     icons: [
         { rel: "icon", url: "/favicon.ico" },
         { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
-        { rel: "manifest", url: "/site.webmanifest" },
     ],
 };
 
@@ -87,9 +86,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <html lang="en" suppressHydrationWarning className={montserrat.variable}>
                 <head>
                     <link rel="preconnect" href="https://vitals.vercel-analytics.com" crossOrigin="" />
-                                            <link rel="preload" as="image" href="/BoosterLongLogo.tmp.png" />
-                                                    <link rel="image_src" href={`${SITE_URL}/BoosterLongLogo.tmp.png`} />
-                        <link rel="manifest" href="/site.webmanifest" />
+                    <link rel="preload" as="image" href="/BoosterLongLogo.tmp.png" />
+                    <link rel="image_src" href={`${SITE_URL}/BoosterLongLogo.tmp.png`} />
+                    <link rel="manifest" href="/site.webmanifest" />
                     {/* JSON-LD structured data for Organization + WebSite */}
                     <script
                         type="application/ld+json"
