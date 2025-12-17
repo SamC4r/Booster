@@ -17,6 +17,13 @@ import { useAuth } from "@clerk/nextjs";
 
 import { UserIcon } from "@/modules/market/components/assetIcons/functions/get-user-icons";
 import { WelcomeBonusModal } from "@/modules/xp/ui/components/welcome-bonus-modal";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 interface HomeViewProps {
     categoryId?: string;
@@ -291,10 +298,17 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {/* Enhanced Video Card 1 - Real Featured Video */}
-                            {featuredVideos.map((featuredVideo) => (
-                                <Link key={featuredVideo.id} href={`/videos/${featuredVideo.id}`}>
+                        <Carousel
+                            opts={{
+                                align: "start",
+                            }}
+                            className="w-full"
+                        >
+                            <CarouselContent className="-ml-4">
+                                {/* Enhanced Video Card 1 - Real Featured Video */}
+                                {featuredVideos.map((featuredVideo) => (
+                                    <CarouselItem key={featuredVideo.id} className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                                        <Link href={`/videos/${featuredVideo.id}`}>
                                     <motion.div
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
@@ -375,10 +389,14 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                                                 </motion.div>
                                             </div>
                                         </div>
-                                    </motion.div>
-                                </Link>
-                            ))}
-                        </div>
+                                            </motion.div>
+                                        </Link>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                            <CarouselPrevious className="left-2" />
+                            <CarouselNext className="right-2" />
+                        </Carousel>
                 </motion.div>
             )}
 

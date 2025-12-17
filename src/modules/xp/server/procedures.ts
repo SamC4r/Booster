@@ -8,6 +8,27 @@ import z from "zod";
 
 export const xpRouter = createTRPCRouter({
 
+    getTopRanked: baseProcedure
+        .input(z.object({
+            limit: z.number().min(1).max(100).default(50),
+        }))
+        .query(async ({ input }) => {
+            const { limit } = input;
+
+            const topUsers = await db
+                .select({
+                    id: users.id,
+                    name: users.name,
+                    imageUrl: users.imageUrl,
+                    boostPoints: users.boostPoints,
+                })
+                .from(users)
+                .orderBy(desc(users.boostPoints))
+                .limit(limit);
+
+            return topUsers;
+        }),
+
     getBoostByVideoId: baseProcedure
         .input(z.object({ videoId: z.string().uuid() }))
         .query(async ({ input }) => {
