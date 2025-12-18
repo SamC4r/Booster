@@ -142,12 +142,17 @@ export const videoViewsRouter = createTRPCRouter({
                         .returning()
                     
                     // Update video view count and score
-                    await db.update(videos)
+                    const [updatedVideo] = await db.update(videos)
                         .set({ viewCount: sql`${videos.viewCount} + 1` })
-                        .where(eq(videos.id, videoId));
+                        .where(eq(videos.id, videoId))
+                        .returning({ isFeatured: videos.isFeatured });
+
                     await updateVideoScore(videoId);
 
-                    const result = await awardXpForView(userId);
+                    let result = { xpEarned: 0, message: undefined as string | undefined };
+                    if (updatedVideo?.isFeatured) {
+                        result = await awardXpForView(userId);
+                    }
 
                     return {
                         ...updatedVideoViews,
@@ -160,12 +165,17 @@ export const videoViewsRouter = createTRPCRouter({
         }
         
         // Update video view count and score
-        await db.update(videos)
+        const [updatedVideo] = await db.update(videos)
             .set({ viewCount: sql`${videos.viewCount} + 1` })
-            .where(eq(videos.id, videoId));
+            .where(eq(videos.id, videoId))
+            .returning({ isFeatured: videos.isFeatured });
+
         await updateVideoScore(videoId);
 
-        const result = await awardXpForView(userId);
+        let result = { xpEarned: 0, message: undefined as string | undefined };
+        if (updatedVideo?.isFeatured) {
+            result = await awardXpForView(userId);
+        }
 
       return {
         ...createdVideoView,
