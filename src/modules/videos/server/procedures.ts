@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { deleteBunnyVideo } from "@/lib/bunny";
 import { db } from "@/db";
 import {
   comments,
@@ -366,6 +367,14 @@ export const videosRouter = createTRPCRouter({
 
       if (!removedVideo) {
         throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      if (removedVideo.bunnyVideoId && removedVideo.bunnyLibraryId) {
+        try {
+          await deleteBunnyVideo(removedVideo.bunnyLibraryId, removedVideo.bunnyVideoId);
+        } catch (error) {
+          console.error("Failed to delete video from BunnyCDN:", error);
+        }
       }
 
       const upload_key = `videos/${removedVideo.id}_${removedVideo.userId}_${removedVideo.s3Name}`; // unique key

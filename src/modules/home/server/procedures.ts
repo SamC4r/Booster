@@ -42,6 +42,7 @@ export const homeRouter = createTRPCRouter({
                 .with(viewerFollow)
                 .select({
                     ...getTableColumns(videos), //instead of ...videos
+                    viewCount: sql<number>`(SELECT count(*) FROM ${videoViews} WHERE ${videoViews.videoId} = ${videos.id})`.mapWith(Number),
                     user: {
                         ...getTableColumns(users),
                         followsCount: sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(Number),

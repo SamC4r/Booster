@@ -28,3 +28,18 @@ export async function getBunnyVideo(libraryId: string, videoId: string) {
     thumbnailFileName?: string;
   }>;
 }
+
+export async function deleteBunnyVideo(libraryId: string, videoId: string) {
+  const r = await fetch(
+    `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        AccessKey: process.env.BUNNY_STREAM_API_KEY!,
+      },
+    }
+  );
+  if (!r.ok) throw new Error(`DeleteVideo failed: ${r.status} ${await r.text()}`);
+  return r.json();
+}

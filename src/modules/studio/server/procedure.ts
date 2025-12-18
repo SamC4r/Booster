@@ -16,7 +16,7 @@ export const studioRouter = createTRPCRouter({
             const [video] = await db
                 .select({
                     ...getTableColumns(videos),
-                    views: videos.viewCount,
+                    views: sql<number>`(SELECT count(*) FROM ${videoViews} WHERE ${videoViews.videoId} = ${videos.id})`.mapWith(Number),
                 })
                 .from(videos)
                 .where(eq(videos.id, input.id));
@@ -86,7 +86,7 @@ export const studioRouter = createTRPCRouter({
 
             const data = await db.select({
                 ...getTableColumns(videos),
-                videoViews: videos.viewCount,
+                videoViews: sql<number>`(SELECT count(*) FROM ${videoViews} WHERE ${videoViews.videoId} = ${videos.id})`.mapWith(Number),
                 videoRatings: videos.averageRating,
                 videoComments: videos.commentCount,
             }).from(videos)
