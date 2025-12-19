@@ -57,6 +57,7 @@ export function BunnyEmbed({
 
     params.set('loading', 'lazy');
     params.set('loop', 'false');
+    params.set('includeRum', 'false');
 
     const src = `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?${params}`;
 
