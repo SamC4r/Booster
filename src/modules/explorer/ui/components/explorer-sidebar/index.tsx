@@ -2,6 +2,7 @@ import { Sidebar, SidebarContent } from "@/components/ui/sidebar"
 import { MainSection } from "./main-section"
 import { Separator } from "@/components/ui/separator"
 import { RankingsSection } from "./rankings-section"
+import { FooterSection } from "./footer-section"
 // import { PersonalSection } from "./personal-section"
 
 
@@ -16,6 +17,7 @@ export const ExplorerSidebar = ({ collapsible, variant }: Props) => {
                 <MainSection />
                 <Separator />
                 <RankingsSection />
+                <FooterSection />
                 {/* <PersonalSection /> */}
             </SidebarContent>
         </Sidebar>

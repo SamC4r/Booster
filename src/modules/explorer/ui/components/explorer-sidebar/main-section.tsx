@@ -30,11 +30,6 @@ const items = [
         url: "/market",
         icon: ShoppingCart,
     },
-    {
-        title: "About",
-        url: "/about",
-        icon: ShieldQuestionIcon,
-    },
 ];
 
 export const MainSection = () => {
