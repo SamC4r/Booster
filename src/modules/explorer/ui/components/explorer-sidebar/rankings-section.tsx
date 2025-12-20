@@ -12,7 +12,7 @@ export const RankingsSection = () => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <SidebarGroup className="relative bg-background">
+        <SidebarGroup className="relative bg-background pt-0">
             <SidebarGroupContent className="relative z-10 bg-background">
                 <SidebarMenu>
                     <SidebarMenuItem className="relative">

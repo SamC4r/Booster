@@ -24,7 +24,7 @@ export const HomeView = () => {
                             <ul className="text-left text-sm text-gray-600 dark:text-gray-400 space-y-2 list-disc pl-6">
                                 <li>No videos are available yet</li>
                                 <li>All videos are still processing</li>
-                                <li>There&apos;s a database connection issue</li>
+                                <li>Database connection issue</li>
                             </ul>
                             <button 
                                 onClick={() => window.location.reload()} 

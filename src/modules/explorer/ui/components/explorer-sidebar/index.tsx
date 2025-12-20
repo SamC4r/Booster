@@ -16,9 +16,10 @@ export const ExplorerSidebar = ({ collapsible, variant }: Props) => {
         <Sidebar className="pt-16 z-40 overflow-hidden bg-background [&>div:last-child]:border-none [&_div[data-sidebar='sidebar']]:border-none border-none " collapsible={collapsible} variant={variant}>
             <SidebarContent className='bg-sidebar overflow-hidden -ml-2' >
                 <MainSection />
-                <Separator />
                 <RankingsSection />
+                <Separator />
                 <FollowingSection />
+                <Separator />
                 <PersonalSection />
                 <FooterSection />
             </SidebarContent>

@@ -71,7 +71,7 @@ export const FilterCarousel = ({
                                 variant={!value ? "default" : "secondary"}
                                 className={cn(
                                     "rounded-2xl px-3 py-1 cursor-pointer whitespace-nowrap text-sm",
-                                    !value ? "bg-[#333333] text-white hover:bg-[#333333]/90" : "bg-[#333333] text-white hover:bg-[#333333]/80"
+                                    !value ? "bg-gray-400 text-white hover:bg-[#333333]/90" : "bg-gray-300 text-black hover:bg-[#333333]/80"
                                 )}
                             >
                                 All
@@ -97,7 +97,7 @@ export const FilterCarousel = ({
                                     variant={value === item.value ? "default" : "secondary"}
                                     className={cn(
                                         "rounded-2xl px-3 py-1 cursor-pointer whitespace-nowrap text-sm",
-                                        active === item.value ? "bg-gradient-to-b from-primary to-secondary text-textprimary hover:bg-[#333333]/90 " : "bg-[#333333] text-white hover:bg-[#333333]/80"
+                                        active === item.value ? "bg-gradient-to-b from-primary to-secondary text-textprimary hover:bg-gray-600 " : "bg-gray-300 text-black hover:bg-gray-600"
                                     )}
                                 >
                                     {item.label}

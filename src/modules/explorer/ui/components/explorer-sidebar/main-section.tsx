@@ -81,7 +81,7 @@ export const MainSection = () => {
     }, [displayItems]);
 
     return (
-        <SidebarGroup className="relative bg-background">
+        <SidebarGroup className="relative bg-background pb-0">
             <SidebarGroupContent className="relative z-10 bg-background">
                 <SidebarMenu>
                     {displayItems.map((item) => {
