@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef } from "react";
+import { useUser, useAuth } from "@clerk/nextjs";
+import { createClient } from "@/lib/supabase/client";
 
 interface MessageViewProps {
     userId: string;
@@ -18,29 +20,158 @@ export const MessageView = ({ userId }: MessageViewProps) => {
     const [messageContent, setMessageContent] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
     const utils = trpc.useUtils();
+    const { user } = useUser();
+    const { getToken } = useAuth();
+    const supabase = createClient();
 
     // Get the other user's details
     const { data: otherUser } = trpc.users.getByUserId.useQuery({ userId });
     
     // Get messages
     const { data: messages, isLoading } = trpc.messages.getMessagesWithUser.useQuery(
-        { otherUserId: userId },
-        {
-            refetchInterval: 5000, // Refetch every 5 seconds for new messages
-        }
+        { otherUserId: userId }
     );
+
+    // Subscribe to real-time messages
+    useEffect(() => {
+        if (!user || !userId) return;
+
+        const setupRealtime = async () => {
+            // Try to get the Supabase token from Clerk if configured
+            // If not configured, this might return null, which is fine if RLS allows anon
+            try {
+                const token = await getToken({ template: 'supabase' });
+                if (token) {
+                    supabase.realtime.setAuth(token);
+                }
+            } catch (e) {
+                console.error("Failed to get Supabase token:", e);
+            }
+
+            // Use a unique channel ID for this conversation "Room"
+            const channelId = [user.id, userId].sort().join('-');
+
+            const handleNewMessage = (payload: any) => {
+                const msg = payload.new;
+                // Check if this message belongs to the current conversation
+                // We listen to all messages involving us, so we filter here
+                const isRelevant = 
+                    (msg.sender_id === userId && msg.receiver_id === user.id) || // Incoming from them
+                    (msg.sender_id === user.id && msg.receiver_id === userId);   // Outgoing to them (sync from other tabs)
+
+                if (isRelevant) {
+                    // Optimistically update the cache instead of invalidating
+                    utils.messages.getMessagesWithUser.setData(
+                        { otherUserId: userId },
+                        (oldData) => {
+                            // Avoid duplicates if we already added it via mutation
+                            if (oldData?.some(m => m.id === msg.id)) return oldData;
+                            
+                            if (!oldData) return [];
+                            const newMessage = {
+                                id: msg.id,
+                                content: msg.content,
+                                senderId: msg.sender_id,
+                                receiverId: msg.receiver_id,
+                                isRead: msg.is_read,
+                                createdAt: new Date(msg.created_at),
+                                senderName: msg.sender_id === userId ? (otherUser?.name || "") : (user.fullName || ""),
+                                senderImageUrl: msg.sender_id === userId ? (otherUser?.imageUrl || "") : (user.imageUrl || ""),
+                            };
+                            return [...oldData, newMessage];
+                        }
+                    );
+                    
+                    // Still invalidate others to keep them fresh eventually
+                    utils.messages.getConversations.invalidate();
+                    utils.messages.getUnreadCount.invalidate();
+                }
+            };
+
+            const channel = supabase
+                .channel(`chat:${channelId}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'messages',
+                        filter: `receiver_id=eq.${user.id}`, // Listen for incoming messages
+                    },
+                    handleNewMessage
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'messages',
+                        filter: `sender_id=eq.${user.id}`, // Listen for outgoing messages (sync)
+                    },
+                    handleNewMessage
+                )
+                .subscribe();
+
+            return () => {
+                supabase.removeChannel(channel);
+            };
+        };
+
+        const cleanupPromise = setupRealtime();
+
+        return () => {
+            cleanupPromise.then(cleanup => cleanup && cleanup());
+        };
+    }, [user, userId, utils, supabase, otherUser, getToken]);
 
     // Send message mutation
     const sendMessageMutation = trpc.messages.sendMessage.useMutation({
-        onSuccess: () => {
-            setMessageContent("");
-            utils.messages.getMessagesWithUser.invalidate();
-            utils.messages.getConversations.invalidate();
-            utils.messages.getUnreadCount.invalidate();
-            // Scroll to bottom after sending
+        onMutate: async (newMessage) => {
+            // Cancel outgoing refetches
+            await utils.messages.getMessagesWithUser.cancel({ otherUserId: userId });
+
+            // Snapshot previous value
+            const previousMessages = utils.messages.getMessagesWithUser.getData({ otherUserId: userId });
+
+            // Optimistically update to the new value
+            utils.messages.getMessagesWithUser.setData(
+                { otherUserId: userId },
+                (old) => {
+                    const optimisticMessage = {
+                        id: 'optimistic-' + Date.now(),
+                        content: newMessage.content,
+                        senderId: user?.id || '',
+                        receiverId: userId,
+                        isRead: false,
+                        createdAt: new Date(),
+                        senderName: user?.fullName || '',
+                        senderImageUrl: user?.imageUrl || '',
+                    };
+                    return old ? [...old, optimisticMessage] : [optimisticMessage];
+                }
+            );
+
+            setMessageContent(""); // Clear input immediately
+            
+            // Scroll to bottom immediately
             setTimeout(() => {
                 scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-            }, 100);
+            }, 10);
+
+            return { previousMessages };
+        },
+        onError: (err, newMessage, context) => {
+            // Rollback
+            utils.messages.getMessagesWithUser.setData(
+                { otherUserId: userId },
+                context?.previousMessages
+            );
+            setMessageContent(newMessage.content); // Restore input
+        },
+        onSettled: () => {
+            // Refetch to ensure sync
+            utils.messages.getMessagesWithUser.invalidate({ otherUserId: userId });
+            utils.messages.getConversations.invalidate();
         },
     });
 

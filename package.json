@@ -52,6 +52,8 @@
         "@radix-ui/react-toggle-group": "^1.1.11",
         "@radix-ui/react-tooltip": "^1.2.8",
         "@radix-ui/react-use-controllable-state": "^1.2.2",
+        "@supabase/ssr": "^0.8.0",
+        "@supabase/supabase-js": "^2.89.0",
         "@tanstack/react-query": "^5.86.0",
         "@trpc/client": "^11.5.0",
         "@trpc/react-query": "^11.5.0",

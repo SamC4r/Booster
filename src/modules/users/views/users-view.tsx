@@ -41,6 +41,7 @@ import { PersonalizeModal } from "../components/personalize-modal";
 import { useNotificationDropdown } from "@/contexts/notification-context";
 
 import { BusinessProfileSection } from "../components/business-profile-section";
+import { CommunityChat } from "@/modules/community/ui/components/community-chat";
 
 interface Props {
   userId: string;
@@ -429,7 +430,7 @@ export const UsersView = ({ userId }: Props) => {
 
         {/* Content Tabs */}
         <div className="flex flex-wrap gap-2 my-6 bg-muted/50 p-2 rounded-xl border border-border w-fit">
-          {["videos", "community", "rewards", "about"]
+          {["videos", "community", "rewards", "about", "chat"]
             .filter(tab => {
               if (user.accountType === 'business') {
                 return tab !== 'community' && tab !== 'rewards';
@@ -608,6 +609,15 @@ export const UsersView = ({ userId }: Props) => {
               </>
             )}
           </div>
+        )}
+
+        {activeTab === "chat" && (
+            <div className="mt-6">
+                <CommunityChat 
+                    channelId={userId} 
+                    isFollowing={followers[0]?.viewerIsFollowing || isOwnProfile} 
+                />
+            </div>
         )}
       </div>
 
