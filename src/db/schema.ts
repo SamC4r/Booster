@@ -38,6 +38,12 @@ export const users = pgTable("users", {
     businessImageUrls: text("business_image_urls").array(),
     dailyWatchCount: integer("daily_watch_count").default(0).notNull(),
     lastDailyXpReset: timestamp("last_daily_xp_reset").defaultNow().notNull(),
+
+    // YouTube Sync
+    youtubeAccessToken: text("youtube_access_token"),
+    youtubeRefreshToken: text("youtube_refresh_token"),
+    youtubeTokenExpiry: timestamp("youtube_token_expiry"),
+    youtubeChannelId: text("youtube_channel_id"),
 }, (t) => [uniqueIndex("clerk_id_idx").on(t.clerkId)]);
 
 //create index on clerk_id to query faster. --> speed up WHERE, JOIN, ORDER BY clauses. B-Tree sorted by the column I index
@@ -95,6 +101,8 @@ export const videos = pgTable("videos", {
     duration: integer("duration").default(0).notNull(),
     visibility: videoVisibility('visibility').default('private').notNull(),
     status: videoStatus().default('processing').notNull(),
+
+    youtubeVideoId: text("youtube_video_id").unique(),
 
     userId: uuid("user_id").references(() => users.id, {
         onDelete: 'cascade',

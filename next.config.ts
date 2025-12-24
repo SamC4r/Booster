@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
             { protocol: "https", hostname: "image.mux.com" },   // Mux poster/thumbnail
             { protocol: "https", hostname: "assets.mux.com" },  // Mux storyboards, etc.
             { protocol: "https", hostname: "utfs.io" },  // UploadThing
+            { protocol: "https", hostname: "i.ytimg.com" }, // YouTube Thumbnails
+            { protocol: "https", hostname: "yt3.ggpht.com" }, // YouTube Channel Avatars
             {
               protocol: "https",
               hostname: process.env.NEXT_PUBLIC_BUNNY_PULLZONE_HOST || "vz-cd04a7d4-494.b-cdn.net",

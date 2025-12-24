@@ -14,6 +14,7 @@
         "@aws-sdk/client-s3": "^3.901.0",
         "@aws-sdk/s3-request-presigner": "^3.901.0",
         "@clerk/nextjs": "6.10.3",
+        "@distube/ytdl-core": "^4.16.12",
         "@fortawesome/react-fontawesome": "^3.1.0",
         "@fullhuman/postcss-purgecss": "^7.0.2",
         "@hookform/resolvers": "^5.2.1",
@@ -80,6 +81,7 @@
         "form-data": "^4.0.4",
         "framer-motion": "^12.23.24",
         "get-video-duration": "^4.1.0",
+        "googleapis": "^169.0.0",
         "hls-video-element": "^1.5.7",
         "input-otp": "^1.4.2",
         "katex": "^0.16.27",
@@ -116,6 +118,7 @@
         "tus-js-client": "^4.3.1",
         "uploadthing": "^7.7.4",
         "vaul": "^1.1.2",
+        "yt-dlp-wrap": "^2.3.12",
         "zod": "^4.1.5"
     },
     "devDependencies": {

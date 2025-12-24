@@ -54,11 +54,19 @@ export const protectedProcedure = t.procedure.use(async function isAuthed(opts){
       const clerkUser = await currentUser();
       
       if (clerkUser && clerkUser.id === ctx.clerkUserId) {
-          const name = `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim();
+          let name = `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim();
+          if (!name) {
+              if (clerkUser.username && clerkUser.username.trim()) {
+                  name = clerkUser.username;
+              } else {
+                  name = `Anonymous ${Math.floor(Math.random() * 100000)}`;
+              }
+          }
+          name = name.substring(0, 50);
           
           const [newUser] = await db.insert(users).values({
               clerkId: clerkUser.id,
-              name: name || clerkUser.username || "User",
+              name: name,
               username: clerkUser.username,
               imageUrl: clerkUser.imageUrl,
           }).returning();

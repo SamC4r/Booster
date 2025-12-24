@@ -43,3 +43,38 @@ export async function deleteBunnyVideo(libraryId: string, videoId: string) {
   if (!r.ok) throw new Error(`DeleteVideo failed: ${r.status} ${await r.text()}`);
   return r.json();
 }
+
+export async function createBunnyVideo(libraryId: string, title: string) {
+  const r = await fetch(
+    `https://video.bunnycdn.com/library/${libraryId}/videos`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        AccessKey: process.env.BUNNY_STREAM_API_KEY!,
+      },
+      body: JSON.stringify({ title }),
+    }
+  );
+  if (!r.ok) throw new Error(`CreateVideo failed: ${r.status} ${await r.text()}`);
+  return r.json() as Promise<{ guid: string }>;
+}
+
+export async function uploadBunnyVideoStream(libraryId: string, videoId: string, stream: ReadableStream) {
+    const r = await fetch(
+        `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`,
+        {
+            method: "PUT",
+            headers: {
+                AccessKey: process.env.BUNNY_STREAM_API_KEY!,
+                "Content-Type": "application/octet-stream",
+            },
+            body: stream,
+            // @ts-ignore - duplex is needed for streaming in Node fetch
+            duplex: 'half' 
+        }
+    );
+    if (!r.ok) throw new Error(`UploadStream failed: ${r.status} ${await r.text()}`);
+    return r.json();
+}

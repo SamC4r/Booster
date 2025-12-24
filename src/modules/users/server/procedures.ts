@@ -257,7 +257,7 @@ export const usersRouter = createTRPCRouter({
 
     update: protectedProcedure
         .input(z.object({
-            name: z.string().optional(),
+            name: z.string().max(50).optional(),
             about: z.string().optional(),
             instagram: z.string().optional(),
             twitter: z.string().optional(),
@@ -270,10 +270,24 @@ export const usersRouter = createTRPCRouter({
             const { name, about, instagram, twitter, youtube, tiktok, discord, website } = input;
             const userId = ctx.user.id;
 
-            if (name || about !== undefined || instagram !== undefined || twitter !== undefined || youtube !== undefined || tiktok !== undefined || discord !== undefined || website !== undefined) {
+            if (name !== undefined || about !== undefined || instagram !== undefined || twitter !== undefined || youtube !== undefined || tiktok !== undefined || discord !== undefined || website !== undefined) {
+                
+                let nameToUpdate = name;
+                if (name !== undefined) {
+                    let trimmedName = name.trim();
+                    if (!trimmedName) {
+                        if (ctx.user.username && ctx.user.username.trim()) {
+                            trimmedName = ctx.user.username;
+                        } else {
+                            trimmedName = `Anonymous ${Math.floor(Math.random() * 100000)}`;
+                        }
+                    }
+                    nameToUpdate = trimmedName.substring(0, 50);
+                }
+
                 await db.update(users)
                     .set({ 
-                        ...(name && { name }),
+                        ...(nameToUpdate !== undefined && { name: nameToUpdate }),
                         ...(about !== undefined && { about }),
                         ...(instagram !== undefined && { instagram }),
                         ...(twitter !== undefined && { twitter }),

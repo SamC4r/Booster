@@ -297,7 +297,7 @@ export const MarketSectionSuspense = () => {
               <div className="p-6">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-green-400" />
-                  Buy XP Packages
+                  Buy XP (Future Implementation)
                 </h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   Get instant XP with these premium packages

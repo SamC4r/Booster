@@ -57,9 +57,15 @@ export async function POST(req: Request) {
     if (type === "user.created") {
         console.log("A new user was created with ID", data.id)
 
-        let lastName = data.last_name ?? ""
-        if(!lastName) lastName = "";
-        const name = `${data.first_name} ${lastName}`.trim()
+        let name = `${data.first_name || ""} ${data.last_name || ""}`.trim()
+        if (!name) {
+            if (data.username && data.username.trim()) {
+                name = data.username
+            } else {
+                name = `Anonymous ${Math.floor(Math.random() * 100000)}`
+            }
+        }
+        name = name.substring(0, 50);
 
         await db.insert(users).values({
             clerkId: data.id,
@@ -91,7 +97,15 @@ export async function POST(req: Request) {
         if (!data.id) {
             return new Response("No user ID provided", { status: 400 })
         }
-        const name = `${data.first_name || ""} ${data.last_name || ""}`.trim()
+        let name = `${data.first_name || ""} ${data.last_name || ""}`.trim()
+        if (!name) {
+            if (data.username && data.username.trim()) {
+                name = data.username
+            } else {
+                name = `Anonymous ${Math.floor(Math.random() * 100000)}`
+            }
+        }
+        name = name.substring(0, 50);
         await db.update(users).set({
             name: name,
             username: data.username,
