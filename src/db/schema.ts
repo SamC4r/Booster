@@ -175,6 +175,7 @@ export const videos = pgTable("videos", {
 
     isAi: boolean("is_ai").notNull().default(false),
     embedding: vector("embedding", { dimensions: 1536 } ), // OpenAI text-embedding-ada-002 dimension is 1536
+    tags: text("tags").array(),
 
     commentCount: integer("comment_count").default(0).notNull(),
     ratingCount: integer("rating_count").default(0).notNull(),

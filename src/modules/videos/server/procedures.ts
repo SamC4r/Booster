@@ -189,11 +189,17 @@ export const videosRouter = createTRPCRouter({
       }
 
       const [currentVideo] = await db
-        .select({ categoryId: videos.categoryId })
+        .select({ 
+          categoryId: videos.categoryId,
+          embedding: videos.embedding,
+          tags: videos.tags
+        })
         .from(videos)
         .where(eq(videos.id, videoId));
 
       const currentCategoryId = currentVideo?.categoryId;
+      const currentEmbedding = currentVideo?.embedding;
+      const currentTags = currentVideo?.tags;
 
       const viewerFollow = db.$with("viewer_follow").as(
         db
@@ -270,6 +276,8 @@ export const videosRouter = createTRPCRouter({
                             + (CASE WHEN ${viewerFollow.userId} IS NOT NULL THEN 50 ELSE 0 END)
                             + (20 * LN(COALESCE(${userCategoryAffinity.affinityScore}, 0) + 1))
                             + (CASE WHEN ${videos.categoryId} = ${currentCategoryId ?? null} THEN 50 ELSE 0 END)
+                            + (CASE WHEN ${currentEmbedding ? sql`(${videos.embedding} <=> ${JSON.stringify(currentEmbedding)}::vector)` : sql`1`} < 0.5 THEN 100 ELSE 0 END)
+                            + (CASE WHEN ${currentTags && currentTags.length > 0 ? sql`${videos.tags} && ${sql.raw(`'{${currentTags.join(',')}}'`)}` : sql`false`} THEN 50 ELSE 0 END)
                     `;
 
       const whereParts: any[] = [
@@ -504,6 +512,7 @@ export const videosRouter = createTRPCRouter({
           updatedAt: new Date(),
           isAi: input.isAi,
           embedding: embedding,
+          tags: input.tags,
         })
         .where(and(eq(videos.id, input.id), eq(videos.userId, userId)))
         .returning();

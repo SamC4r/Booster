@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/trpc/client";
-import { Suspense, useState } from "react";
+import { Suspense, useState, KeyboardEvent } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { z } from "zod";
@@ -43,11 +43,13 @@ import {
   Eye,
   Calendar,
   Clock,
+  XIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { videoUpdateSchema } from "@/db/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -220,6 +222,30 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
     defaultValues: video,
     resolver: zodResolver(videoUpdateSchema),
   });
+
+  const [tagInput, setTagInput] = useState("");
+
+  const handleAddTag = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const value = tagInput.trim();
+      if (value) {
+        const currentTags = form.getValues("tags") || [];
+        if (!currentTags.includes(value)) {
+          form.setValue("tags", [...currentTags, value]);
+        }
+        setTagInput("");
+      }
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = form.getValues("tags") || [];
+    form.setValue(
+      "tags",
+      currentTags.filter((tag) => tag !== tagToRemove)
+    );
+  };
 
   const onSubmit = async (data: z.infer<typeof videoUpdateSchema>) => {
     console.log("DATA", data);
@@ -492,9 +518,30 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Tags can be useful if content in your video is commonly misspelled. Otherwise, tags play a minimal role in helping viewers find your video.
                   </p>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {form.watch("tags")?.map((tag: string, index: number) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="flex items-center gap-1 px-3 py-1 text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-full transition-colors"
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTag(tag)}
+                          className="ml-1 hover:text-blue-900 focus:outline-none"
+                        >
+                          <XIcon className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
                   <Input
-                    placeholder="Add tags (comma separated)"
-                    className="h-12 rounded-xl border-gray-200"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleAddTag}
+                    placeholder="Add a tag and press Enter (e.g: tutorial, education,...)"
+                    className="h-12 rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-500/20 transition-all"
                   />
                 </div>
 
