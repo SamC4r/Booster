@@ -6,6 +6,7 @@ import { and, eq, inArray, desc, lt, count, getTableColumns } from "drizzle-orm"
 import { TRPCError } from "@trpc/server";
 import { createClient } from "@supabase/supabase-js";
 import { UTApi } from "uploadthing/server";
+import { COMMUNITY_CREATION_LIMIT } from "@/constants";
 
 const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY
     ? createClient(
@@ -195,6 +196,20 @@ export const communityRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       const userId = ctx.user.id;
+
+      // COMMUNITY CREATION LIMIT IS SET TO 4
+      // Check if user has reached the limit of 4 communities
+      const [userCommunities] = await db
+        .select({ count: count() })
+        .from(communityMembers)
+        .where(and(eq(communityMembers.userId, userId), eq(communityMembers.role, "admin")));
+
+      if (userCommunities && userCommunities.count >= COMMUNITY_CREATION_LIMIT) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You have reached the limit of 4 communities created.",
+        });
+      }
 
       // Create community
       const [community] = await db

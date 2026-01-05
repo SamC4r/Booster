@@ -311,82 +311,85 @@ export const xpRouter = createTRPCRouter({
             const userId = ctx.user.id;
             const { price, recipientId } = input;
 
-            const [recipient] = await db.select().from(users).where(eq(users.id, recipientId));
             
-            if (!recipient) {
-                throw new TRPCError({
-                    code: "NOT_FOUND",
-                    message: "Recipient not found.",
-                });
-            }
+            //ROW lock 
+            return await db.transaction(async (tx) => {
+                const [recipient] = await tx.select().from(users).where(eq(users.id, recipientId));
+                
+                if (!recipient) {
+                    throw new TRPCError({
+                        code: "NOT_FOUND",
+                        message: "Recipient not found.",
+                    });
+                }
 
-            if (recipient.accountType === 'business') {
-                throw new TRPCError({
-                    code: "FORBIDDEN",
-                    message: "Business accounts cannot be boosted.",
-                });
-            }
+                if (recipient.accountType === 'business') {
+                    throw new TRPCError({
+                        code: "FORBIDDEN",
+                        message: "Business accounts cannot be boosted.",
+                    });
+                }
 
-            // Atomic decrement with balance check in WHERE
-            const [updated] = await db
-                .update(users)
-                .set({
-                    xp: sql<number>`${users.xp} - ${price}`,
-                })
-                .where(and(eq(users.id, userId), gte(users.xp, price)))
-                .returning({
-                    // id: users.id,
-                    xp: users.xp,
-                });
+                // Atomic decrement with balance check in WHERE
+                const [updated] = await tx
+                    .update(users)
+                    .set({
+                        xp: sql<number>`${users.xp} - ${price}`,
+                    })
+                    .where(and(eq(users.id, userId), gte(users.xp, price)))
+                    .returning({
+                        // id: users.id,
+                        xp: users.xp,
+                    });
 
-            if (!updated) {
-                throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: "Insufficient XP or user not found.",
-                });
-            }
+                if (!updated) {
+                    throw new TRPCError({
+                        code: "BAD_REQUEST",
+                        message: "Insufficient XP or user not found.",
+                    });
+                }
 
-            const [updatedBoostedChannel] = await db
-                .update(users)
-                .set({
-                    id: users.id,
-                    boostPoints: sql<number> `${users.boostPoints} + ${price}`
-                })
-                .where(eq(users.id, recipientId))
-                .returning()
+                const [updatedBoostedChannel] = await tx
+                    .update(users)
+                    .set({
+                        boostPoints: sql<number> `${users.boostPoints} + ${price}`
+                    })
+                    .where(eq(users.id, recipientId))
+                    .returning()
 
-            if (!updatedBoostedChannel) {
-                throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: "Insufficient XP or user not found.",
-                });
-            }
+                if (!updatedBoostedChannel) {
+                    throw new TRPCError({
+                        code: "INTERNAL_SERVER_ERROR",
+                        message: "Failed to update recipient boost points.",
+                    });
+                }
 
 
-            //create transaction
-            await db
-                .insert(boostTransactions)
-                .values({
-                    boosterId: userId,
-                    creatorId: recipientId,
-                    xp: price,
-                })
-                .returning();
+                //create transaction
+                await tx
+                    .insert(boostTransactions)
+                    .values({
+                        boosterId: userId,
+                        creatorId: recipientId,
+                        xp: price,
+                    })
+                    .returning();
 
-            // Create boost notification (only if not boosting own channel)
-            if (userId !== recipientId) {
-                await db.insert(notifications).values({
-                    userId: recipientId, // Recipient of the boost (channel owner)
-                    type: 'boost',
-                    relatedUserId: userId, // Who boosted
-                    boostAmount: price, // Amount of XP boosted
-                });
-            }
+                // Create boost notification (only if not boosting own channel)
+                if (userId !== recipientId) {
+                    await tx.insert(notifications).values({
+                        userId: recipientId, // Recipient of the boost (channel owner)
+                        type: 'boost',
+                        relatedUserId: userId, // Who boosted
+                        boostAmount: price, // Amount of XP boosted
+                    });
+                }
 
-            //insert transaction in transactionsTable
-            //insert item in owns of user
+                //insert transaction in transactionsTable
+                //insert item in owns of user
 
-            return updatedBoostedChannel;
+                return updatedBoostedChannel;
+            });
         }),
 
     getBoostersByCreatorId: baseProcedure

@@ -1,3 +1,4 @@
+
 # High-Traffic Optimization Guide for Booster
 
 ## ✅ Already Implemented

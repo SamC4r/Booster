@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { deleteBunnyVideo } from "@/lib/bunny";
 import { db } from "@/db";
+import { uploadRateLimit } from "@/lib/ratelimit";
 import {
   comments,
   userFollows,
@@ -475,7 +476,10 @@ export const videosRouter = createTRPCRouter({
     }),
 
   update: protectedProcedure
-    .input(videoUpdateSchema)
+    .input(videoUpdateSchema.extend({
+      title: z.string().min(1).max(100).optional(),
+      description: z.string().max(5000).optional(),
+    }))
     .mutation(async ({ ctx, input }) => {
       const { id: userId } = ctx.user;
       if (!input.id) {
@@ -547,6 +551,11 @@ export const videosRouter = createTRPCRouter({
 
   //to get URL endpoint
   getDirectUpload: protectedProcedure.mutation(async ({ ctx }) => {
+    const { success } = await uploadRateLimit.limit(ctx.user.id);
+    if (!success) {
+      throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "You have reached your daily upload limit." });
+    }
+
     const directUpload = await mux.video.uploads.create({
       cors_origin: "*", //TODO: in production change to my url
       new_asset_settings: {

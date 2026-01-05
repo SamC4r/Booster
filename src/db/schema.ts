@@ -1,4 +1,4 @@
-import { pgTable, text, uuid, timestamp, uniqueIndex, integer, pgEnum, primaryKey, AnyPgColumn, boolean, index, vector, real } from "drizzle-orm/pg-core";
+import { pgTable, text, uuid, timestamp, uniqueIndex, integer, pgEnum, primaryKey, AnyPgColumn, boolean, index, vector, real, bigint } from "drizzle-orm/pg-core";
 
 import {
     createInsertSchema,
@@ -27,7 +27,7 @@ export const users = pgTable("users", {
     discord: text("discord"),
     website: text("website"),
     xp: integer("xp").default(0), // THis is the virtual currency to trade and boost a channel
-    boostPoints: integer("boost_points").default(0), // to measure the amount of boost given to the channel (amount of XP given to the channel). Can only be done with xp
+    boostPoints: bigint("boost_points", { mode: "number" }).default(0), // to measure the amount of boost given to the channel (amount of XP given to the channel). Can only be done with xp
     // level: integer("level").default(1),
     newLevelUpgrade: timestamp("new_level_at"),
     equippedAssetId: uuid("equipped_asset_id").references((): AnyPgColumn => assets.assetId), // The currently equipped/displayed asset icon

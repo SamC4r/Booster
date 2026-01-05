@@ -5,8 +5,9 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import { eq } from 'drizzle-orm';
 import { cache } from 'react';
 import superjson from 'superjson';
+import { headers } from 'next/headers';
 
-import { ratelimit } from '@/lib/ratelimit';
+import { ratelimit, publicRateLimit } from '@/lib/ratelimit';
 
 export const createTRPCContext = cache(async () => {
   /** NO DATABASE QUERIES HERE
@@ -14,8 +15,10 @@ export const createTRPCContext = cache(async () => {
    */
 
   const { userId } = await auth();
+  const heads = await headers();
+  const ip = heads.get("x-forwarded-for") ?? "127.0.0.1";
 
-  return { clerkUserId: userId };
+  return { clerkUserId: userId, ip };
 
   // return { userId: 'user_123' };
 });
@@ -36,7 +39,14 @@ const t = initTRPC.context<Context>().create({
 // Base router and procedure helpers
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
-export const baseProcedure = t.procedure;
+export const baseProcedure = t.procedure.use(async (opts) => {
+  const { ctx } = opts;
+  const { success } = await publicRateLimit.limit(ctx.ip);
+  if (!success) {
+    throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+  }
+  return opts.next();
+});
 
 
 export const protectedProcedure = t.procedure.use(async function isAuthed(opts){

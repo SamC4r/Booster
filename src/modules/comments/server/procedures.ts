@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { eq, getTableColumns, inArray, desc, sql, or, and, lt, isNull, asc, gt } from "drizzle-orm";
 import z from "zod";
 import { updateVideoScore } from "@/modules/videos/server/utils";
+import { commentRateLimit } from "@/lib/ratelimit";
 
 export const commentsRouter = createTRPCRouter({
   getTopLevel: baseProcedure
@@ -147,7 +148,7 @@ export const commentsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({
       videoId: z.string().uuid(),
-      comment: z.string()
+      comment: z.string().min(1).max(2000)
     }))
     .mutation(async ({ ctx, input }) => {
 
@@ -161,6 +162,11 @@ export const commentsRouter = createTRPCRouter({
         userId = user.id
       } else {
         throw new TRPCError({ code: "UNAUTHORIZED" })
+      }
+
+      const { success } = await commentRateLimit.limit(userId);
+      if (!success) {
+        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "You are commenting too fast." });
       }
 
       const { videoId, comment } = input;
@@ -202,7 +208,7 @@ export const commentsRouter = createTRPCRouter({
     .input(z.object({
       videoId: z.string().uuid(),
       parentId: z.string().uuid(),
-      comment: z.string()
+      comment: z.string().min(1).max(2000)
     }))
     .mutation(async ({ ctx, input }) => {
 
@@ -318,9 +324,11 @@ export const commentsRouter = createTRPCRouter({
       }
 
       // Decrement video comment count
+      // We need to subtract 1 (the comment itself) + the number of replies it had
+      const totalDeleted = 1 + deletedComment.replies;
       await db
         .update(videos)
-        .set({ commentCount: sql`${videos.commentCount} - 1` })
+        .set({ commentCount: sql`${videos.commentCount} - ${totalDeleted}` })
         .where(eq(videos.id, deletedComment.videoId));
 
       // Update video score
@@ -332,7 +340,7 @@ export const commentsRouter = createTRPCRouter({
   update: protectedProcedure
     .input(z.object({
       commentId: z.string().uuid(),
-      comment: z.string().min(1),
+      comment: z.string().min(1).max(2000),
     }))
     .mutation(async ({ ctx, input }) => {
       const { commentId, comment } = input;

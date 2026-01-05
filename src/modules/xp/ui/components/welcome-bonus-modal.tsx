@@ -22,7 +22,7 @@ export const WelcomeBonusModal = () => {
     const { mutate: claimBonus, isPending } = trpc.xp.claimWelcomeBonus.useMutation({
         onSuccess: (data) => {
             setIsOpen(false);
-            toast.success(`🎉 You claimed ${data.amount} XP!`);
+            toast.success(`You claimed ${data.amount} XP!`);
             utils.xp.getXpByUserId.invalidate();
             utils.xp.getWelcomeBonusStatus.invalidate();
             

@@ -3,6 +3,7 @@ export const DEFAULT_COMMUNITIES_LIMIT = 12;
 export const MAX_COMMENT_LENGTH=512;
 export const COMMENT_SECTION_SIZE=10;
 export const COMMENT_REPLIES_SIZE=5;
+export const COMMUNITY_CREATION_LIMIT=4;
 
 export const TITLE_DEFINITIONS = [
     { name: "CEO", gradient: "from-yellow-400 to-amber-600" },
