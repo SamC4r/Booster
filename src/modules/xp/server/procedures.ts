@@ -210,14 +210,28 @@ export const xpRouter = createTRPCRouter({
     buyById: protectedProcedure
         .input(
             z.object({
-                // price is an integer number of XP points
                 assetId: z.string().uuid(),
-                price: z.number().int().nonnegative(),
             })
         )
         .mutation(async ({ ctx, input }) => {
             const userId = ctx.user.id;
-            const { price, assetId } = input;
+            const { assetId } = input;
+
+            // 1. Fetch the asset to get its real price
+            const [asset] = await db
+                .select({ price: assets.price })
+                .from(assets)
+                .where(eq(assets.assetId, assetId))
+                .limit(1);
+
+            if (!asset) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Asset not found.",
+                });
+            }
+
+            const price = asset.price;
 
             // Atomic decrement with balance check in WHERE
             const [updated] = await db
