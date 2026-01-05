@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { boostTransactions, notifications, userAssets, users, videos, bonusClaims, userFollows } from "@/db/schema";
+import { boostTransactions, notifications, userAssets, users, videos, bonusClaims, userFollows, assets } from "@/db/schema";
 import { stripe } from "@/lib/stripe";
 import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
@@ -217,7 +217,7 @@ export const xpRouter = createTRPCRouter({
             const userId = ctx.user.id;
             const { assetId } = input;
 
-            // 1. Fetch the asset to get its real price
+            // Fetch the real price from the database
             const [asset] = await db
                 .select({ price: assets.price })
                 .from(assets)
@@ -227,7 +227,7 @@ export const xpRouter = createTRPCRouter({
             if (!asset) {
                 throw new TRPCError({
                     code: "NOT_FOUND",
-                    message: "Asset not found.",
+                    message: "Asset not found",
                 });
             }
 
