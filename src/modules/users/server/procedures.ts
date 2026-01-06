@@ -291,6 +291,20 @@ export const usersRouter = createTRPCRouter({
             const { accountType } = input;
             const userId = ctx.user.id;
 
+            // Verify user is a business account
+
+            const [user] = await db
+            .select({ accountType: users.accountType })
+            .from(users)
+            .where(eq(users.id, userId));
+
+            if(user.accountType !== null){
+                throw new TRPCError({
+                    code: "FORBIDDEN",
+                    message: "Account type has already been set and cannot be changed"
+                });
+            }
+
             await db.update(users)
                 .set({ accountType })
                 .where(eq(users.id, userId));

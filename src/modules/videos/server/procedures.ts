@@ -304,7 +304,7 @@ export const videosRouter = createTRPCRouter({
       const whereParts: any[] = [
         and(
           eq(videos.visibility, "public"),
-          not(eq(videos.status, "processing")),
+          eq(videos.status, "completed"),
           not(eq(videos.id, videoId))
         ),
       ];
@@ -478,7 +478,7 @@ export const videosRouter = createTRPCRouter({
   update: protectedProcedure
     .input(videoUpdateSchema.extend({
       title: z.string().min(1).max(200).optional(),
-      description: z.string().max(5000).optional(),
+      description: z.string().max(5000).optional().nullable(),
     }))
     .mutation(async ({ ctx, input }) => {
       const { id: userId } = ctx.user;
@@ -684,7 +684,7 @@ export const videosRouter = createTRPCRouter({
   createAfterUpload: protectedProcedure
     .input(
       z.object({
-        bunnyVideoId: z.string(), // Bunny GUID you just uploaded to
+        bunnyVideoId: z.string(), // Bunny GUID just uploaded to
         title: z.string().min(1),
         description: z.string().optional(),
         categoryId: z.string().uuid().optional(),
@@ -693,11 +693,10 @@ export const videosRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id: userId, accountType } = ctx.user;
       const [row] = await db
-        .insert(videos)
-        .values({
+        .update(videos)
+        .set({
           title: input.title,
           description: input.description,
-          userId,
           categoryId: input.categoryId,
           bunnyVideoId: input.bunnyVideoId,
           bunnyLibraryId: process.env.BUNNY_STREAM_LIBRARY_ID!,
@@ -705,7 +704,7 @@ export const videosRouter = createTRPCRouter({
           s3Name: "a",
           isAi: false,
           isFeatured: accountType === 'business',
-        })
+        }).where(and(eq(videos.bunnyVideoId, input.bunnyVideoId), eq(videos.userId, userId)))
         .returning();
       return row;
     }),
@@ -718,7 +717,7 @@ export const videosRouter = createTRPCRouter({
         thumbnailUrl: z.string(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx,input }) => {
       const { videoId, fileUrl, thumbnailUrl } = input;
 
       await db
@@ -727,7 +726,7 @@ export const videosRouter = createTRPCRouter({
           playbackUrl: fileUrl,
           thumbnailUrl,
         })
-        .where(eq(videos.id, videoId));
+        .where(and(eq(videos.id, videoId),eq(videos.userId, ctx.user.id)));
     }),
 
   getUserByVideoId: baseProcedure

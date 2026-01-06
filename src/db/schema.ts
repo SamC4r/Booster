@@ -114,6 +114,7 @@ export const videoVisibility = pgEnum("video_visibility", [
 ])
 
 export const videoStatus = pgEnum("video_status", [
+    'created',
     'error',
     'processing',
     'completed'

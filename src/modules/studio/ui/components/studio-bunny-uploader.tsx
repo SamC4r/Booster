@@ -1,9 +1,10 @@
 "use client";
 
 import { LockIcon, Upload, Loader2 } from "lucide-react";
-import { ChangeEvent, DragEvent, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, useRef, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
+
 import { trpc } from "@/trpc/client";
 import { DEFAULT_LIMIT } from "@/constants";
 import { useRouter } from "next/navigation";
@@ -31,49 +32,44 @@ const getVideoDuration = (file: File): Promise<number> => {
   });
 };
 
-export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: StudioBunnyUploaderProps) => {
-  const [state, setState] = useState<{ file: File | null; progress: number; uploading: boolean }>({
-    file: null, progress: 0, uploading: false
-  });
-  const utils = trpc.useUtils();
-  const router = useRouter();
-  const videoIdRef = useRef<string | null>(null);
+// --- Upload Service Singleton ---
+type UploadCallbacks = {
+  onProgress?: (progress: number) => void;
+  onError?: (error: string) => void;
+  onSuccess?: (videoId: string) => void;
+  onUploadStarted?: (videoId: string) => void;
+};
 
-  const createAfterUpload = trpc.videos.createAfterUpload.useMutation({
-    onSuccess: (data) => {
-      utils.studio.getMany.invalidate({ limit: DEFAULT_LIMIT })
-      videoIdRef.current = data.id;
-      onUploadStarted?.(data.id);
+class BunnyUploadService {
+  private static instance: BunnyUploadService;
+  private activeUpload: tus.Upload | null = null;
+  private videoIdRef: string | null = null;
+
+  static getInstance() {
+    if (!BunnyUploadService.instance) {
+      BunnyUploadService.instance = new BunnyUploadService();
     }
-  });
+    return BunnyUploadService.instance;
+  }
 
-  const { data: video } = trpc.studio.getOne.useQuery(
-    { id: videoIdRef.current ?? "" },
-    {
-      enabled: !!videoIdRef.current && state.progress === 100,
-      refetchInterval: (query) => {
-        const status = query.state.data?.bunnyStatus;
-        return !query.state.data || (status !== 'completed' && status !== 'error') ? 1000 : false;
-      }
-    }
-  );
-
-
-  const tusUploader = async (file: File) => {
+  async startUpload(file: File, callbacks: UploadCallbacks = {}) {
     try {
+      const MAX_SIZE_BYTES = 10 * 1024 * 1024 * 1024;  // 10 GB size limit
+      if (file.size > MAX_SIZE_BYTES) {
+        callbacks.onError?.("Video file is larger than 10 GB. Contact the admins to upload a bigger video file.");
+        return;
+      }
       const duration = await getVideoDuration(file);
       if (duration > 600) {
-        toast.error("Video is longer than 10 minutes");
+        callbacks.onError?.("Video is longer than 10 minutes");
         return;
       }
 
-      setState({ file, progress: 0, uploading: true });
       const createRes = await fetch("/api/bunny/create", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ title: file.name }),
       });
-
       if (!createRes.ok) {
         const errorData = await createRes.json();
         throw new Error(errorData.error || "Failed to create video");
@@ -85,13 +81,13 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ videoId: guid }),
       });
-
       if (!signRes.ok) throw new Error(await signRes.text());
       const { libraryId, videoId, expires, signature } = await signRes.json();
 
+      this.videoIdRef = videoId;
+      callbacks.onUploadStarted?.(videoId);
 
-      const upload = new tus.Upload(file, {
-        // Endpoint is the upload creation URL from your tus server
+      this.activeUpload = new tus.Upload(file, {
         endpoint: 'https://video.bunnycdn.com/tusupload',
         headers: {
           AuthorizationSignature: signature,
@@ -99,61 +95,105 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
           VideoId: videoId,
           LibraryId: libraryId,
         },
-
-        // Retry delays will enable tus-js-client to automatically retry on errors
         retryDelays: [0, 3000, 5000, 10000, 20000],
-        // Attach additional meta data about the file for the server
         metadata: {
           filename: file.name,
           filetype: file.type,
         },
-        // Callback for errors which cannot be fixed using retries
         onError: (err) => {
-          setState((s) => ({ ...s, uploading: false }));
-          toast.error(`Upload failed: ${err.message}`);
+          callbacks.onError?.(`Upload failed: ${err.message}`);
         },
         onProgress: (bytesUploaded, bytesTotal) => {
           const pct = Math.min(99, Math.round((bytesUploaded / bytesTotal) * 100));
-          setState((s) => ({ ...s, progress: pct,}));
+          callbacks.onProgress?.(pct);
         },
         onSuccess: async () => {
-          setState((s) => ({ ...s, progress: 100, uploading: false }));
-          toast.success("Uploaded! Processing started.");
-          if (onSuccess && videoIdRef.current) {
-            onSuccess(videoIdRef.current);
-          } else if (!onSuccess && videoIdRef.current) {
-            router.push(`/studio/videos/${videoIdRef.current}`)
-          }
+          callbacks.onProgress?.(100);
+          callbacks.onSuccess?.(videoId);
         },
-      })
-      upload.findPreviousUploads().then(async function (previousUploads) {
-        // Found previous uploads so we select the first one. 
+      });
+      this.activeUpload.findPreviousUploads().then(async (previousUploads) => {
         if (previousUploads.length) {
-          upload.resumeFromPreviousUpload(previousUploads[0])
+          this.activeUpload?.resumeFromPreviousUpload(previousUploads[0]);
         }
-
-        // Start the upload
-        upload.start()
-
-        await createAfterUpload.mutateAsync({
-          bunnyVideoId: videoId,
-          title: file.name,
-        });
-      })
-    } catch {
-      toast.error("Upload failed")
+        this.activeUpload?.start();
+      });
+    } catch (err: any) {
+      callbacks.onError?.("Upload failed");
     }
   }
 
+  getVideoId() {
+    return this.videoIdRef;
+  }
+}
+
+
+export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: StudioBunnyUploaderProps) => {
+  const [file, setFile] = useState<File | null>(null);
+  const [progress, setProgress] = useState<number>(0);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [videoId, setVideoId] = useState<string | null>(null);
+  const utils = trpc.useUtils();
+  const router = useRouter();
+
+  // trpc mutation for after upload
+  const createAfterUpload = trpc.videos.createAfterUpload.useMutation({
+    onSuccess: (data) => {
+      utils.studio.getMany.invalidate({ limit: DEFAULT_LIMIT });
+      setVideoId(data.id);
+      onUploadStarted?.(data.id);
+    }
+  });
+
+  // Query for video status
+  const { data: video } = trpc.studio.getOne.useQuery(
+    { id: videoId ?? "" },
+    {
+      enabled: !!videoId && progress === 100,
+      refetchInterval: (query) => {
+        const status = query.state.data?.bunnyStatus;
+        return !query.state.data || (status !== 'completed' && status !== 'error') ? 1000 : false;
+      }
+    }
+  );
+
+  // Start upload using singleton service
+  const startUpload = (f: File) => {
+    setFile(f);
+    setProgress(0);
+    setUploading(true);
+    setError(null);
+    BunnyUploadService.getInstance().startUpload(f, {
+      onProgress: (pct) => setProgress(pct),
+      onError: (msg) => { setError(msg); setUploading(false); toast.error(msg); },
+      onSuccess: (vid) => {
+        setProgress(100);
+        setUploading(false);
+        toast.success("Uploaded! Processing started.");
+        setVideoId(vid);
+        if (onSuccess) onSuccess(vid);
+        else router.push(`/studio/videos/${vid}`);
+        // After upload, call mutation
+        createAfterUpload.mutateAsync({ bunnyVideoId: vid, title: f.name });
+      },
+      onUploadStarted: (vid) => {
+        setVideoId(vid);
+        onUploadStarted?.(vid);
+      }
+    });
+  };
+
   const onPick = (e: ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0]; if (f) void tusUploader(f);
+    const f = e.target.files?.[0]; if (f) startUpload(f);
   };
   const onDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const f = e.dataTransfer.files?.[0]; if (f) void tusUploader(f);
+    const f = e.dataTransfer.files?.[0]; if (f) startUpload(f);
   };
 
-  const { file, progress } = state;
+  // If modal closes, upload continues in service
 
   if (file) {
     return (
@@ -248,7 +288,9 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
               <p className="pl-1">to upload</p>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              Video duration is limited to 10 minutes!
+              Video duration is limited to 10 minutes!<br />
+              Video file size is limited to 10 GB.<br />
+              Contact the admins to upload a bigger video file.
             </p>
             <p className="text-xs text-muted-foreground mt-1 text-center">
               Daily upload limit: 5 videos

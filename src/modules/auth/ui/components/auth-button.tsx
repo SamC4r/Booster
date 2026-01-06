@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { ClapperboardIcon, UserCircle2Icon } from "lucide-react"
+import { ClapperboardIcon, UserCircle2Icon, Sun, Moon } from "lucide-react"
 import { User as RetroUser } from "@react95/icons"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
@@ -9,7 +9,7 @@ import { useEffect, useState } from "react"
 import { UserButton,SignInButton, SignedIn, SignedOut } from "@clerk/nextjs"
 
 export const AuthButton = () => {
-    const { theme } = useTheme()
+    const { theme, setTheme } = useTheme()
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
@@ -28,6 +28,11 @@ export const AuthButton = () => {
                         labelIcon={<ClapperboardIcon className="size-4"/>}
                         />
                     <UserButton.Action label='manageAccount' />
+                    <UserButton.Action 
+                        label={theme === 'dark' ? "Light Mode" : "Dark Mode"}
+                        labelIcon={theme === 'dark' ? <Sun className="size-4"/> : <Moon className="size-4"/>}
+                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    />
                 </UserButton.MenuItems>
             </UserButton>
             {/* TODO: Menu items for studio and user profile */}

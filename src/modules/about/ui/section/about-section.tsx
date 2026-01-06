@@ -392,7 +392,7 @@ score(x) &= \ln\Bigg(
                 </motion.div>
                 <footer className="flex text-center gap-2 justify-center items-center mt-16 py-8 border-t border-gray-700">
                     <Copyright className='size-4' />
-                    <p className="text-gray-400"> 2025 Booster. Samuel Caraballo Chichiraldi & Maximo Caraballo Chichiraldi.</p>
+                    <p className="text-gray-400"> {new Date().getFullYear()} Booster. Samuel Caraballo Chichiraldi & Maximo Caraballo Chichiraldi.</p>
                 </footer>
             </div>
         </div >

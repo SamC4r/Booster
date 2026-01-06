@@ -61,7 +61,7 @@ export const studioRouter = createTRPCRouter({
                              duration: duration,
                              thumbnailUrl: thumbnailUrl,
                              thumbnailKey: thumbnailKey
-                         }).where(eq(videos.id, video.id));
+                         }).where(and(eq(videos.userId, userId),eq(videos.id, video.id)));
 
                          return {
                              ...video,

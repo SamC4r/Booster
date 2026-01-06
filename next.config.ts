@@ -13,7 +13,6 @@ const nextConfig: NextConfig = {
 
         // …or remotePatterns (more flexible/recommended):
         remotePatterns: [
-            { protocol: "https", hostname: "images.unsplash.com" },
             { protocol: "https", hostname: "img.clerk.com" },  // Clerk user profile images
             { protocol: "https", hostname: "image.mux.com" },   // Mux poster/thumbnail
             { protocol: "https", hostname: "assets.mux.com" },  // Mux storyboards, etc.

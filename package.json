@@ -1,7 +1,7 @@
 {
     "name": "new-tube",
     "version": "0.1.0",
-    "license": "MIT",
+    "license": "Business Source License 1.1",
     "private": true,
     "scripts": {
         "dev": "next dev",

@@ -20,6 +20,12 @@ export const publicRateLimit = new Ratelimit({
   prefix: "@upstash/ratelimit/public",
 });
 
+export const messageRateLimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.slidingWindow(10, "10s"),
+  prefix: "@upstash/ratelimit/message",
+});
+
 export const commentRateLimit = new Ratelimit({
   redis: redis,
   limiter: Ratelimit.slidingWindow(5, "1m"),

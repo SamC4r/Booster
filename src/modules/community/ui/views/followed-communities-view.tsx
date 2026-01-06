@@ -94,19 +94,15 @@ const FollowedCommunitiesSuspense = () => {
                         <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
                             <Users className="w-10 h-10 text-primary" />
                         </div>
-                        <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                            Discover Amazing Communities
-                        </h2>
+                        
                         <p className="text-muted-foreground mb-8 text-lg max-w-md mx-auto">
-                            Join communities to see their latest videos, connect with creators, and be part of something special.
+                            Join communities to see their latest videos
                         </p>
                         <Link 
-                            href="/communities"
+                            href="/c"
                             className="group inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold transition-all duration-300"
                         >
-                            <Sparkles className="w-4 h-4" />
                             Explore Communities
-                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </CardContent>
                 </Card>
@@ -169,7 +165,7 @@ const FollowedCommunitiesSuspense = () => {
                                     </div>
                                 </div>
                                 <Link 
-                                    href={`/communities/${community.communityId}`}
+                                    href={`/c/${community.communityId}`}
                                     className="group/link flex items-center gap-2 px-5 py-2.5 rounded-lg  text-secondary font-medium hover:bg-primary-gradient hover:text-primary-foreground transition-all duration-300"
                                 >
                                     View All

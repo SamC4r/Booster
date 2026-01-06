@@ -2,11 +2,13 @@ import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init
 import { db } from "@/db";
 import { userFollows, users, assets, communities, communityMembers, communityModerators, videos } from "@/db/schema";
 import { z } from "zod";
-import { and, eq, inArray, desc, lt, count, getTableColumns } from "drizzle-orm";
+import { and, eq, inArray, desc, lt, count, getTableColumns, not } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { createClient } from "@supabase/supabase-js";
 import { UTApi } from "uploadthing/server";
 import { COMMUNITY_CREATION_LIMIT } from "@/constants";
+
+import { messageRateLimit } from "@/lib/ratelimit";
 
 const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY
     ? createClient(
@@ -510,8 +512,8 @@ export const communityRouter = createTRPCRouter({
           and(
             eq(videos.communityId, communityId),
             cursor ? lt(videos.createdAt, new Date(cursor)) : undefined,
-            eq(videos.visibility, "public")
-          )
+            eq(videos.visibility, "public"),
+          eq(videos.status, "completed"),          )
         )
         .limit(limit + 1)
         .orderBy(desc(videos.createdAt));
@@ -705,6 +707,15 @@ export const communityRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { channelId, content } = input;
       const userId = ctx.user.id;
+
+      const { success } = await messageRateLimit.limit(userId);
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "You are sending messages too fast",
+        });
+      }
 
       if (!supabaseAdmin) {
         throw new TRPCError({

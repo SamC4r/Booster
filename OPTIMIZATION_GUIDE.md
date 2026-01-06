@@ -1,3 +1,12 @@
+# This is to test some improvements suggested by an AI tool
+
+This is to test some improvements suggested by an AI tool
+This is to test some improvements suggested by an AI tool
+This is to test some improvements suggested by an AI tool
+This is to test some improvements suggested by an AI tool
+This is to test some improvements suggested by an AI tool
+
+Save them here to read future possible improvements
 
 # High-Traffic Optimization Guide for Booster
 

@@ -77,20 +77,6 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     const utils = trpc.useUtils();
     const { theme } = useTheme();
 
-    // Add XP reward mutation for featured videos
-    // const { mutate: rewardXp } = trpc.xp.rewardXp.useMutation({
-    //     onSuccess: (data) => {
-    //         utils.xp.getXpByUserId.invalidate({ userId });
-    //         // Show success message for XP reward
-    //         toast.success(`🎉 You earned ${data.xpAdded} XP for watching this featured video to the end!`);
-    //     },
-    //     onError: (error) => {
-    //         console.error("Failed to reward XP:", error);
-    //         toast.error("Failed to award XP. Please try again later.");
-    //         setHasRewarded(false); // Reset on error so user can try again
-    //         isRewardingRef.current = false; // Reset ref flag on error
-    //     }
-    // });
 
    
 
