@@ -513,8 +513,7 @@ export const communityRouter = createTRPCRouter({
             eq(videos.communityId, communityId),
             cursor ? lt(videos.createdAt, new Date(cursor)) : undefined,
             eq(videos.visibility, "public"),
-            not(eq(videos.status,"processing"))
-          )
+          eq(videos.status, "completed"),          )
         )
         .limit(limit + 1)
         .orderBy(desc(videos.createdAt));

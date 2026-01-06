@@ -119,7 +119,7 @@ export const explorerRouter = createTRPCRouter({
         .leftJoin(categories, eq(videos.categoryId, categories.id))
         .where(and(
           eq(videos.visibility, "public"),
-          not(eq(videos.status, "processing")),
+          eq(videos.status, "completed"),
           eq(videos.isFeatured, true),
           user?.aiContentEnabled === false ? eq(videos.isAi, false) : undefined
         ))
@@ -238,7 +238,7 @@ export const explorerRouter = createTRPCRouter({
       const whereParts: any[] = [
         and(
           eq(videos.visibility, "public"),
-          not(eq(videos.status, "processing")),
+          eq(videos.status, "completed"),
           user?.aiContentEnabled === false ? eq(videos.isAi, false) : undefined
         ),
       ];
@@ -417,7 +417,7 @@ export const explorerRouter = createTRPCRouter({
       const whereParts: any[] = [
         and(
           eq(videos.visibility, "public"),
-          not(eq(videos.status, "processing"))
+          eq(videos.status, "completed")
         ),
       ];
 
