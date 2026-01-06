@@ -2,8 +2,10 @@
 export const runtime = "nodejs";
 
 import { db } from "@/db";
-import { videos } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { users, videos } from "@/db/schema";
+import { auth } from "@clerk/nextjs/server";
+import { and, eq, inArray } from "drizzle-orm";
+import { NextResponse } from "next/server";
 import Sightengine from "sightengine";
 
 const statusMap = new Map<string, string>([
@@ -69,6 +71,15 @@ export async function POST(req: Request) {
     return new Response("Missing video/library id", { status: 400 });
   }
 
+
+  //TODO: verify bunny is sending this webhook
+
+  const video = await db.query.videos.findFirst({
+    where: and(eq(videos.bunnyVideoId, videoId)),
+  });
+
+  if (!video || video.status !== "created") return new Response("Forbidden", { status: 403 });
+
   // Only act when the video is processed/ready
 
   try {
@@ -94,10 +105,10 @@ export async function POST(req: Request) {
 
     const status = statusMap.get(rawStatus);
     console.log("THUMBNAIL URL", thumbnailUrl);
-    
+
     // Only mark as completed when fully finished (status 3)
     // Status 4 is "resolution_finished" (e.g. 360p ready), so we keep it as processing
-    const dbStatus = rawStatus === '3' ? 'completed' : 'processing';
+    const dbStatus = rawStatus === "3" ? "completed" : "processing";
 
     await db
       .update(videos)
@@ -118,11 +129,13 @@ export async function POST(req: Request) {
 
     //MODERATION CHECK
 
-    // if you haven't already, install the SDK with "npm install sightengine --save"
-    const videoUrl = `https://vz-cd04a7d4-494.b-cdn.net/${videoId}/play_360p.mp4`
-    const client = Sightengine(process.env.SIGHTENGINE_API_USER as string, process.env.SIGHTENGINE_API_SECRET as string);
+    const videoUrl = `https://${process.env.BUNNY_PULLZONE_HOST!}/${videoId}/play_360p.mp4`;
+    const client = Sightengine(
+      process.env.SIGHTENGINE_API_USER as string,
+      process.env.SIGHTENGINE_API_SECRET as string
+    );
     client
-      .check(["nudity-2.1", "violence","self-harm"])
+      .check(["nudity-2.1", "violence", "self-harm"])
       .video_sync(videoUrl)
       .then(function (result: string) {
         // The API response (result)

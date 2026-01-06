@@ -61,6 +61,12 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
 
   const tusUploader = async (file: File) => {
     try {
+     
+      const MAX_SIZE_BYTES = 10 * 1024 * 1024 * 1024;  // 10 GB size limit
+      if (file.size > MAX_SIZE_BYTES) {
+        toast.error("Video file is larger than 10 GB. Contact the admins to upload a bigger video file.");
+        return;
+      }
       const duration = await getVideoDuration(file);
       if (duration > 600) {
         toast.error("Video is longer than 10 minutes");
@@ -248,7 +254,9 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
               <p className="pl-1">to upload</p>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              Video duration is limited to 10 minutes!
+              Video duration is limited to 10 minutes!<br />
+              Video file size is limited to 10 GB.<br />
+              Contact the admins to upload a bigger video file.
             </p>
             <p className="text-xs text-muted-foreground mt-1 text-center">
               Daily upload limit: 5 videos

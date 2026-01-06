@@ -684,7 +684,7 @@ export const videosRouter = createTRPCRouter({
   createAfterUpload: protectedProcedure
     .input(
       z.object({
-        bunnyVideoId: z.string(), // Bunny GUID you just uploaded to
+        bunnyVideoId: z.string(), // Bunny GUID just uploaded to
         title: z.string().min(1),
         description: z.string().optional(),
         categoryId: z.string().uuid().optional(),
@@ -693,11 +693,10 @@ export const videosRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id: userId, accountType } = ctx.user;
       const [row] = await db
-        .insert(videos)
-        .values({
+        .update(videos)
+        .set({
           title: input.title,
           description: input.description,
-          userId,
           categoryId: input.categoryId,
           bunnyVideoId: input.bunnyVideoId,
           bunnyLibraryId: process.env.BUNNY_STREAM_LIBRARY_ID!,
@@ -705,7 +704,7 @@ export const videosRouter = createTRPCRouter({
           s3Name: "a",
           isAi: false,
           isFeatured: accountType === 'business',
-        })
+        }).where(and(eq(videos.bunnyVideoId, input.bunnyVideoId), eq(videos.userId, userId)))
         .returning();
       return row;
     }),

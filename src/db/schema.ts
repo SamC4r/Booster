@@ -26,7 +26,7 @@ export const users = pgTable("users", {
     tiktok: text("tiktok"),
     discord: text("discord"),
     website: text("website"),
-    xp: bigint("xp", {mode: "number"}).default(0), // THis is the virtual currency to trade and boost a channel
+    xp: integer("xp").default(0), // THis is the virtual currency to trade and boost a channel
     boostPoints: bigint("boost_points", { mode: "number" }).default(0), // to measure the amount of boost given to the channel (amount of XP given to the channel). Can only be done with xp
     // level: integer("level").default(1),
     newLevelUpgrade: timestamp("new_level_at"),
@@ -114,6 +114,7 @@ export const videoVisibility = pgEnum("video_visibility", [
 ])
 
 export const videoStatus = pgEnum("video_status", [
+    'created',
     'error',
     'processing',
     'completed'
