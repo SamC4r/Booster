@@ -16,6 +16,11 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { NotificationProvider } from "@/contexts/notification-context";
 import UnreadTitleUpdater from '@/components/unread-title-updater'
 
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+
+import { ourFileRouter } from "./api/uploadthing/core";
+import { extractRouterConfig } from "uploadthing/server";
+
 const montserrat = Montserrat({
     subsets: ["latin"],
     display: "swap",
@@ -103,7 +108,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                                         "@type": "SearchAction",
                                         "target": `${SITE_URL}/search?q={search_term_string}`,
                                         "query-input": "required name=search_term_string"
-                            }                              },
+                                    }
+                                },
                                 {
                                     "@context": "https://schema.org",
                                     "@type": "Organization",
@@ -125,7 +131,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                             <NotificationProvider>
                                 <UnreadTitleUpdater />
                                 <OnboardingCheck accountType={accountType} userId={userId} />
-                                {children}
+                                <NextSSRPlugin
+                                    routerConfig={extractRouterConfig(ourFileRouter)}
+                                />                                {children}
                                 <Toaster richColors closeButton />
                                 <Analytics />
                             </NotificationProvider>

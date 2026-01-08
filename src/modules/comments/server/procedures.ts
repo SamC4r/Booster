@@ -290,7 +290,7 @@ export const commentsRouter = createTRPCRouter({
       const [user] = await db
         .select()
         .from(users)
-        .where(eq(users.clerkId, ctx.clerkUserId));
+        .where(inArray(users.clerkId, ctx.clerkUserId ? [ctx.clerkUserId]: []));
 
       if (!user) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -348,7 +348,7 @@ export const commentsRouter = createTRPCRouter({
       const [user] = await db
         .select()
         .from(users)
-        .where(eq(users.clerkId, ctx.clerkUserId));
+        .where(inArray(users.clerkId, ctx.clerkUserId ? [ctx.clerkUserId]: []));
 
       if (!user) {
         throw new TRPCError({ code: "UNAUTHORIZED" });

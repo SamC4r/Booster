@@ -1,11 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    transpilePackages: ["@uploadthing/react", "uploadthing"],
     typescript: {
         ignoreBuildErrors: true,
-    },
-    eslint: {
-        ignoreDuringBuilds: true,
     },
     images: {
         // Either use domains:
@@ -34,9 +32,6 @@ const nextConfig: NextConfig = {
 
             // {protocol: "https", hostname: ""}
             // { protocol: "https", hostname: "" },  // TODO: upload thing
-        ],
-        domains: [
-            process.env.BUNNY_PULLZONE_HOST || "vz-cd04a7d4-494.b-cdn.net",
         ],
         formats: ["image/avif", "image/webp"],
     },
