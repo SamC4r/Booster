@@ -112,14 +112,6 @@ export const searchRouter = createTRPCRouter({
                 )
                 .limit(limit);
 
-            console.log('🔍 Channel Search Results:', data.length, 'channels found');
-            if (data.length > 0) {
-                console.log('🔍 Top channels:', data.map(c => ({ 
-                    name: c.name, 
-                    relevance: c.relevanceScore,
-                    videos: c.videoCount 
-                })));
-            }
 
             return { items: data };
         }),

@@ -100,7 +100,7 @@ const FollowedCommunitiesSuspense = () => {
                         </p>
                         <Link 
                             href="/c"
-                            className="group inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-semibold transition-all duration-300"
+                            className="group inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-t from-secondary to-primary hover:from-secondary/90 hover:to-primary/90 text-primary-foreground font-semibold transition-all duration-300 shadow"
                         >
                             Explore Communities
                         </Link>

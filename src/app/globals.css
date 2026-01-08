@@ -48,43 +48,41 @@ body {
     }
 
     .dark {
-        --background: 0 0% 0%;
-        /* #000000 pitch black */
-        --foreground: 0 0% 98%;
-        --card: 0 0% 0%;
-        /* Match background */
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 0%;
-        /* Match background */
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 10%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 10%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 10%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 20%;
-        /* Visible border */
-        --input: 0 0% 20%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-        --sidebar-background: 0 0% 0%;
-        /* #000000 pitch black */
-        --sidebar-foreground: 0 0% 98%;
-        --sidebar-primary: 224.3 76.3% 48%;
-        --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 0 0% 10%;
-        --sidebar-accent-foreground: 0 0% 98%;
-        --sidebar-border: 0 0% 20%;
-        --sidebar-ring: 217.2 91.2% 59.8%;
+        --background: 20 14.3% 4.1%;
+        --foreground: 60 9.1% 97.8%;
+        --card: 20 14.3% 7%;
+        --card-foreground: 60 9.1% 97.8%;
+        --popover: 20 14.3% 7%;
+        --popover-foreground: 60 9.1% 97.8%;
+        --primary: 47.9 95.8% 53.1%;
+        --primary-foreground: 26 83.3% 14.1%;
+        --secondary: 36 100% 50%;
+        --secondary-foreground: 20 14.3% 4.1%;
+        --muted: 12 6.5% 15.1%;
+        --muted-foreground: 24 5.4% 63.9%;
+        --accent: 12 6.5% 15.1%;
+        --accent-foreground: 60 9.1% 97.8%;
+        --destructive: 0 100% 50%;
+        --destructive-foreground: 60 9.1% 97.8%;
+        --border: 12 6.5% 15.1%;
+        --input: 12 6.5% 15.1%;
+        --ring: 47.9 95.8% 53.1%;
+        --chart-1: 47.9 95.8% 53.1%;
+        --chart-2: 35 91% 32%;
+        --chart-3: 45 93% 47%;
+        --chart-4: 50 96% 57%;
+        --chart-5: 27 87% 67%;
+        --sidebar-background: 20 14.3% 4.1%;
+        --sidebar-foreground: 60 9.1% 97.8%;
+        --sidebar-primary: 47.9 95.8% 53.1%;
+        --sidebar-primary-foreground: 26 83.3% 14.1%;
+        --sidebar-accent: 12 6.5% 15.1%;
+        --sidebar-accent-foreground: 60 9.1% 97.8%;
+        --sidebar-border: 12 6.5% 15.1%;
+        --sidebar-ring: 47.9 95.8% 53.1%;
+        --glass-bg: rgba(20, 10, 5, 0.9);
+        --glass-blur: 16px;
+        
     }
 
     .retro {
@@ -120,15 +118,7 @@ body {
     }
 }
 
-/*
 
-
-----------------------------------------------------------------------
-        RETRO THEME - WINDOWS 95/98/VISTA STYLE                     
-----------------------------------------------------------------------
----
-
-*/
 
 @layer base {
     * {
@@ -138,7 +128,105 @@ body {
     body {
         @apply bg-background text-foreground;
         font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+        transition: background 0.3s, color 0.3s;
     }
+
+    .dark body {
+        background: radial-gradient(circle at 50% -10%, hsl(45 50% 12%), transparent 50%), hsl(var(--background));
+        background-attachment: fixed;
+    }
+
+    .dark .card, .dark .popover {
+        box-shadow: 0 4px 32px 0 rgba(0,0,0,0.4);
+    }
+    .dark .sidebar {
+        background: hsl(var(--sidebar-background));
+        color: hsl(var(--sidebar-foreground));
+        border-right: 2px solid hsl(var(--sidebar-border));
+        box-shadow: 2px 0 16px 0 rgba(255,193,0,0.08);
+    }
+    .dark .sidebar .active,
+    .dark .sidebar .selected {
+        background: hsl(var(--sidebar-primary));
+        color: hsl(var(--sidebar-primary-foreground));
+        border-radius: 8px;
+    }
+    .dark .sidebar a,
+    .dark .sidebar .link {
+        color: hsl(var(--sidebar-foreground));
+        transition: color 0.2s;
+        opacity: 0.7;
+    }
+    .dark .sidebar a:hover,
+    .dark .sidebar .link:hover {
+        color: hsl(var(--sidebar-foreground));
+        background: hsl(var(--sidebar-accent));
+        border-radius: 6px;
+        opacity: 1;
+    }
+
+    .btn-primary {
+        background: linear-gradient(to top, #ff9800 0%, #ffc100 100%) !important;
+        color: #121212;
+        border: none;
+        box-shadow: 0 2px 8px 0 rgba(255,193,0,0.15);
+        transition: background 0.2s, box-shadow 0.2s; 
+    }
+    .btn-primary:hover {
+        background: linear-gradient(to top, #ffc100 0%, #ff9800 100%);
+        box-shadow: 0 4px 16px 0 rgba(255,193,0,0.25);
+    }
+
+    .dark .btn-primary {
+        background: linear-gradient(90deg, #ff9800 0%, #ffc100 100%);
+        color: #121212;
+        border: none;
+        box-shadow: 0 2px 8px 0 rgba(255,193,0,0.15);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .dark .btn-primary:hover {
+        background: linear-gradient(90deg, #ffc100 0%, #ff9800 100%);
+        box-shadow: 0 4px 16px 0 rgba(255,193,0,0.25);
+    }
+
+    .dark .border, .dark .border-t, .dark .border-b, .dark .border-l, .dark .border-r {
+        border-color: hsl(var(--border));
+    }
+
+    .dark input, .dark textarea, .dark select {
+        background: hsl(var(--card));
+        color: hsl(var(--foreground));
+        border: 1px solid hsl(var(--input));
+        box-shadow: 0 1px 4px 0 rgba(0,0,0,0.12);
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .dark ::selection {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+    }
+
+    .dark a {
+        color: hsl(var(--foreground));
+        transition: color 0.2s;
+    }
+    .dark a:hover {
+        color: hsl(var(--primary));
+    }
+
+    .dark .shadow, .dark .shadow-lg, .dark .shadow-md {
+        box-shadow: 0 4px 32px 0 rgba(0,0,0,0.4) !important;
+    }
+
+    /*
+
+
+    ----------------------------------------------------------------------
+            RETRO THEME - WINDOWS 95/98/VISTA STYLE                     
+    ----------------------------------------------------------------------
+    ---
+
+    */
 
     .retro body {
         font-family: "MS Sans Serif", "Tahoma", "Verdana", sans-serif;

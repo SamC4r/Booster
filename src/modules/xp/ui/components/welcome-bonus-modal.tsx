@@ -72,7 +72,7 @@ export const WelcomeBonusModal = () => {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogContent className="sm:max-w-md border-amber-500/20 bg-white dark:bg-white dark:text-black">
+            <DialogContent className="sm:max-w-md border-amber-500/20">
                 <DialogHeader>
                     <div className="mx-auto w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-4">
                         <span className="text-2xl font-black text-amber-500">XP</span>

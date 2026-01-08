@@ -70,8 +70,8 @@ export const FilterCarousel = ({
                             <Badge
                                 variant={!value ? "default" : "secondary"}
                                 className={cn(
-                                  "rounded-md px-3 py-1 cursor-pointer whitespace-nowrap text-sm border border-gray-200 ",
-                                        !value ? "bg-gradient-to-b from-primary to-secondary text-textprimary hover:bg-gray-600 " : "bg-gray-100 text-black hover:bg-gray-200"
+                                  "rounded-lg px-3 py-1 cursor-pointer whitespace-nowrap text-sm border-2 transition-all ",
+                                        !value ? "bg-gradient-to-r from-secondary to-primary border-transparent text-black font-semibold shadow-md" : "bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-[#333] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#252525] hover:border-slate-300 dark:hover:border-[#444]"
 
                                 )}
                             >
@@ -97,8 +97,8 @@ export const FilterCarousel = ({
                                 <Badge
                                     variant={value === item.value ? "default" : "secondary"}
                                     className={cn(
-                                        "rounded-md px-3 py-1 cursor-pointer whitespace-nowrap text-sm border border-gray-200 ",
-                                        active === item.value ? "bg-gradient-to-b from-primary to-secondary text-textprimary hover:bg-gray-600 " : "bg-gray-100 text-black hover:bg-gray-200"
+                                        "rounded-lg px-3 py-1 cursor-pointer whitespace-nowrap text-sm border-2 transition-all ",
+                                        active === item.value ? "bg-gradient-to-r from-secondary to-primary border-transparent text-black font-semibold shadow-md" : "bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-[#333] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#252525] hover:border-slate-300 dark:hover:border-[#444]"
                                     )}
                                 >
                                     {item.label}

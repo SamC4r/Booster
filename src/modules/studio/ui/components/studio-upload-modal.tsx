@@ -33,7 +33,7 @@ export const StudioUploadModal = () => {
 
     return (
         <>
-            <Button variant="secondary" onClick={handleOpen}>
+            <Button variant="default" onClick={handleOpen}>
                 <PlusIcon className="mr-2 h-4 w-4" />
                 Create
             </Button>

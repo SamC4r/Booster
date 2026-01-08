@@ -389,7 +389,7 @@ const GuidelineCard = ({
                         <ul className="space-y-2">
                             {notAllowed.map((item, i) => (
                                 <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-destructive/50 shrink-0" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-destructive/80 shrink-0" />
                                     {item}
                                 </li>
                             ))}
@@ -406,7 +406,7 @@ const GuidelineCard = ({
                         <ul className="space-y-2">
                             {allowed.map((item, i) => (
                                 <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-green-600/50 dark:bg-green-500/50 shrink-0" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-green-600/80 dark:bg-green-500/80 shrink-0" />
                                     {item}
                                 </li>
                             ))}
@@ -423,7 +423,7 @@ const GuidelineCard = ({
                         <ul className="space-y-2">
                             {allowedWithRestrictions.map((item, i) => (
                                 <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-amber-600/50 dark:bg-amber-500/50 shrink-0" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-amber-600/80 dark:bg-amber-500/50 shrink-0" />
                                     {item}
                                 </li>
                             ))}

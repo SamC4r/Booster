@@ -34,11 +34,11 @@ export default withUt({
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "#ffca55",
+          DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#ffa100", //'hsl(var(--secondary))',
+          DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
         muted: {

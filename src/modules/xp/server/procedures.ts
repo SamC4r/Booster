@@ -8,12 +8,14 @@ import z from "zod";
 
 export const xpRouter = createTRPCRouter({
 
+    //TODO: change to users proceedures no?
     getTopRanked: baseProcedure
         .input(z.object({
             limit: z.number().min(1).max(100).default(50),
+            sortBy: z.enum(["xp", "followers"]).default("xp"),
         }))
         .query(async ({ input }) => {
-            const { limit } = input;
+            const { limit, sortBy } = input;
 
 
             const topUsers = await db
@@ -28,7 +30,7 @@ export const xpRouter = createTRPCRouter({
                 .from(users)
                 .leftJoin(userFollows, eq(users.id, userFollows.creatorId))
                 .groupBy(users.id)
-                .orderBy(desc(users.boostPoints))
+                .orderBy(sortBy === "followers" ? desc(count(userFollows.userId)) : desc(users.boostPoints))
                 .limit(limit);
 
             return topUsers;
@@ -311,6 +313,13 @@ export const xpRouter = createTRPCRouter({
             const userId = ctx.user.id;
             const { price, recipientId } = input;
 
+            //xd, i forgot it
+            if (userId === recipientId) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Cannot boost your own channel!",
+                });
+            }
             
             //ROW lock 
             return await db.transaction(async (tx) => {
@@ -360,7 +369,7 @@ export const xpRouter = createTRPCRouter({
                 if (!updatedBoostedChannel) {
                     throw new TRPCError({
                         code: "INTERNAL_SERVER_ERROR",
-                        message: "Failed to update recipient boost points.",
+                        message: "Failed to boost channel.",
                     });
                 }
 
@@ -375,15 +384,12 @@ export const xpRouter = createTRPCRouter({
                     })
                     .returning();
 
-                // Create boost notification (only if not boosting own channel)
-                if (userId !== recipientId) {
-                    await tx.insert(notifications).values({
-                        userId: recipientId, // Recipient of the boost (channel owner)
-                        type: 'boost',
-                        relatedUserId: userId, // Who boosted
-                        boostAmount: price, // Amount of XP boosted
-                    });
-                }
+                await tx.insert(notifications).values({
+                    userId: recipientId, // Recipient of the boost (channel owner)
+                    type: "boost",
+                    relatedUserId: userId, // Who boosted
+                    boostAmount: price, // Amount of XP boosted
+                });
 
                 //insert transaction in transactionsTable
                 //insert item in owns of user

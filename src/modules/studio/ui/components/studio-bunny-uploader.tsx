@@ -197,9 +197,9 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
 
   if (file) {
     return (
-      <div className="flex flex-col h-full w-full min-h-0">
+      <div className="flex flex-col h-full w-full min-h-0 bg-background ">
         {progress < 100 && (
-            <div className="flex flex-col items-center justify-center gap-2 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+            <div className="flex flex-col items-center justify-center gap-2 p-4 border-b bg-background sticky top-0 z-10">
                 <div className="relative h-12 w-12 flex items-center justify-center bg-primary/5 rounded-full">
                     <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
                     <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
@@ -252,7 +252,7 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
           {children || (
             <div className="flex flex-col items-center justify-center h-full space-y-4">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              <p className="text-muted-foreground">Preparing your video...</p>
+              <p className="text-muted-foreground">Preparing your video... (Don't close this dialog)</p>
             </div>
           )}
         </div>
@@ -261,8 +261,8 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
   }
 
   return (
-    <div className="flex items-center justify-center p-3 w-full max-w-lg h-full z-50 mx-auto">
-      <form className="w-full" onSubmit={(e) => e.preventDefault()}>
+    <div className="flex items-center justify-center p-3 w-full max-w-lg h-full z-50 mx-auto bg-background">
+      <form className="w-full " onSubmit={(e) => e.preventDefault()}>
         <div
           className="flex justify-center rounded-md border mt-2 border-dashed border-input px-6 py-12"
           onDragOver={(e) => e.preventDefault()}

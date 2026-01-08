@@ -1,7 +1,7 @@
 'use client'
 import { UserAvatar } from "@/components/user-avatar";
 import { trpc } from "@/trpc/client"
-import { Users, Crown, Search, UserPlus, Zap, ArrowRight } from "lucide-react";
+import { Users, Crown, Search, UserPlus, Zap, ArrowRight, Globe2Icon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -78,20 +78,14 @@ export const FollowList = () => {
 
                             {/* Enhanced Stats */}
                             <div className="flex flex-wrap gap-6">
-                                <motion.div
-                                    whileHover={{ scale: 1.05 }}
+                                <div
                                     className="flex items-center gap-3 bg-muted/50 px-4 py-3 rounded-xl backdrop-blur-sm border border-border"
                                 >
-                                    <div className="p-2 bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg">
-                                        <Users className="h-5 w-5 text-white" />
-                                    </div>
-                                    <div className="text-left">
+                                        <div className="text-sm text-muted-foreground">Following</div>
                                         <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                                             {followList.length}
                                         </div>
-                                        <div className="text-sm text-muted-foreground">Following</div>
-                                    </div>
-                                </motion.div>
+                                </div>
 
 
 
@@ -199,40 +193,17 @@ export const FollowList = () => {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.2 }}
-                        className="text-center py-16 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-amber-200 dark:border-amber-800 relative overflow-hidden"
+                        className="text-center py-16  rounded-2xl shadow-xl border relative overflow-hidden bg-gradient-to-b dark:from-black-500/10 dark:to-orange-500/10"
                     >
-                        {/* Background Elements */}
-                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                            <motion.div
-                                animate={{
-                                    rotate: 360,
-                                    scale: [1, 1.2, 1]
-                                }}
-                                transition={{
-                                    rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                                    scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }
-                                }}
-                                className="absolute -top-32 -left-32 w-64 h-64 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-full blur-3xl"
-                            />
-                        </div>
-
+                      
                         <div className="relative z-10">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="mx-auto h-24 w-24 rounded-2xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 flex items-center justify-center mb-6 border border-amber-200 dark:border-amber-800"
-                            >
-                                <Users className="h-12 w-12 text-amber-500" />
-                            </motion.div>
-
                             <motion.h3
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
                                 className="text-2xl font-bold text-amber-900 dark:text-amber-100 mb-3"
                             >
-                                {searchQuery ? "No matches found" : "Your community awaits"}
+                                {searchQuery ? "No matches found" : "You are not following anyone yet"}
                             </motion.h3>
 
                             <motion.p
@@ -242,8 +213,8 @@ export const FollowList = () => {
                                 className="text-amber-600 dark:text-amber-400 max-w-md mx-auto mb-6 text-lg leading-relaxed"
                             >
                                 {searchQuery
-                                    ? `No users found for "${searchQuery}". Try exploring our community to find amazing creators.`
-                                    : "Start building your network by following creators who inspire you."
+                                    ? `No users found for "${searchQuery}". Go to the explorer!.`
+                                    : "When you follow creators, they will appear here."
                                 }
                             </motion.p>
 
@@ -253,12 +224,11 @@ export const FollowList = () => {
                                 transition={{ delay: 0.5 }}
                             >
                                 <Link
-                                    href="/explorer"
-                                    className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-amber-500/25 transition-all duration-300 group"
+                                    href="/"
+                                    className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-500   text-white px-8 py-4 rounded-2xl font-semibold shadow-lg "
                                 >
-                                    <Zap className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                                    Discover Amazing Creators
-                                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                    Discover Creators
+                                    <Globe2Icon className="h-5 w-5 transition-transform" />
                                 </Link>
                             </motion.div>
                         </div>
