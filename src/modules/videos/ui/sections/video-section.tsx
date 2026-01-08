@@ -78,7 +78,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     const { theme } = useTheme();
 
 
-   
+
 
 
     // console.log("BOOST AAAA",boostPoints.boostPoints)
@@ -90,11 +90,11 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     const { isSignedIn, } = useAuth();
 
     const createView = trpc.videoViews.create.useMutation({
-        onSuccess: (data) => {
+        onSuccess: () => {
             utils.videos.getOne.invalidate({ id: videoId }) //invalidate cache and get new updated views value
             utils.users.getByClerkId.invalidate({ clerkId: clerkUserId }); // Update user XP in real-time
-           
-            
+
+
         }, onError: (error) => {
             console.error("Failed to create view:", error);
             // toast.error("Failed to record view");
@@ -104,9 +104,9 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
     const createRewardedView = trpc.rewardView.awardXpForView.useMutation({
         onSuccess: (data) => {
             utils.xp.getXpByUserId.invalidate({ userId });
-            if(data.xpEarned == 0){
+            if (data.xpEarned == 0) {
                 toast.info(data.message);
-            }else{
+            } else {
                 toast.success(data.message);
             }
         }

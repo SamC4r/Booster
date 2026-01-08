@@ -5,7 +5,6 @@ import { trpc } from '@/trpc/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Coins, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuth } from '@clerk/nextjs';
 
@@ -14,7 +13,7 @@ export const WelcomeBonusModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const utils = trpc.useUtils();
 
-    const { data: status, isLoading } = trpc.xp.getWelcomeBonusStatus.useQuery(undefined, {
+    const { data: status } = trpc.xp.getWelcomeBonusStatus.useQuery(undefined, {
         enabled: !!isSignedIn,
         refetchOnWindowFocus: false,
     });
@@ -25,7 +24,7 @@ export const WelcomeBonusModal = () => {
             toast.success(`You claimed ${data.amount} XP!`);
             utils.xp.getXpByUserId.invalidate();
             utils.xp.getWelcomeBonusStatus.invalidate();
-            
+
             // Fire confetti
             const duration = 3 * 1000;
             const animationEnd = Date.now() + duration;
@@ -35,7 +34,7 @@ export const WelcomeBonusModal = () => {
                 return Math.random() * (max - min) + min;
             }
 
-            const interval: any = setInterval(function() {
+            const interval: any = setInterval(function () {
                 const timeLeft = animationEnd - Date.now();
 
                 if (timeLeft <= 0) {
@@ -44,12 +43,12 @@ export const WelcomeBonusModal = () => {
 
                 const particleCount = 50 * (timeLeft / duration);
                 confetti({
-                    ...defaults, 
+                    ...defaults,
                     particleCount,
                     origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
                 });
                 confetti({
-                    ...defaults, 
+                    ...defaults,
                     particleCount,
                     origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
                 });
@@ -84,7 +83,7 @@ export const WelcomeBonusModal = () => {
                         You are eligible for a special early adopter bonus.
                     </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="flex flex-col items-center gap-4 py-4">
                     <div className="text-center space-y-1">
                         <div className="text-4xl font-black text-amber-500 flex items-center justify-center gap-2">
@@ -103,8 +102,8 @@ export const WelcomeBonusModal = () => {
                 </div>
 
                 <DialogFooter className="sm:justify-center">
-                    <Button 
-                        size="lg" 
+                    <Button
+                        size="lg"
                         className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold shadow-lg shadow-amber-500/20"
                         onClick={() => claimBonus()}
                         disabled={isPending}

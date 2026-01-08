@@ -1,7 +1,6 @@
 "use client"
 
 import { trpc } from "@/trpc/client"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Building2, User } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -39,7 +38,7 @@ export const AccountTypeSelection = () => {
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
-                <Card 
+                <Card
                     className="cursor-pointer hover:border-primary transition-colors relative overflow-hidden group"
                     onClick={() => handleSelect('personal')}
                 >
@@ -60,7 +59,7 @@ export const AccountTypeSelection = () => {
                     </CardContent>
                 </Card>
 
-                <Card 
+                <Card
                     className="cursor-pointer hover:border-primary transition-colors relative overflow-hidden group"
                     onClick={() => handleSelect('business')}
                 >
@@ -81,7 +80,7 @@ export const AccountTypeSelection = () => {
                     </CardContent>
                 </Card>
             </div>
-            
+
             {isPending && (
                 <div className="text-center text-sm text-muted-foreground animate-pulse">
                     Setting up your account...

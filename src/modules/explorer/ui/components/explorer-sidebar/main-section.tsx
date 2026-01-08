@@ -1,24 +1,24 @@
 'use client';
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { EarthIcon,  PlayIcon, ShoppingCart, Users, ShieldQuestionIcon, Building2, Megaphone, TrophyIcon } from "lucide-react";
+import { EarthIcon, PlayIcon, ShoppingCart, Users, Building2, Megaphone, TrophyIcon } from "lucide-react";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import { trpc } from "@/trpc/client";
 
 const items = [
-     {
+    {
         title: "Next Up",
         url: "/next-up",
         icon: PlayIcon,
     },
-     {
+    {
         title: "Explorer",
         url: "/",
         icon: EarthIcon
     },
-   
+
     {
         title: "Following",
         url: "/feed/follows",
@@ -36,7 +36,7 @@ const items = [
         icon: Megaphone,
     },
     {
-        title:"Top Channels",
+        title: "Top Channels",
         url: "/rankings",
         icon: TrophyIcon,
     }
@@ -63,7 +63,7 @@ export const MainSection = () => {
                 url: "/business",
                 icon: Building2,
             };
-            
+
             // Find index of Following to insert after, or just push if not found
             const followingIndex = filtered.findIndex(i => i.title === "Following");
             if (followingIndex !== -1) {
@@ -78,8 +78,8 @@ export const MainSection = () => {
 
     useEffect(() => {
         const currentPath = window.location.pathname;
-        const currentItem = displayItems.find(item => 
-            item.url === currentPath || 
+        const currentItem = displayItems.find(item =>
+            item.url === currentPath ||
             (currentPath.startsWith(item.url) && item.url !== "/")
         );
         if (currentItem) {
@@ -97,14 +97,14 @@ export const MainSection = () => {
                         const isActive = activeItem === item.title;
                         const isHovered = hoveredItem === item.title;
                         const Icon = item.icon;
-                        
+
                         return (
                             <SidebarMenuItem key={item.title} className="relative">
                                 {/* Active state background */}
                                 {isActive && (
                                     <div className="absolute inset-0 bg-accent rounded-full border border-border shadow-sm" />
                                 )}
-                                
+
                                 {/* Hover state background */}
                                 {isHovered && !isActive && (
                                     <div className="absolute inset-0 bg-accent/50 rounded-full transition-all duration-200" />
@@ -127,8 +127,8 @@ export const MainSection = () => {
                                         relative
                                         transition-all duration-200
                                         rounded-full
-                                        ${isActive 
-                                            ? 'bg-accent/50 rounded-full' 
+                                        ${isActive
+                                            ? 'bg-accent/50 rounded-full'
                                             : 'hover:bg-accent/30'
                                         }
                                         group
@@ -136,16 +136,16 @@ export const MainSection = () => {
                                         mx-0.5 
                                     `}
                                 >
-                                    <Link 
-                                        href={item.url} 
+                                    <Link
+                                        href={item.url}
                                         className="flex items-center gap-3 w-full h-full  relative z-10"
                                     >
                                         {/* Icon container - simplified for collapsed mode */}
                                         <div className={`
                                             flex items-center justify-center
                                             transition-all duration-200
-                                            ${isActive 
-                                                ? 'bg-amber-500 text-slate-900' 
+                                            ${isActive
+                                                ? 'bg-amber-500 text-slate-900'
                                                 : 'bg-muted text-muted-foreground group-hover:bg-amber-500/10 group-hover:text-foreground'
                                             }
                                             rounded-lg
@@ -155,12 +155,12 @@ export const MainSection = () => {
                                         `}>
                                             <Icon className="w-5 h-5" /> {/* Smaller icon */}
                                         </div>
-                                        
+
                                         {/* Text - will be hidden by sidebar when collapsed */}
                                         <span className={`
                                             text-base font-medium transition-all duration-200
-                                            ${isActive 
-                                                ? 'text-foreground font-semibold' 
+                                            ${isActive
+                                                ? 'text-foreground font-semibold'
                                                 : 'text-muted-foreground group-hover:text-foreground'
                                             }
                                             whitespace-nowrap

@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { trpc } from "@/trpc/client";
 import { UploadDropzone } from "@/lib/uploadthing";
-import { X, Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";

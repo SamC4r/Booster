@@ -1,9 +1,9 @@
 import { createTRPCRouter } from "@/trpc/init";
 import { protectedProcedure } from "@/trpc/init";
 import { db } from "@/db";
-import { messages, users, userFollows } from "@/db/schema";
+import { users, userFollows } from "@/db/schema";
 import { z } from "zod";
-import { and, eq, or, desc, sql } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { createClient } from "@supabase/supabase-js";
 
@@ -11,9 +11,9 @@ import { createClient } from "@supabase/supabase-js";
 // If you named it SUPABASE_SECRET_KEY in your .env, we use that.
 const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY
     ? createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY)!
-      )
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY)!
+    )
     : null;
 
 export const messagesRouter = createTRPCRouter({
@@ -44,10 +44,10 @@ export const messagesRouter = createTRPCRouter({
 
             // 2. Process messages to find unique conversation partners
             const conversationMap = new Map();
-            
+
             for (const msg of recentMessages) {
                 const otherUserId = msg.sender_id === currentUserId ? msg.receiver_id : msg.sender_id;
-                
+
                 if (!conversationMap.has(otherUserId)) {
                     conversationMap.set(otherUserId, {
                         lastMessage: msg,

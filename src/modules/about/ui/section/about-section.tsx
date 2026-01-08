@@ -1,6 +1,6 @@
 'use client';
 
-import { Boxes, CircleDollarSignIcon, Code, Copyright, CpuIcon, Github, Headset, Megaphone, Sparkles, UsersRound } from 'lucide-react';
+import { Boxes, CircleDollarSignIcon, Code, Copyright, CpuIcon, Github, Headset, Megaphone, UsersRound } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect } from 'react';
 

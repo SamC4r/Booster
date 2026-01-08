@@ -140,7 +140,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
     }, []);
 
     const createView = trpc.videoViews.create.useMutation({
-        onSuccess: (data) => {
+        onSuccess: () => {
             utils.videos.getOne.invalidate({ id: videoId });
             utils.users.getByClerkId.invalidate({ clerkId: clerkUserId }); // Update user XP in real-time
             console.log("VIEWWW")
@@ -152,12 +152,12 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
         }
     });
 
-      const createRewardedView = trpc.rewardView.awardXpForView.useMutation({
+    const createRewardedView = trpc.rewardView.awardXpForView.useMutation({
         onSuccess: (data) => {
             utils.xp.getXpByUserId.invalidate({ userId });
-            if(data.xpEarned == 0){
+            if (data.xpEarned == 0) {
                 toast.info(data.message);
-            }else{
+            } else {
                 toast.success(data.message);
             }
         }
@@ -200,7 +200,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
         const seconds = data.seconds || data.currentTime;
         const duration = data.duration;
         durationRef.current = duration;
-        
+
         // console.log("TimeUpdate Home:", { seconds, duration, isSignedIn, hasViewed, isFeatured: video.isFeatured });
 
 
@@ -212,8 +212,8 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
         const percentage = (seconds / duration) * 100;
         const isFeatured = video.isFeatured;
 
-        if(!isFeatured) return;
-        
+        if (!isFeatured) return;
+
         // If featured, reward after 5 seconds. Otherwise, reward after 30% watched.
         if ((Math.floor(seconds) == 5) || (percentage >= 99)) {
             hasViewedRef.current = true;

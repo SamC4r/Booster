@@ -4,7 +4,7 @@ import { DEFAULT_LIMIT, getTitleGradient } from "@/constants";
 import { compactNumber, cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import { motion } from "framer-motion";
-import { Eye, Star, RocketIcon, Trophy } from "lucide-react";
+import { Eye, Star, RocketIcon } from "lucide-react";
 import { useMemo } from "react";
 import { THUMBNAIL_FALLBACK } from "../../constants";
 import { VideoThumbnail } from "../components/video-thumbnail";

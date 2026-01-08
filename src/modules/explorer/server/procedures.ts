@@ -19,7 +19,6 @@ import {
   inArray,
   isNotNull,
   lt,
-  not,
   or,
   sql,
   sum,
@@ -98,8 +97,8 @@ export const explorerRouter = createTRPCRouter({
               ),
             viewerRating: userId
               ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(
-                  Number
-                )
+                Number
+              )
               : sql<number>`(NULL)`.mapWith(Number),
           },
           category: {
@@ -136,12 +135,12 @@ export const explorerRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-        const {text} = input;
-        const embedding = await embedText(text);
-        console.log("Embedding:", embedding);
+      const { text } = input;
+      const embedding = await embedText(text);
+      console.log("Embedding:", embedding);
 
-        return { embedding };
-        
+      return { embedding };
+
     }),
 
   aiSearch: baseProcedure
@@ -269,8 +268,8 @@ export const explorerRouter = createTRPCRouter({
               ),
             viewerRating: userId
               ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(
-                  Number
-                )
+                Number
+              )
               : sql<number>`(NULL)`.mapWith(Number),
           },
           distance: sql<number>`${distanceExpr}`.as("distance"),
@@ -443,7 +442,7 @@ export const explorerRouter = createTRPCRouter({
       }
 
       const rows = await db
-        .with(viewerFollow, ratingStats, videoViewsStats, viewerView,userCategoryAffinity)
+        .with(viewerFollow, ratingStats, videoViewsStats, viewerView, userCategoryAffinity)
         .select({
           ...getTableColumns(videos),
           user: {
@@ -460,8 +459,8 @@ export const explorerRouter = createTRPCRouter({
               ),
             viewerRating: userId
               ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(
-                  Number
-                )
+                Number
+              )
               : sql<number>`(NULL)`.mapWith(Number),
           },
           score: scoreExpr.as("score"),

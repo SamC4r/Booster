@@ -7,11 +7,11 @@ import { ErrorBoundary } from "react-error-boundary";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
 } from "@/components/ui/carousel";
 import { UserAvatar } from "@/components/user-avatar";
 
@@ -35,7 +35,7 @@ const FollowedUsersSuspense = () => {
     if (users.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-                <h2 className="text-2xl font-bold mb-2">You aren't following anyone yet</h2>
+                <h2 className="text-2xl font-bold mb-2">You aren&apos;t following anyone yet</h2>
                 <p className="text-muted-foreground mb-6">Follow creators to see their latest videos here.</p>
                 <Link href="/" className="text-primary hover:underline">
                     Explore Videos
@@ -50,7 +50,7 @@ const FollowedUsersSuspense = () => {
                 <div key={user.id} className="space-y-4">
                     <div className="flex items-center justify-between px-4">
                         <div className="flex items-center gap-3">
-                            <UserAvatar 
+                            <UserAvatar
                                 userId={user.id}
                                 imageUrl={user.imageUrl}
                                 name={user.name}
@@ -63,7 +63,7 @@ const FollowedUsersSuspense = () => {
                                 </p>
                             </div>
                         </div>
-                        <Link 
+                        <Link
                             href={`/users/${user.id}`}
                             className="flex items-center gap-2 text-sm font-medium text-secondary hover:underline"
                         >

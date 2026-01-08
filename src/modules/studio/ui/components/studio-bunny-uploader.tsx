@@ -1,9 +1,8 @@
 "use client";
 
 import { LockIcon, Upload, Loader2 } from "lucide-react";
-import { ChangeEvent, DragEvent, useRef, useState, useEffect } from "react";
+import { ChangeEvent, DragEvent, useState } from "react";
 import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
 
 import { trpc } from "@/trpc/client";
 import { DEFAULT_LIMIT } from "@/constants";
@@ -118,7 +117,7 @@ class BunnyUploadService {
         }
         this.activeUpload?.start();
       });
-    } catch (err: any) {
+    } catch {
       callbacks.onError?.("Upload failed");
     }
   }
@@ -132,8 +131,6 @@ class BunnyUploadService {
 export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: StudioBunnyUploaderProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState<number>(0);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [videoId, setVideoId] = useState<string | null>(null);
   const utils = trpc.useUtils();
   const router = useRouter();
@@ -163,14 +160,11 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
   const startUpload = (f: File) => {
     setFile(f);
     setProgress(0);
-    setUploading(true);
-    setError(null);
     BunnyUploadService.getInstance().startUpload(f, {
       onProgress: (pct) => setProgress(pct),
-      onError: (msg) => { setError(msg); setUploading(false); toast.error(msg); },
+      onError: (msg) => { toast.error(msg); },
       onSuccess: (vid) => {
         setProgress(100);
-        setUploading(false);
         toast.success("Uploaded! Processing started.");
         setVideoId(vid);
         if (onSuccess) onSuccess(vid);
@@ -199,54 +193,54 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
     return (
       <div className="flex flex-col h-full w-full min-h-0">
         {progress < 100 && (
-            <div className="flex flex-col items-center justify-center gap-2 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
-                <div className="relative h-12 w-12 flex items-center justify-center bg-primary/5 rounded-full">
-                    <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
-                    <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-                    <Upload className="h-5 w-5 text-primary animate-bounce" />
-                </div>
-                <div className="text-center">
-                    <p className="text-sm font-medium truncate max-w-xs">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                        {progress}% Uploading...
-                    </p>
-                </div>
+          <div className="flex flex-col items-center justify-center gap-2 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
+            <div className="relative h-12 w-12 flex items-center justify-center bg-primary/5 rounded-full">
+              <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+              <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+              <Upload className="h-5 w-5 text-primary animate-bounce" />
             </div>
+            <div className="text-center">
+              <p className="text-sm font-medium truncate max-w-xs">{file.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {progress}% Uploading...
+              </p>
+            </div>
+          </div>
         )}
         {progress === 100 && (!video || (video?.bunnyStatus !== 'completed' && video?.bunnyStatus !== 'error')) && (
-            <div className="flex flex-col items-center justify-center gap-2 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-                <div className="relative h-12 w-12 flex items-center justify-center bg-primary/5 rounded-full">
-                    <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
-                    <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-                    <Loader2 className="h-5 w-5 text-primary animate-spin" />
-                </div>
-                <div className="text-center">
-                    <p className="text-sm font-medium truncate max-w-xs">
-                        {(() => {
-                            switch (video?.bunnyStatus) {
-                                case 'queued': return 'Video queued...';
-                                case 'processing': return 'Processing video...';
-                                case 'encoding': return 'Transcoding video...';
-                                case 'resolution_finished': return 'Optimizing quality...';
-                                case 'failed': return 'Processing failed';
-                                default: return 'Processing video...';
-                            }
-                        })()}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                        {(() => {
-                            switch (video?.bunnyStatus) {
-                                case 'queued': return 'Waiting in line to be processed';
-                                case 'processing': return 'Analyzing video file';
-                                case 'encoding': return 'Converting formats';
-                                case 'resolution_finished': return 'You can preview it now in lower quality';
-                                case 'failed': return 'Something went wrong';
-                                default: return 'This might take a moment';
-                            }
-                        })()}
-                    </p>
-                </div>
+          <div className="flex flex-col items-center justify-center gap-2 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+            <div className="relative h-12 w-12 flex items-center justify-center bg-primary/5 rounded-full">
+              <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+              <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+              <Loader2 className="h-5 w-5 text-primary animate-spin" />
             </div>
+            <div className="text-center">
+              <p className="text-sm font-medium truncate max-w-xs">
+                {(() => {
+                  switch (video?.bunnyStatus) {
+                    case 'queued': return 'Video queued...';
+                    case 'processing': return 'Processing video...';
+                    case 'encoding': return 'Transcoding video...';
+                    case 'resolution_finished': return 'Optimizing quality...';
+                    case 'failed': return 'Processing failed';
+                    default: return 'Processing video...';
+                  }
+                })()}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {(() => {
+                  switch (video?.bunnyStatus) {
+                    case 'queued': return 'Waiting in line to be processed';
+                    case 'processing': return 'Analyzing video file';
+                    case 'encoding': return 'Converting formats';
+                    case 'resolution_finished': return 'You can preview it now in lower quality';
+                    case 'failed': return 'Something went wrong';
+                    default: return 'This might take a moment';
+                  }
+                })()}
+              </p>
+            </div>
+          </div>
         )}
         <div className="flex-1 overflow-y-auto p-4">
           {children || (

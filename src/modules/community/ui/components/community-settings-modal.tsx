@@ -25,12 +25,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Settings, 
-  Users, 
-  Shield, 
-  Image as ImageIcon, 
-  Lock, 
+import {
+  Settings,
+  Shield,
+  Image as ImageIcon,
+  Lock,
   Globe,
   Save,
   Loader2,
@@ -122,7 +121,7 @@ export const CommunitySettingsModal = ({
       setOpen(false);
     },
     onError: (error) => {
-      toast.error("Failed to update settings", {description: error.message});
+      toast.error("Failed to update settings", { description: error.message });
     },
   });
 
@@ -212,7 +211,7 @@ export const CommunitySettingsModal = ({
             </Badge>
           </div>
         </DialogHeader>
-        
+
         <div className="flex flex-1 min-h-0">
           {/* Sidebar Navigation */}
           <div className="w-56 border-r bg-gradient-to-b from-background to-accent/5 p-4 space-y-1">
@@ -237,9 +236,9 @@ export const CommunitySettingsModal = ({
                 </button>
               );
             })}
-            
+
             <Separator className="my-4" />
-            
+
             <div className="px-3 py-2 space-y-2">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Community Stats
@@ -247,7 +246,7 @@ export const CommunitySettingsModal = ({
               <div className="space-y-1.5 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Status:</span>
-                  <Badge 
+                  <Badge
                     variant={initialData.isPrivate ? "default" : "outline"}
                     className="text-xs"
                   >
@@ -256,7 +255,7 @@ export const CommunitySettingsModal = ({
                 </div>
                 <div className="flex justify-between ">
                   <span className="text-muted-foreground">Video Linking:</span>
-                  <Badge 
+                  <Badge
                     variant="outline"
                     className="text-xs text-center p-0"
                   >
@@ -285,7 +284,7 @@ export const CommunitySettingsModal = ({
                         <p className="text-muted-foreground mb-6">
                           Configure your community's identity and guidelines
                         </p>
-                        
+
                         <div className="space-y-6">
                           <FormField
                             control={form.control}
@@ -294,8 +293,8 @@ export const CommunitySettingsModal = ({
                               <FormItem>
                                 <FormLabel className="text-base">Community Name</FormLabel>
                                 <FormControl>
-                                  <Input 
-                                    {...field} 
+                                  <Input
+                                    {...field}
                                     className="h-11 text-base"
                                     placeholder="e.g., Tech Enthusiasts United"
                                   />
@@ -307,7 +306,7 @@ export const CommunitySettingsModal = ({
                               </FormItem>
                             )}
                           />
-                          
+
                           <div className="grid md:grid-cols-2 gap-6">
                             <FormField
                               control={form.control}
@@ -319,9 +318,9 @@ export const CommunitySettingsModal = ({
                                     Brief description (max 200 chars)
                                   </FormDescription>
                                   <FormControl>
-                                    <Textarea 
-                                      {...field} 
-                                      className="h-28 resize-none" 
+                                    <Textarea
+                                      {...field}
+                                      className="h-28 resize-none"
                                       value={field.value ?? ""}
                                       placeholder="What's your community about in one sentence?"
                                     />
@@ -329,8 +328,8 @@ export const CommunitySettingsModal = ({
                                   <div className="flex justify-end">
                                     <span className={cn(
                                       "text-xs",
-                                      (field.value?.length || 0) > 180 
-                                        ? "text-amber-600" 
+                                      (field.value?.length || 0) > 180
+                                        ? "text-amber-600"
                                         : "text-muted-foreground"
                                     )}>
                                       {field.value?.length || 0}/200
@@ -340,7 +339,7 @@ export const CommunitySettingsModal = ({
                                 </FormItem>
                               )}
                             />
-                            
+
                             <FormField
                               control={form.control}
                               name="description_long"
@@ -351,9 +350,9 @@ export const CommunitySettingsModal = ({
                                     Full community introduction
                                   </FormDescription>
                                   <FormControl>
-                                    <Textarea 
-                                      {...field} 
-                                      className="h-28 resize-none" 
+                                    <Textarea
+                                      {...field}
+                                      className="h-28 resize-none"
                                       value={field.value ?? ""}
                                       placeholder="Tell people what your community is all about..."
                                     />
@@ -398,7 +397,7 @@ export const CommunitySettingsModal = ({
                               </FormItem>
                             )}
                           />
-                          
+
                           <FormField
                             control={form.control}
                             name="rules"
@@ -409,9 +408,9 @@ export const CommunitySettingsModal = ({
                                   Set clear guidelines for member behavior (Markdown supported)
                                 </FormDescription>
                                 <FormControl>
-                                  <Textarea 
-                                    {...field} 
-                                    className="h-40 resize-none font-mono text-sm" 
+                                  <Textarea
+                                    {...field}
+                                    className="h-40 resize-none font-mono text-sm"
                                     value={field.value ?? ""}
                                     placeholder="1. Be respectful to all members...
 2. No spam or self-promotion...
@@ -437,7 +436,7 @@ export const CommunitySettingsModal = ({
                         <p className="text-muted-foreground mb-6">
                           Control who can see and participate in your community
                         </p>
-                        
+
                         <div className="space-y-4">
                           <FormField
                             control={form.control}
@@ -451,7 +450,7 @@ export const CommunitySettingsModal = ({
                                       Private Community (Future Implementation)
                                     </FormLabel>
                                     <FormDescription>
-                                      When enabled, only approved members can view and participate. 
+                                      When enabled, only approved members can view and participate.
                                       New members require moderator approval. (Future Implementation)
                                     </FormDescription>
                                   </div>
@@ -466,17 +465,17 @@ export const CommunitySettingsModal = ({
                                 {field.value && (
                                   <Alert className=" mt-4 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
                                     <div className="flex items-center gap-2 ">
-                                    <AlertCircleIcon className="size-4  text-blue-600 dark:text-blue-400" />
-                                    <AlertDescription className="text-blue-700 dark:text-blue-300">
-                                      Private mode is active. All content is hidden from non-members.
-                                    </AlertDescription>
+                                      <AlertCircleIcon className="size-4  text-blue-600 dark:text-blue-400" />
+                                      <AlertDescription className="text-blue-700 dark:text-blue-300">
+                                        Private mode is active. All content is hidden from non-members.
+                                      </AlertDescription>
                                     </div>
                                   </Alert>
                                 )}
                               </FormItem>
                             )}
                           />
-                          
+
                           <FormField
                             control={form.control}
                             name="allowUserPosts"
@@ -521,7 +520,7 @@ export const CommunitySettingsModal = ({
                         <p className="text-muted-foreground mb-6">
                           Customize how your community looks across the platform
                         </p>
-                        
+
                         <div className="space-y-8">
                           <FormField
                             control={form.control}
@@ -532,13 +531,13 @@ export const CommunitySettingsModal = ({
                                 <FormDescription className="mb-4">
                                   Recommended: 256×256px PNG or JPG. This appears next to your community name.
                                 </FormDescription>
-                                
+
                                 <div className="flex flex-col md:flex-row gap-8 items-start">
                                   <div className="flex-shrink-0">
                                     <div className="relative group">
                                       <Avatar className="h-40 w-40 border-4 border-background shadow-lg">
-                                        <AvatarImage 
-                                          src={field.value || ""} 
+                                        <AvatarImage
+                                          src={field.value || ""}
                                           className="object-cover"
                                         />
                                         <AvatarFallback className="text-4xl bg-gradient-to-br from-primary/20 to-primary/5">
@@ -556,7 +555,7 @@ export const CommunitySettingsModal = ({
                                       )}
                                     </div>
                                   </div>
-                                  
+
                                   <div className="flex-1 space-y-4">
                                     <div className="rounded-lg border-2 border-dashed bg-muted/30 p-8">
                                       <UploadDropzone
@@ -582,7 +581,7 @@ export const CommunitySettingsModal = ({
                                         }}
                                       />
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-2 gap-4">
                                       <div className="text-center p-3 rounded-lg bg-muted/30">
                                         <div className="text-xs font-medium text-muted-foreground mb-1">
@@ -612,15 +611,15 @@ export const CommunitySettingsModal = ({
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-base">Banner Image</FormLabel>
-                                
-                                
+
+
                                 <div className="space-y-6">
                                   <div className="relative rounded-xl border-2 overflow-hidden bg-gradient-to-r from-muted/30 to-muted/10">
                                     {field.value ? (
                                       <>
-                                        <img 
-                                          src={field.value} 
-                                          alt="Banner preview" 
+                                        <img
+                                          src={field.value}
+                                          alt="Banner preview"
                                           className="w-full aspect-[5/1] object-cover"
                                         />
                                         <button
@@ -639,7 +638,7 @@ export const CommunitySettingsModal = ({
                                       </div>
                                     )}
                                   </div>
-                                  
+
                                   <div className="rounded-lg border-2 border-dashed bg-muted/30 p-8">
                                     <UploadDropzone
                                       endpoint="communityImageUploader"
@@ -663,19 +662,19 @@ export const CommunitySettingsModal = ({
                                   </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                      <div className="text-center p-3 rounded-lg bg-muted/30">
-                                        <div className="text-xs font-medium text-muted-foreground mb-1">
-                                          Format
-                                        </div>
-                                        <div className="font-semibold">PNG, JPG</div>
-                                      </div>
-                                      <div className="text-center p-3 rounded-lg bg-muted/30">
-                                        <div className="text-xs font-medium text-muted-foreground mb-1">
-                                          Max Size
-                                        </div>
-                                        <div className="font-semibold">2MB</div>
-                                      </div>
+                                  <div className="text-center p-3 rounded-lg bg-muted/30">
+                                    <div className="text-xs font-medium text-muted-foreground mb-1">
+                                      Format
                                     </div>
+                                    <div className="font-semibold">PNG, JPG</div>
+                                  </div>
+                                  <div className="text-center p-3 rounded-lg bg-muted/30">
+                                    <div className="text-xs font-medium text-muted-foreground mb-1">
+                                      Max Size
+                                    </div>
+                                    <div className="font-semibold">2MB</div>
+                                  </div>
+                                </div>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -697,7 +696,7 @@ export const CommunitySettingsModal = ({
                         <p className="text-muted-foreground mb-6">
                           Add or remove community moderators. Moderators can manage videos, members, and settings.
                         </p>
-                        
+
                         <div className="space-y-6">
                           <div className="rounded-xl border bg-card p-6 shadow-sm">
                             <h4 className="font-semibold text-lg mb-4">Add New Moderator</h4>
@@ -711,7 +710,7 @@ export const CommunitySettingsModal = ({
                                   disabled={addModeratorMutation.isPending}
                                 />
                               </div>
-                              <Button 
+                              <Button
                                 disabled={addModeratorMutation.isPending || !newModUsername.trim()}
                                 className="gap-2"
                                 onClick={handleAddModerator}
@@ -733,7 +732,7 @@ export const CommunitySettingsModal = ({
                                 {moderators.length} {moderators.length === 1 ? "Moderator" : "Moderators"}
                               </Badge>
                             </div>
-                            
+
                             {moderators.length === 0 ? (
                               <div className="text-center py-12 rounded-xl border border-dashed">
                                 <Shield className="h-12 w-12 mx-auto text-muted-foreground/40 mb-3" />
@@ -747,8 +746,8 @@ export const CommunitySettingsModal = ({
                             ) : (
                               <div className="grid gap-3">
                                 {moderators.map((mod) => (
-                                  <div 
-                                    key={mod.userId} 
+                                  <div
+                                    key={mod.userId}
                                     className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/30 transition-colors group"
                                   >
                                     <div className="flex items-center gap-4">
@@ -795,7 +794,7 @@ export const CommunitySettingsModal = ({
                     </div>
                   )}
                 </div>
-                
+
                 {/* Save Button - Hidden for moderators tab */}
                 {activeTab !== "moderators" && (
                   <div className="sticky bottom-0 border-t bg-background/95 backdrop-blur-sm p-6">
@@ -818,8 +817,8 @@ export const CommunitySettingsModal = ({
                         >
                           Cancel
                         </Button>
-                        <Button 
-                          type="submit" 
+                        <Button
+                          type="submit"
                           disabled={updateMutation.isPending || !isDirty}
                           className="gap-2 min-w-32"
                         >

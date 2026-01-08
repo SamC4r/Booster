@@ -2,7 +2,7 @@ import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init
 import { db } from "@/db";
 import { userFollows, users, assets, communities, communityMembers, communityModerators, videos } from "@/db/schema";
 import { z } from "zod";
-import { and, eq, inArray, desc, lt, count, getTableColumns, not } from "drizzle-orm";
+import { and, eq, inArray, desc, lt, count, getTableColumns } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { createClient } from "@supabase/supabase-js";
 import { UTApi } from "uploadthing/server";
@@ -11,11 +11,11 @@ import { COMMUNITY_CREATION_LIMIT } from "@/constants";
 import { messageRateLimit } from "@/lib/ratelimit";
 
 const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY
-    ? createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY)!
-      )
-    : null;
+  ? createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY)!
+  )
+  : null;
 
 export const communityRouter = createTRPCRouter({
   getJoined: protectedProcedure
@@ -304,7 +304,7 @@ export const communityRouter = createTRPCRouter({
 
       if (existingCommunity) {
         const utapi = new UTApi();
-        
+
         if (banner_url === "" && existingCommunity.banner_url) {
           const key = existingCommunity.banner_url.split("/").pop();
           if (key) await utapi.deleteFiles(key);
@@ -513,7 +513,7 @@ export const communityRouter = createTRPCRouter({
             eq(videos.communityId, communityId),
             cursor ? lt(videos.createdAt, new Date(cursor)) : undefined,
             eq(videos.visibility, "public"),
-          eq(videos.status, "completed"),          )
+            eq(videos.status, "completed"),)
         )
         .limit(limit + 1)
         .orderBy(desc(videos.createdAt));
@@ -607,9 +607,9 @@ export const communityRouter = createTRPCRouter({
       const assetsData =
         assetIds.length > 0
           ? await db
-              .select()
-              .from(assets)
-              .where(inArray(assets.assetId, assetIds))
+            .select()
+            .from(assets)
+            .where(inArray(assets.assetId, assetIds))
           : [];
 
       const assetMap = new Map(assetsData.map((a) => [a.assetId, a]));

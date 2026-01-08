@@ -37,7 +37,6 @@ import {
   Globe2Icon,
   LockIcon,
   MoreVerticalIcon,
-  SparklesIcon,
   TrashIcon,
   Loader2,
   Eye,
@@ -55,7 +54,6 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { formatDuration, snakeCaseToTitle } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BunnyEmbed } from "@/modules/videos/ui/sections/BunnyEmbed";
@@ -755,10 +753,10 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                       <div className="flex items-center">
                         <div
                           className={`h-2 w-2 rounded-full mr-2 ${video.status === "completed"
-                              ? "bg-green-500"
-                              : video.status === "processing"
-                                ? "bg-yellow-500"
-                                : "bg-gray-500"
+                            ? "bg-green-500"
+                            : video.status === "processing"
+                              ? "bg-yellow-500"
+                              : "bg-gray-500"
                             }`}
                         ></div>
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -774,10 +772,10 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                       <div className="flex items-center">
                         <div
                           className={`h-2 w-2 rounded-full mr-2 ${video.status === "completed"
-                              ? "bg-green-500"
-                              : video.status === "processing"
-                                ? "bg-yellow-500"
-                                : "bg-gray-500"
+                            ? "bg-green-500"
+                            : video.status === "processing"
+                              ? "bg-yellow-500"
+                              : "bg-gray-500"
                             }`}
                         ></div>
                         <p className="text-sm font-medium text-gray-900 dark:text-white">

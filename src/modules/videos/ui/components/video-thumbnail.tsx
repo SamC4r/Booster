@@ -15,10 +15,10 @@ interface VideoThumbnailProps {
     isAi?: boolean;
 }
 
-export const VideoThumbnail = ({imageUrl,previewUrl, duration, title, aspectRatio = "video", isAi = false}: VideoThumbnailProps) => {
+export const VideoThumbnail = ({ imageUrl, previewUrl, duration, title, aspectRatio = "video", isAi = false }: VideoThumbnailProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [showVideo, setShowVideo] = useState(false);
-    
+
     // Use video preview for vertical videos to improve quality
     const shouldUseVideo = aspectRatio === "vertical";
     const videoSrc = shouldUseVideo && previewUrl ? previewUrl.replace("/preview.webp", "/play_360p.mp4") : null;
@@ -30,8 +30,8 @@ export const VideoThumbnail = ({imageUrl,previewUrl, duration, title, aspectRati
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     setShowVideo(true);
-                }).catch((error) => {
-                    // console.error("Video play failed:", error);
+                }).catch(() => {
+                    // console.error("Video play failed:");
                 });
             }
         }
@@ -45,23 +45,22 @@ export const VideoThumbnail = ({imageUrl,previewUrl, duration, title, aspectRati
     };
 
     return (
-        <div 
+        <div
             className="relative group"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
             {/* thumbnail wrapper */}
-            <div className={`relative w-full rounded-2xl overflow-hidden ${
-                aspectRatio === "vertical" ? "aspect-[9/16]" : 
-                aspectRatio === "square" ? "aspect-square" : "aspect-video"
-            }`}>
+            <div className={`relative w-full rounded-2xl overflow-hidden ${aspectRatio === "vertical" ? "aspect-[9/16]" :
+                    aspectRatio === "square" ? "aspect-square" : "aspect-video"
+                }`}>
                 {/* Layer 1: WebP Preview (Fallback) */}
-                <Image 
-                unoptimized={!!previewUrl}
-                src={previewUrl ?? imageUrl ?? THUMBNAIL_FALLBACK} 
-                alt='thumbnail' 
-                fill 
-                className='size-full object-cover rounded-2xl '
+                <Image
+                    unoptimized={!!previewUrl}
+                    src={previewUrl ?? imageUrl ?? THUMBNAIL_FALLBACK}
+                    alt='thumbnail'
+                    fill
+                    className='size-full object-cover rounded-2xl '
                 />
 
                 {/* Layer 2: Video (High Quality) */}
@@ -77,11 +76,11 @@ export const VideoThumbnail = ({imageUrl,previewUrl, duration, title, aspectRati
                 )}
 
                 {/* Layer 3: Static Thumbnail (Foreground) */}
-                <Image 
-                src={imageUrl ?? THUMBNAIL_FALLBACK} 
-                alt={title} 
-                fill 
-                className='size-full object-cover group-hover:opacity-0 rounded-2xl transition-opacity duration-300 z-10 border-red-500'
+                <Image
+                    src={imageUrl ?? THUMBNAIL_FALLBACK}
+                    alt={title}
+                    fill
+                    className='size-full object-cover group-hover:opacity-0 rounded-2xl transition-opacity duration-300 z-10 border-red-500'
                 />
             </div>
 
@@ -93,7 +92,7 @@ export const VideoThumbnail = ({imageUrl,previewUrl, duration, title, aspectRati
                     </Badge>
                 </div>
             )}
-                
+
             {/* Duration box */}
             <div className="absolute bottom-2 right-2 px-1 py-0.5 rounded-lg bg-amber-700 text-white text-xs font-medium z-20">
                 {formatDuration(duration)}

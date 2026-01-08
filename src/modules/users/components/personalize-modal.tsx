@@ -717,7 +717,6 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                 <textarea
                                                     value={about}
                                                     onChange={(e) => setAbout(e.target.value)}
-                                                    maxLength={2000}
                                                     className="w-full min-h-[100px] p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-background resize-y focus:outline-none focus:border-blue-500"
                                                     placeholder="Tell us about yourself..."
                                                 />
@@ -731,7 +730,6 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     <Input
                                                         value={instagram}
                                                         onChange={(e) => setInstagram(e.target.value)}
-                                                        maxLength={100}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="Instagram username or URL"
                                                     />
@@ -742,7 +740,6 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     <Input
                                                         value={twitter}
                                                         onChange={(e) => setTwitter(e.target.value)}
-                                                        maxLength={100}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="Twitter username or URL"
                                                     />
@@ -753,7 +750,6 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     <Input
                                                         value={youtube}
                                                         onChange={(e) => setYoutube(e.target.value)}
-                                                        maxLength={200}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="YouTube channel URL"
                                                     />
@@ -764,7 +760,6 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     <Input
                                                         value={tiktok}
                                                         onChange={(e) => setTiktok(e.target.value)}
-                                                        maxLength={100}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="TikTok username or URL"
                                                     />
@@ -775,7 +770,6 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     <Input
                                                         value={discord}
                                                         onChange={(e) => setDiscord(e.target.value)}
-                                                        maxLength={100}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="Discord server URL or username"
                                                     />
@@ -786,7 +780,6 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     <Input
                                                         value={website}
                                                         onChange={(e) => setWebsite(e.target.value)}
-                                                        maxLength={200}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="Website URL"
                                                     />

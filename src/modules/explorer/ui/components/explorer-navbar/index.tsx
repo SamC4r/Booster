@@ -7,7 +7,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SearchInput } from "./search-input";
 import { AuthButton } from "@/modules/auth/ui/components/auth-button";
 
-import { Tv2Icon,  Video, Upload } from "lucide-react";
+import { Tv2Icon, Upload } from "lucide-react";
 import { User as RetroUser, FileTransfer as RetroUpload } from "@react95/icons";
 import { useTheme } from "next-themes";
 import { trpc } from "@/trpc/client";

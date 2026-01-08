@@ -1,5 +1,4 @@
 import { VideosSection } from "../sections/videos-section";
-import { SyncYouTubeButton } from "../components/sync-youtube-button";
 
 export const StudioView = () => {
     return (
