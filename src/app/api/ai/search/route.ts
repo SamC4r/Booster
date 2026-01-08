@@ -3,11 +3,23 @@ import { videos } from "@/db/schema";
 import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { publicRateLimit } from "@/lib/ratelimit";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function GET(req: Request) {
   try {
+    // Rate limit by IP to prevent abuse of OpenAI API
+    const forwarded = req.headers.get("x-forwarded-for");
+    const ip = forwarded ? forwarded.split(",")[0].trim() : "anonymous";
+    const { success } = await publicRateLimit.limit(`ai-search:${ip}`);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     //Tomar el search input del usuario y crear el embedding
     const { searchParams } = new URL(req.url);
     const text = searchParams.get("text") || "";

@@ -1,11 +1,49 @@
 // app/api/bunny/upload/route.ts
 // PUT /api/bunny/upload?videoId=GUID
+import { auth } from "@clerk/nextjs/server";
+import { db } from "@/db";
+import { users, videos } from "@/db/schema";
+import { eq, and, inArray } from "drizzle-orm";
+import { uploadRateLimit } from "@/lib/ratelimit";
+
 export const runtime = 'nodejs'; // ensure Node, not Edge
 
 export async function PUT(req: Request) {
+  // Authenticate user
+  const { userId: clerkUserId } = await auth();
+  if (!clerkUserId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  // Get internal user ID
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(inArray(users.clerkId, [clerkUserId]));
+
+  if (!user) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const { searchParams } = new URL(req.url);
   const videoId = searchParams.get("videoId");
   if (!videoId) return new Response("Missing videoId", { status: 400 });
+
+  // Verify video ownership - user must own the video to upload to it
+  const [video] = await db
+    .select()
+    .from(videos)
+    .where(and(eq(videos.id, videoId), eq(videos.userId, user.id)));
+
+  if (!video) {
+    return new Response("Video not found or access denied", { status: 403 });
+  }
+
+  // Apply rate limiting
+  const { success } = await uploadRateLimit.limit(user.id);
+  if (!success) {
+    return new Response("Daily upload limit reached", { status: 429 });
+  }
 
   const r = await fetch(
     `https://video.bunnycdn.com/library/${process.env.BUNNY_STREAM_LIBRARY_ID}/${"videos"}/${videoId}`,
@@ -15,13 +53,13 @@ export async function PUT(req: Request) {
         "AccessKey": process.env.BUNNY_STREAM_API_KEY!,
         "accept": "application/json",
       },
-      body: req.body, 
-      duplex:"half",
+      body: req.body,
+      duplex: "half",
     } as any
   );
   if (!r.ok) return new Response(await r.text(), { status: r.status });
 
-//   const newVideo = 
+  //   const newVideo = 
 
   return new Response("ok");
 }
