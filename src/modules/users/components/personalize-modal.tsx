@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserAvatar } from "@/components/user-avatar";
 import { useAuth } from "@clerk/nextjs";
-import { 
-    User, 
-    Gamepad, 
-    Palette, 
-    Code, 
-    Camera, 
-    Star, 
-    Heart, 
+import {
+    User,
+    Gamepad,
+    Palette,
+    Code,
+    Camera,
+    Star,
+    Heart,
     Sun,
     Moon,
     Check,
@@ -64,7 +64,7 @@ const getTitleGradient = (titleName: string) => {
 };
 
 const ACCENT_COLORS = [
-    { 
+    {
         name: 'Dark Gray',
         bg: 'bg-[#212121]',
         gradient: 'from-[#212121] to-[#424242]',
@@ -75,7 +75,7 @@ const ACCENT_COLORS = [
         light: 'bg-gray-100',
         dark: 'bg-gray-900'
     },
-    { 
+    {
         name: 'Blue Teal',
         bg: 'bg-blue-500',
         gradient: 'from-blue-500 to-teal-400',
@@ -86,7 +86,7 @@ const ACCENT_COLORS = [
         light: 'bg-blue-50',
         dark: 'bg-blue-950'
     },
-    { 
+    {
         name: 'Green Blue',
         bg: 'bg-green-500',
         gradient: 'from-green-400 to-blue-500',
@@ -97,7 +97,7 @@ const ACCENT_COLORS = [
         light: 'bg-green-50',
         dark: 'bg-green-950'
     },
-    { 
+    {
         name: 'Orange Red',
         bg: 'bg-orange-500',
         gradient: 'from-yellow-400 to-red-500',
@@ -108,7 +108,7 @@ const ACCENT_COLORS = [
         light: 'bg-orange-50',
         dark: 'bg-orange-950'
     },
-    { 
+    {
         name: 'Purple Pink',
         bg: 'bg-purple-500',
         gradient: 'from-purple-500 to-pink-500',
@@ -146,9 +146,9 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
     // Fetch user's owned assets from marketplace
     const { data: ownedAssets, isLoading: loadingAssets } = trpc.assets.getAssetsByUser.useQuery();
-    
+
     const ownedTitles = ownedAssets?.filter(asset => asset.category === 'titles') || [];
-    
+
     // Fetch current user information with actual Clerk ID
     const { data: currentUser } = trpc.users.getByClerkId.useQuery(
         { clerkId: clerkUserId },
@@ -156,13 +156,13 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     );
 
     const utils = trpc.useUtils();
-    
+
     // Fetch boost points for XP bar
     const { data: boostPoints } = trpc.xp.getBoostByUserId.useQuery(
         { userId: currentUser?.id || '' },
         { enabled: !!currentUser?.id }
     );
-    
+
     // Fetch currently equipped asset
     const { data: equippedAsset } = trpc.users.getEquippedAsset.useQuery(
         { userId: currentUser?.id || '' },
@@ -197,14 +197,14 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     }, [currentUser]);
 
     // Calculate channel level and XP
-    const channelLevel = currentUser && boostPoints 
+    const channelLevel = currentUser && boostPoints
         ? Math.floor(Math.floor(Math.sqrt(boostPoints.boostPoints * 1000)) / 1000)
         : 0;
-    
+
     const f = (x: number) => Math.floor((x * x) / 1000);
     const xpOnCurrentLevel = f(1000 * channelLevel);
     const xpForNextLevel = f(1000 * (channelLevel + 1));
-    const xpProgress = boostPoints 
+    const xpProgress = boostPoints
         ? Math.max(0, Math.min(100, ((boostPoints.boostPoints - xpOnCurrentLevel) / (xpForNextLevel - xpOnCurrentLevel)) * 100))
         : 0;
 
@@ -274,7 +274,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     // Deduplicate icons, preferring the equipped one
     const uniquePurchasedIcons = purchasedIcons.reduce((acc, current) => {
         const existingIndex = acc.findIndex(item => item.iconNumber === current.iconNumber);
-        
+
         if (existingIndex === -1) {
             // New icon number, add it
             acc.push(current);
@@ -296,7 +296,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     ];
 
     // Find the index of currently equipped asset
-    const equippedIconIndex = equippedAsset 
+    const equippedIconIndex = equippedAsset
         ? availableIcons.findIndex(icon => 'assetId' in icon && icon.assetId === equippedAsset.assetId)
         : -1;
 
@@ -308,14 +308,14 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
     // Render the preview icon in the same style as channel page
     const renderPreviewIcon = () => {
         if (!selectedIconData) return null;
-        
+
         // If the "Remove Icon" option is selected, show nothing
         if ('isRemoveOption' in selectedIconData && selectedIconData.isRemoveOption) {
             return <span className="text-muted-foreground text-sm">(No icon)</span>;
         }
-        
+
         const size = 10; // Same size as channel page (size 10 = big)
-        
+
         if (selectedIconData.isLucideIcon && selectedIconData.icon) {
             const IconComponent = selectedIconData.icon;
             return <IconComponent size={40} className="w-10 h-10" />;
@@ -324,19 +324,19 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
             const CustomIcon = selectedIconData.icon;
             return <CustomIcon size={size} />;
         }
-        
+
         return null;
     };
 
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         let changesSaved = false;
 
         // Only save if there's a change to the icon
         if (previewIconIndex !== null) {
             const iconData = availableIcons[previewIconIndex];
-            
+
             // Check if it's the remove icon option
             if ('isRemoveOption' in iconData && iconData.isRemoveOption) {
                 // Unequip any equipped icon
@@ -353,19 +353,19 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
         // Save title if changed
         if (selectedTitle !== (equippedTitle?.name || null)) {
-             if (selectedTitle) {
-                 const titleAsset = ownedTitles.find(t => t.name === selectedTitle);
-                 if (titleAsset) {
-                     equipTitleMutation.mutate({ assetId: titleAsset.assetId });
-                 }
-             } else {
-                 equipTitleMutation.mutate({ assetId: null });
-             }
-             changesSaved = true;
+            if (selectedTitle) {
+                const titleAsset = ownedTitles.find(t => t.name === selectedTitle);
+                if (titleAsset) {
+                    equipTitleMutation.mutate({ assetId: titleAsset.assetId });
+                }
+            } else {
+                equipTitleMutation.mutate({ assetId: null });
+            }
+            changesSaved = true;
         }
 
         // Save display name and other info if changed
-        if (displayName !== currentUser?.name || 
+        if (displayName !== currentUser?.name ||
             about !== (currentUser?.about || "") ||
             instagram !== (currentUser?.instagram || "") ||
             twitter !== (currentUser?.twitter || "") ||
@@ -374,7 +374,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
             discord !== (currentUser?.discord || "") ||
             website !== (currentUser?.website || "")
         ) {
-            updateUserMutation.mutate({ 
+            updateUserMutation.mutate({
                 name: displayName,
                 about,
                 instagram,
@@ -386,11 +386,11 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
             });
             changesSaved = true;
         }
-        
+
         if (changesSaved) {
             toast.success('Profile updated successfully!');
         }
-        
+
         setPreviewIconIndex(null); // Reset preview
         onClose();
     };
@@ -412,7 +412,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
             <div className="fixed inset-0 bg-transparent backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
                 <div className="bg-background rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden my-8">
                     {/* Header */}
-                    <div 
+                    <div
                         className="px-6 py-4 flex justify-between items-center"
                         style={{ background: currentAccent.bgSolid }}
                     >
@@ -474,7 +474,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                 </span>
                                             ) : 'No title selected'}
                                         </p>
-                                        
+
                                         {/* Icon Preview - Same as channel page */}
                                         <div className="mt-1 flex justify-center">
                                             {renderPreviewIcon()}
@@ -488,7 +488,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                             <span className="text-primary font-bold text-sm">Level {channelLevel}</span>
                                         </div>
                                         <div className="h-2.5 bg-muted rounded-full overflow-hidden">
-                                            <div 
+                                            <div
                                                 className="h-full rounded-full transition-all"
                                                 style={{ width: `${xpProgress}%`, background: currentAccent.bgSolid }}
                                             />
@@ -529,8 +529,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                             onClick={() => setActiveTab('basic')}
                                             className={cn(
                                                 "flex-1 py-2 px-4 rounded-lg font-medium transition-all text-sm whitespace-nowrap",
-                                                activeTab === 'basic' 
-                                                    ? "text-white" 
+                                                activeTab === 'basic'
+                                                    ? "text-white"
                                                     : "text-muted-foreground hover:text-foreground"
                                             )}
                                             style={activeTab === 'basic' ? { background: currentAccent.bgSolid } : {}}
@@ -542,8 +542,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                             onClick={() => setActiveTab('about')}
                                             className={cn(
                                                 "flex-1 py-2 px-4 rounded-lg font-medium transition-all text-sm whitespace-nowrap",
-                                                activeTab === 'about' 
-                                                    ? "text-white" 
+                                                activeTab === 'about'
+                                                    ? "text-white"
                                                     : "text-muted-foreground hover:text-foreground"
                                             )}
                                             style={activeTab === 'about' ? { background: currentAccent.bgSolid } : {}}
@@ -555,8 +555,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                             onClick={() => setActiveTab('appearance')}
                                             className={cn(
                                                 "flex-1 py-2 px-4 rounded-lg font-medium transition-all text-sm whitespace-nowrap",
-                                                activeTab === 'appearance' 
-                                                    ? "text-white" 
+                                                activeTab === 'appearance'
+                                                    ? "text-white"
                                                     : "text-muted-foreground hover:text-foreground"
                                             )}
                                             style={activeTab === 'appearance' ? { background: currentAccent.bgSolid } : {}}
@@ -571,8 +571,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                         <form onSubmit={handleSave} className="space-y-4">
                                             <div>
                                                 <label className="block text-sm font-bold mb-2">Display Name</label>
-                                                <Input 
-                                                    value={displayName} 
+                                                <Input
+                                                    value={displayName}
                                                     onChange={(e) => setDisplayName(e.target.value)}
                                                     className="border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                     placeholder="Enter your display name"
@@ -584,8 +584,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                             <div>
                                                 <label className="block text-sm font-bold mb-2">Username</label>
-                                                <Input 
-                                                    value={currentUser?.username ? `@${currentUser.username}` : ''} 
+                                                <Input
+                                                    value={currentUser?.username ? `@${currentUser.username}` : ''}
                                                     disabled
                                                     className="border-2 border-gray-300 dark:border-gray-600 bg-muted cursor-not-allowed"
                                                 />
@@ -596,10 +596,10 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                             <div>
                                                 <label className="block text-sm font-bold mb-2">Select Title</label>
-                                                <Button 
-                                                    type="button" 
-                                                    variant="outline" 
-                                                    onClick={() => setShowTitleModal(true)} 
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    onClick={() => setShowTitleModal(true)}
                                                     className="w-full justify-start border-2 border-gray-300 dark:border-gray-600 hover:border-[#212121] dark:hover:border-[#212121]"
                                                 >
                                                     {selectedTitle ? (
@@ -646,7 +646,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                         const assetId = 'assetId' in iconData ? iconData.assetId : null;
                                                         const isEquipped = equippedAsset?.assetId === assetId;
                                                         const isSelected = displayIconIndex === idx;
-                                                        
+
                                                         return (
                                                             <button
                                                                 key={idx}
@@ -657,11 +657,11 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                                 }}
                                                                 className={cn(
                                                                     "w-10 h-10 rounded-lg flex items-center justify-center transition-all border-2 relative",
-                                                                    isSelected 
-                                                                        ? "border-blue-500 bg-blue-500/10" 
+                                                                    isSelected
+                                                                        ? "border-blue-500 bg-blue-500/10"
                                                                         : isEquipped
-                                                                        ? "border-green-500 bg-green-500/5"
-                                                                        : "border-transparent hover:border-gray-300"
+                                                                            ? "border-green-500 bg-green-500/5"
+                                                                            : "border-transparent hover:border-gray-300"
                                                                 )}
                                                             >
                                                                 {/* Render appropriate icon component */}
@@ -698,8 +698,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                             <div className="flex justify-end space-x-3 pt-4">
                                                 <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
-                                                <Button 
-                                                    type="submit" 
+                                                <Button
+                                                    type="submit"
                                                     className="text-white"
                                                     style={{ background: currentAccent.bgSolid }}
                                                 >
@@ -714,8 +714,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                         <form onSubmit={handleSave} className="space-y-4">
                                             <div>
                                                 <label className="block text-sm font-bold mb-2">About Me</label>
-                                                <textarea 
-                                                    value={about} 
+                                                <textarea
+                                                    value={about}
                                                     onChange={(e) => setAbout(e.target.value)}
                                                     className="w-full min-h-[100px] p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-background resize-y focus:outline-none focus:border-blue-500"
                                                     placeholder="Tell us about yourself..."
@@ -724,11 +724,11 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                             <div className="space-y-3">
                                                 <label className="block text-sm font-bold">Social Links</label>
-                                                
+
                                                 <div className="relative">
                                                     <Instagram className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                                                    <Input 
-                                                        value={instagram} 
+                                                    <Input
+                                                        value={instagram}
                                                         onChange={(e) => setInstagram(e.target.value)}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="Instagram username or URL"
@@ -737,8 +737,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                                 <div className="relative">
                                                     <Twitter className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                                                    <Input 
-                                                        value={twitter} 
+                                                    <Input
+                                                        value={twitter}
                                                         onChange={(e) => setTwitter(e.target.value)}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="Twitter username or URL"
@@ -747,8 +747,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                                 <div className="relative">
                                                     <Youtube className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                                                    <Input 
-                                                        value={youtube} 
+                                                    <Input
+                                                        value={youtube}
                                                         onChange={(e) => setYoutube(e.target.value)}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="YouTube channel URL"
@@ -757,8 +757,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                                 <div className="relative">
                                                     <Music className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                                                    <Input 
-                                                        value={tiktok} 
+                                                    <Input
+                                                        value={tiktok}
                                                         onChange={(e) => setTiktok(e.target.value)}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="TikTok username or URL"
@@ -767,8 +767,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                                 <div className="relative">
                                                     <Gamepad2 className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                                                    <Input 
-                                                        value={discord} 
+                                                    <Input
+                                                        value={discord}
                                                         onChange={(e) => setDiscord(e.target.value)}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="Discord server URL or username"
@@ -777,8 +777,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                                                 <div className="relative">
                                                     <Globe className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                                                    <Input 
-                                                        value={website} 
+                                                    <Input
+                                                        value={website}
                                                         onChange={(e) => setWebsite(e.target.value)}
                                                         className="pl-10 border-2 border-gray-300 dark:border-gray-600 bg-background"
                                                         placeholder="Website URL"
@@ -787,8 +787,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                             </div>
 
                                             <div className="flex justify-end pt-4">
-                                                <Button 
-                                                    type="submit" 
+                                                <Button
+                                                    type="submit"
                                                     className="text-white"
                                                     style={{ background: currentAccent.bgSolid }}
                                                 >
@@ -805,12 +805,12 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                 <h3 className="text-lg font-bold mb-3">Theme</h3>
                                                 <div className="grid grid-cols-3 gap-4">
                                                     {/* Light Theme */}
-                                                    <button 
-                                                        onClick={() => setTheme('light')} 
+                                                    <button
+                                                        onClick={() => setTheme('light')}
                                                         className={cn(
                                                             "relative border-2 rounded-xl p-4 transition-all group hover:scale-105",
-                                                            theme === 'light' 
-                                                                ? "bg-gradient-to-br from-white to-gray-100 shadow-lg" 
+                                                            theme === 'light'
+                                                                ? "bg-gradient-to-br from-white to-gray-100 shadow-lg"
                                                                 : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/50"
                                                         )}
                                                         style={theme === 'light' ? { borderColor: currentAccent.bgSolid } : {}}
@@ -826,7 +826,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                         </div>
                                                         {/* Selection indicator */}
                                                         {theme === 'light' && (
-                                                            <div 
+                                                            <div
                                                                 className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
                                                                 style={{ background: currentAccent.bgSolid }}
                                                             >
@@ -842,12 +842,12 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     </button>
 
                                                     {/* Dark Theme */}
-                                                    <button 
-                                                        onClick={() => setTheme('dark')} 
+                                                    <button
+                                                        onClick={() => setTheme('dark')}
                                                         className={cn(
                                                             "relative border-2 rounded-xl p-4 transition-all group hover:scale-105",
-                                                            theme === 'dark' 
-                                                                ? "bg-gradient-to-br from-gray-900 to-gray-800 shadow-lg" 
+                                                            theme === 'dark'
+                                                                ? "bg-gradient-to-br from-gray-900 to-gray-800 shadow-lg"
                                                                 : "border-gray-300 dark:border-gray-600 bg-gray-900 dark:bg-gray-800/50"
                                                         )}
                                                         style={theme === 'dark' ? { borderColor: currentAccent.bgSolid } : {}}
@@ -863,7 +863,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                         </div>
                                                         {/* Selection indicator */}
                                                         {theme === 'dark' && (
-                                                            <div 
+                                                            <div
                                                                 className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
                                                                 style={{ background: currentAccent.bgSolid }}
                                                             >
@@ -879,12 +879,12 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                     </button>
 
                                                     {/* Retro Theme */}
-                                                    <button 
-                                                        onClick={() => setTheme('retro')} 
+                                                    <button
+                                                        onClick={() => setTheme('retro')}
                                                         className={cn(
                                                             "relative border-2 rounded-xl p-4 transition-all group hover:scale-105",
-                                                            theme === 'retro' 
-                                                                ? "bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg" 
+                                                            theme === 'retro'
+                                                                ? "bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg"
                                                                 : "border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800/50"
                                                         )}
                                                         style={theme === 'retro' ? { borderColor: currentAccent.bgSolid } : {}}
@@ -900,7 +900,7 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                         </div>
                                                         {/* Selection indicator */}
                                                         {theme === 'retro' && (
-                                                            <div 
+                                                            <div
                                                                 className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
                                                                 style={{ background: currentAccent.bgSolid }}
                                                             >
@@ -948,14 +948,14 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                 ownedTitles.map(title => {
                                     const isSelected = selectedTitle === title.name;
                                     return (
-                                        <button 
-                                            key={title.assetId} 
-                                            onClick={() => setSelectedTitle(isSelected ? null : title.name)} 
+                                        <button
+                                            key={title.assetId}
+                                            onClick={() => setSelectedTitle(isSelected ? null : title.name)}
                                             className={cn(
-                                                "w-full flex items-center p-3 rounded-lg border-2 transition-all", 
+                                                "w-full flex items-center p-3 rounded-lg border-2 transition-all",
                                                 isSelected ? "" : "border-transparent hover:bg-muted"
                                             )}
-                                            style={isSelected ? { 
+                                            style={isSelected ? {
                                                 borderColor: currentAccent.bgSolid,
                                                 backgroundColor: `${currentAccent.bgSolid}15`
                                             } : {}}
@@ -967,8 +967,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
                                                 {title.name}
                                             </span>
                                             {isSelected && (
-                                                <Check 
-                                                    className="w-5 h-5" 
+                                                <Check
+                                                    className="w-5 h-5"
                                                     style={{ color: currentAccent.bgSolid }}
                                                 />
                                             )}
@@ -980,8 +980,8 @@ export const PersonalizeModal = ({ isOpen, onClose }: PersonalizeModalProps) => 
 
                         <div className="flex justify-end space-x-3">
                             <Button variant="outline" onClick={() => setShowTitleModal(false)}>Cancel</Button>
-                            <Button 
-                                onClick={() => { setShowTitleModal(false); toast.success('Title updated!'); }} 
+                            <Button
+                                onClick={() => { setShowTitleModal(false); toast.success('Title updated!'); }}
                                 className="text-white"
                                 style={{ background: currentAccent.bgSolid }}
                             >

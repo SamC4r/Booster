@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -25,9 +24,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { trpc } from "@/trpc/client";
 import { toast } from "sonner";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { PlusCircle } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(3).max(50),
@@ -35,12 +33,12 @@ const formSchema = z.object({
   description_long: z.string().max(2000).optional(),
 });
 
-interface Props{
-    open: boolean;
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+interface Props {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const CreateCommunityModal = ({open, setOpen}:Props) => {
+export const CreateCommunityModal = ({ open, setOpen }: Props) => {
   const router = useRouter();
   const utils = trpc.useUtils();
 
@@ -72,7 +70,7 @@ export const CreateCommunityModal = ({open, setOpen}:Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      
+
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>Create a Community</DialogTitle>

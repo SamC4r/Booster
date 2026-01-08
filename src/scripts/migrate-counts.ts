@@ -1,10 +1,9 @@
 import { db } from "@/db";
-import { videos, videoViews, comments, videoRatings } from "@/db/schema";
 import { sql } from "drizzle-orm";
 
 async function main() {
     console.log("Starting migration...");
-    
+
     // Update view counts
     console.log("Updating view counts...");
     await db.execute(sql`
@@ -42,7 +41,7 @@ async function main() {
             WHERE vr.video_id = v.id
         )
     `);
-    
+
     console.log("Migration complete.");
     process.exit(0);
 }

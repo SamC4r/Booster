@@ -109,7 +109,7 @@ export const ourFileRouter = {
 
             return { userId: user.id };
         })
-        .onUploadComplete(async ({ metadata, file }) => {
+        .onUploadComplete(async ({ file }) => {
             return { url: file.url, key: file.key };
         }),
 

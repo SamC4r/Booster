@@ -17,7 +17,6 @@ import { CommentReplyInput } from "./comment-reply-input";
 import { User } from "@/modules/users/types";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { toast } from "sonner";
-import { getUserIcons } from "@/modules/market/components/assetIcons/functions/get-user-icons";
 import {
     DropdownMenu,
     DropdownMenuContent,

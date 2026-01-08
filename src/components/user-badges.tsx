@@ -1,4 +1,4 @@
-import { Zap, Users, Star, type LucideIcon } from "lucide-react";
+import { Zap, Users, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const getIconComponent = (iconNumber: number) => {
@@ -49,7 +49,7 @@ interface UserIconProps {
 export const UserIcon = ({ iconNumber, className }: UserIconProps) => {
     const Icon = getIconComponent(iconNumber);
     if (!Icon) return null;
-    
+
     let iconClass = "text-primary";
     if (iconNumber === 1) iconClass = "text-yellow-500 fill-yellow-500";
     if (iconNumber === 2) iconClass = "text-blue-500 fill-blue-500";

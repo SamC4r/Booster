@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Users, Shield } from "lucide-react";
 
@@ -38,12 +37,12 @@ export const CommunityCard = ({ community }: CommunityCardProps) => {
                 {/* Avatar */}
                 <div className="relative shrink-0">
                     <Avatar className="h-14 w-14 border-2 border-background shadow-sm">
-                        <AvatarImage src={community.icon_url || ""} alt={community.name} className="object-cover"/>
+                        <AvatarImage src={community.icon_url || ""} alt={community.name} className="object-cover" />
                         <AvatarFallback>
                             {getInitials(community.name)}
                         </AvatarFallback>
                     </Avatar>
-                     {community.isVerified && (
+                    {community.isVerified && (
                         <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-0.5 border-2 border-background">
                             <Shield className="h-3 w-3 text-white" />
                         </div>
@@ -57,13 +56,13 @@ export const CommunityCard = ({ community }: CommunityCardProps) => {
                             {community.name}
                         </h3>
                     </div>
-                    
+
                     {community.description_short && (
                         <p className="text-sm text-muted-foreground line-clamp-1 leading-snug">
                             {community.description_short}
                         </p>
                     )}
-                    
+
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                         <div className="flex items-center gap-1">
                             <Users className="h-3 w-3" />
@@ -72,7 +71,7 @@ export const CommunityCard = ({ community }: CommunityCardProps) => {
                     </div>
                 </div>
 
-               
+
             </Card>
         </Link>
     );

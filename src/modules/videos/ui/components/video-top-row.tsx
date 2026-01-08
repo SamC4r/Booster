@@ -3,8 +3,6 @@ import { VideoGetOneOutput } from "../../types";
 import { VideoMenu } from "./video-menu";
 
 import { VideoViews } from "./video-views";
-import { Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 interface Props {
     video: VideoGetOneOutput;

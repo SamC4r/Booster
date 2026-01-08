@@ -2,10 +2,8 @@
 export const runtime = "nodejs";
 
 import { db } from "@/db";
-import { users, videos } from "@/db/schema";
-import { auth } from "@clerk/nextjs/server";
-import { and, eq, inArray } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { videos } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import Sightengine from "sightengine";
 
 const statusMap = new Map<string, string>([
@@ -52,7 +50,7 @@ async function getBunnyVideo(libraryId: string, videoId: string) {
   }>;
 }
 
-export async function POST( req: Request, { params }: { params: { token: string } }) {
+export async function POST(req: Request, { params }: { params: { token: string } }) {
 
 
 
@@ -60,17 +58,17 @@ export async function POST( req: Request, { params }: { params: { token: string 
   if (params.token !== process.env.BUNNY_WEBHOOK_SECRET) {
     return new Response("Not found", { status: 404 });
   }
-  
-  
+
+
   // Bunny sends JSON when a video status changes.
   const payload = await req.json().catch(() => ({} as any));
 
   // Be defensive with field names across accounts/templates
   const libraryId = String(
     payload.VideoLibraryId ??
-      payload.LibraryId ??
-      process.env.BUNNY_STREAM_LIBRARY_ID ??
-      ""
+    payload.LibraryId ??
+    process.env.BUNNY_STREAM_LIBRARY_ID ??
+    ""
   );
   const videoId = String(
     payload.VideoGuid ?? payload.Guid ?? payload.VideoId ?? ""

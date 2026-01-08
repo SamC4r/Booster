@@ -115,10 +115,10 @@ export const videosRouter = createTRPCRouter({
 
             viewerRating: userId
               ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(
-                  Number
-                )
+                Number
+              )
               : sql<number>`(NULL)`.mapWith(Number),
-            
+
             viewerHasViewed: userId
               ? sql<boolean>`EXISTS (SELECT 1 FROM ${videoViews} WHERE ${videoViews.userId} = ${userId} AND ${videoViews.videoId} = ${videos.id})`.mapWith(Boolean)
               : sql<boolean>`false`.mapWith(Boolean),
@@ -191,7 +191,7 @@ export const videosRouter = createTRPCRouter({
       }
 
       const [currentVideo] = await db
-        .select({ 
+        .select({
           categoryId: videos.categoryId,
           embedding: videos.embedding,
           tags: videos.tags
@@ -346,8 +346,8 @@ export const videosRouter = createTRPCRouter({
               ),
             viewerRating: userId
               ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(
-                  Number
-                )
+                Number
+              )
               : sql<number>`(NULL)`.mapWith(Number),
           },
           score: scoreExpr.as("score"),
@@ -690,9 +690,9 @@ export const videosRouter = createTRPCRouter({
   createAfterUpload: protectedProcedure
     .input(
       z.object({
-        bunnyVideoId: z.string(), // Bunny GUID just uploaded to
-        title: z.string().min(1),
-        description: z.string().optional(),
+        bunnyVideoId: z.string().uuid(), // Bunny GUID just uploaded to
+        title: z.string().min(1).max(200),
+        description: z.string().max(5000).optional(),
         categoryId: z.string().uuid().optional(),
       })
     )
@@ -723,7 +723,7 @@ export const videosRouter = createTRPCRouter({
         thumbnailUrl: z.string(),
       })
     )
-    .mutation(async ({ ctx,input }) => {
+    .mutation(async ({ ctx, input }) => {
       const { videoId, fileUrl, thumbnailUrl } = input;
 
       await db
@@ -732,7 +732,7 @@ export const videosRouter = createTRPCRouter({
           playbackUrl: fileUrl,
           thumbnailUrl,
         })
-        .where(and(eq(videos.id, videoId),eq(videos.userId, ctx.user.id)));
+        .where(and(eq(videos.id, videoId), eq(videos.userId, ctx.user.id)));
     }),
 
   getUserByVideoId: baseProcedure
@@ -743,14 +743,13 @@ export const videosRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const { videoId } = input;
-      console.log("KJADLSKD");
       const { clerkUserId } = ctx;
       let userId;
 
       const [user] = await db
         .select()
         .from(users)
-        .where(inArray(users.clerkId, clerkUserId ? [clerkUserId] : [])); //trick
+        .where(inArray(users.clerkId, clerkUserId ? [clerkUserId] : []));
 
       if (user) {
         userId = user.id;
@@ -766,7 +765,18 @@ export const videosRouter = createTRPCRouter({
       const [creator] = await db
         .with(viewerFollow)
         .select({
-          ...getTableColumns(users),
+          id: users.id,
+          clerkId: users.clerkId,
+          name: users.name,
+          username: users.username,
+          imageUrl: users.imageUrl,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt,
+          about: users.about,
+          xp: users.xp,
+          boostPoints: users.boostPoints,
+          newLevelUpgrade: users.newLevelUpgrade,
+          accountType: users.accountType,
           followsCount:
             sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(
               Number

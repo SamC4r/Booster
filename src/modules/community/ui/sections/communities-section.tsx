@@ -5,7 +5,7 @@ import { InfiniteScroll } from "@/components/infinite-scroll";
 import { CommunityCard } from "../components/community-card";
 import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { PlusCircle, Search, Shield, Sparkles } from "lucide-react";
+import { PlusCircle, Search, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CategoriesSection } from "@/modules/explorer/ui/sections/categories-section";
@@ -128,7 +128,7 @@ const CommunitiesSectionSuspense = ({
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {communities.map((community, index) => (
+              {communities.map((community) => (
                 <CommunityCard
                   key={community.communityId}
                   community={community}

@@ -5,20 +5,18 @@ import { VideoGridCard } from "@/modules/videos/ui/components/video-grid-card";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import Link from "next/link";
-import { 
-  ArrowRight, 
-  Users, 
-  Video, 
-  ChevronRight,
-  Sparkles,
-  Loader2
+import {
+    ArrowRight,
+    Users,
+    Video,
+    Loader2
 } from "lucide-react";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -44,7 +42,7 @@ const ErrorFallback = () => (
             </div>
             <h3 className="text-lg font-semibold mb-2">Failed to load communities</h3>
             <p className="text-muted-foreground mb-4">We couldn't load your followed communities. Please try again.</p>
-            <button 
+            <button
                 onClick={() => window.location.reload()}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
@@ -94,11 +92,11 @@ const FollowedCommunitiesSuspense = () => {
                         <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
                             <Users className="w-10 h-10 text-primary" />
                         </div>
-                        
+
                         <p className="text-muted-foreground mb-8 text-lg max-w-md mx-auto">
                             Join communities to see their latest videos
                         </p>
-                        <Link 
+                        <Link
                             href="/c"
                             className="group inline-flex items-center gap-2 px-8 py-3 rounded-xl btn-primary font-semibold transition-all duration-300 shadow"
                         >
@@ -128,9 +126,9 @@ const FollowedCommunitiesSuspense = () => {
             </div>
 
             <div className="space-y-12">
-                {communities.map((community, index) => (
-                    <div 
-                        key={community.communityId} 
+                {communities.map((community) => (
+                    <div
+                        key={community.communityId}
                         className="space-y-6 group/community"
                     >
                         <div className="max-w-5xl mx-auto px-4">
@@ -138,9 +136,9 @@ const FollowedCommunitiesSuspense = () => {
                                 <div className="flex items-center gap-4">
                                     <div className="relative">
                                         {community.icon_url ? (
-                                            <Image 
-                                                src={community.icon_url} 
-                                                alt={community.name} 
+                                            <Image
+                                                src={community.icon_url}
+                                                alt={community.name}
                                                 width={56}
                                                 height={56}
                                                 className="w-14 h-14 rounded-full object-cover border-2 border-border shadow-lg"
@@ -150,7 +148,7 @@ const FollowedCommunitiesSuspense = () => {
                                                 <Users className="w-7 h-7 text-primary" />
                                             </div>
                                         )}
-                                       
+
                                     </div>
                                     <div>
                                         <div className="flex items-start justify-start gap-1 flex-col">
@@ -161,10 +159,10 @@ const FollowedCommunitiesSuspense = () => {
                                                 {community.description_short}
                                             </p>
                                         </div>
-                                       
+
                                     </div>
                                 </div>
-                                <Link 
+                                <Link
                                     href={`/c/${community.communityId}`}
                                     className="group/link flex items-center gap-2 px-5 py-2.5 rounded-lg  text-secondary font-medium hover:bg-primary-gradient hover:text-primary-foreground transition-all duration-300"
                                 >
@@ -178,7 +176,7 @@ const FollowedCommunitiesSuspense = () => {
                             <div className="relative">
                                 <div className="absolute left-0 top-0 bottom-0 w-24  z-10 pointer-events-none" />
                                 <div className="absolute right-0 top-0 bottom-0 w-24  z-10 pointer-events-none" />
-                                
+
                                 <Carousel
                                     opts={{
                                         align: "start",
@@ -188,8 +186,8 @@ const FollowedCommunitiesSuspense = () => {
                                 >
                                     <CarouselContent className="-ml-6 py-2">
                                         {community.recentVideos.map((item) => (
-                                            <CarouselItem 
-                                                key={item.video.id} 
+                                            <CarouselItem
+                                                key={item.video.id}
                                                 className={cn(
                                                     "pl-6 transition-all duration-300",
                                                     "md:basis-1/2 lg:basis-1/3 xl:basis-1/4",

@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { db } from "@/db";
-import { comments, userFollows, users, videoRatings, videos, videoViews } from "@/db/schema";
+import { userFollows, users, videoRatings, videos, videoViews } from "@/db/schema";
 import { baseProcedure, createTRPCRouter, } from "@/trpc/init";
-import { eq, and, or, lt, desc, sql, getTableColumns, sum, avg, inArray, isNotNull, not, } from "drizzle-orm";
+import { eq, and, or, lt, desc, sql, getTableColumns, inArray, isNotNull, } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
 
@@ -48,7 +48,7 @@ export const homeRouter = createTRPCRouter({
                         followsCount: sql<number>` (SELECT COUNT(*) FROM ${userFollows} WHERE ${userFollows.creatorId} = ${users.id}) `.mapWith(Number),
                         viewerIsFollowing: isNotNull(viewerFollow.userId).mapWith(Boolean),
                         videoCount: sql<number>`(SELECT COUNT(*) FROM ${videos} WHERE ${videos.userId} = ${users.id})`.mapWith(Number),
-                        viewerRating : (userId ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(Number) : sql<number>`(NULL)`.mapWith(Number)),
+                        viewerRating: (userId ? sql<number>`(SELECT ${videoRatings.rating} FROM ${videoRatings} WHERE ${videoRatings.userId} = ${userId} AND ${videoRatings.videoId} = ${videos.id} LIMIT 1)`.mapWith(Number) : sql<number>`(NULL)`.mapWith(Number)),
                     },
                     videoRatings: videos.ratingCount,
                 })
@@ -84,30 +84,29 @@ export const homeRouter = createTRPCRouter({
                 limit: z.number().min(1).max(100),
             })
         )
-        .query(async ({ ctx, input }) => {
+        .query(async ({ input }) => {
             const { cursor, limit } = input;
-            const { clerkUserId } = ctx;
 
             // Common Where Clauses
             const baseWhere = and(
-                eq(videos.visibility, "public"), 
+                eq(videos.visibility, "public"),
                 // not(eq(videos.status, "processing"))
             );
 
             // --- Normal Videos ---
             let normalVideos: { id: string, updatedAt: Date, isFeatured: boolean, score: number }[] = [];
             let nextNormalCursor: { id: string, score: number } | null = null;
-            
+
             // Determine if we should fetch normal videos
             // Fetch if cursor is null (start) OR cursor.id is present (continuation)
             const shouldFetchNormal = !cursor || (cursor.id !== null && cursor.id !== undefined);
-            
+
             if (shouldFetchNormal) {
                 const normalWhereParts = [
                     baseWhere,
                     eq(videos.isFeatured, false)
                 ];
-                
+
                 if (cursor && cursor.id && cursor.score != null) {
                     normalWhereParts.push(
                         or(
@@ -116,7 +115,7 @@ export const homeRouter = createTRPCRouter({
                         )
                     );
                 }
-                
+
                 const normalRows = await db
                     .select({
                         id: videos.id,
@@ -128,7 +127,7 @@ export const homeRouter = createTRPCRouter({
                     .where(and(...normalWhereParts))
                     .orderBy(desc(videos.trendingScore), desc(videos.id))
                     .limit(limit + 1);
-                    
+
                 if (normalRows.length > limit) {
                     const last = normalRows[limit - 1];
                     nextNormalCursor = { id: last.id, score: last.score };
@@ -142,18 +141,18 @@ export const homeRouter = createTRPCRouter({
             // --- Featured Videos ---
             let featuredVideos: { id: string, updatedAt: Date, isFeatured: boolean, score: number }[] = [];
             let nextFeaturedCursor: { id: string, score: number } | null = null;
-            
+
             // Fetch 1 featured video for every batch (assuming limit ~5)
-            const featuredLimit = 1; 
-            
+            const featuredLimit = 1;
+
             const shouldFetchFeatured = !cursor || (cursor.featuredId !== null && cursor.featuredId !== undefined);
-            
+
             if (shouldFetchFeatured) {
                 const featuredWhereParts = [
                     baseWhere,
                     eq(videos.isFeatured, true)
                 ];
-                
+
                 if (cursor && cursor.featuredId && cursor.featuredScore != null) {
                     featuredWhereParts.push(
                         or(
@@ -162,7 +161,7 @@ export const homeRouter = createTRPCRouter({
                         )
                     );
                 }
-                
+
                 const featuredRows = await db
                     .select({
                         id: videos.id,
@@ -174,7 +173,7 @@ export const homeRouter = createTRPCRouter({
                     .where(and(...featuredWhereParts))
                     .orderBy(desc(videos.trendingScore), desc(videos.id))
                     .limit(featuredLimit + 1);
-                    
+
                 if (featuredRows.length > featuredLimit) {
                     const last = featuredRows[featuredLimit - 1];
                     nextFeaturedCursor = { id: last.id, score: last.score };

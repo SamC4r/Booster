@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 
 
 import { cva, type VariantProps } from "class-variance-authority";
-import Link from "next/link";
 import { UserProfilePopup } from "@/modules/users/ui/components/user-profile-popup";
 
 const avatarVariants = cva("", {
@@ -20,7 +19,7 @@ const avatarVariants = cva("", {
 
             xl: 'h-[160px] w-[160px]',
         },
-        
+
         iconSize: {
             default: 'h-4 w-4',
             xs: 'h-4 w-4',
@@ -33,7 +32,7 @@ const avatarVariants = cva("", {
 
         defaultVariants: {
             size: 'default',
-            iconSize:'default'
+            iconSize: 'default'
         },
     }
 })
@@ -61,7 +60,7 @@ export const UserAvatar = ({
 }: UserAvatarProps) => {
     const avatar = (
         <Avatar className={cn(avatarVariants({ size, className }), '')} onClick={onClick}>
-            <AvatarImage src={imageUrl} alt={name} />   
+            <AvatarImage src={imageUrl} alt={name} />
         </Avatar>
     );
 

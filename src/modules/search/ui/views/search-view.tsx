@@ -12,7 +12,6 @@ import { ErrorBoundary } from "react-error-boundary"
 import Link from "next/link"
 import { SubButton } from "@/modules/subscriptions/ui/components/sub-button"
 import { useFollow } from "@/modules/follows/hooks/follow-hook"
-import { Spinner } from "@/components/ui/shadcn-io/spinner"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@clerk/nextjs"
 import { RocketIcon, TrendingUpIcon, ZapIcon } from "lucide-react"
@@ -134,7 +133,7 @@ const ChannelCard = ({ channel }: ChannelCardProps) => {
     const router = useRouter()
     const [showAddXpModal, setShowAddXpModal] = useState(false)
     const isOwnChannel = viewerClerkId === channel.clerkId
-    
+
     const { onClick, isPending, isFollowing } = useFollow({
         userId: channel.id,
         isFollowing: channel.viewerIsFollowing ?? false,
@@ -290,7 +289,7 @@ export const SearchViewSuspense = ({ query }: SearchViewProps) => {
     }, [data]);
 
     const channels = channelsQuery.data?.items ?? [];
-    
+
     // Show error message if channels query fails
     if (channelsQuery.error) {
         console.error('🎨 Channel Query Error Details:', channelsQuery.error);
@@ -351,65 +350,65 @@ export const SearchViewSuspense = ({ query }: SearchViewProps) => {
                         </h2>
                         {/* Video List */}
                         <div className="space-y-6">
-                    {videos.map((video) => (
-                        <Link
-                            key={video.id}
-                            href={`/videos/${video.id}`}
-                            className="flex flex-col lg:flex-row bg-card text-card-foreground rounded-xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-2xl"
-                        >
-                            {/* Thumbnail */}
-                            <div className="relative lg:w-96 xl:w-[400px] h-48 lg:h-56 flex-shrink-0">
-                                <VideoThumbnail title={video.title} duration={video.duration} imageUrl={video.thumbnailUrl} isAi={video.isAi}
-                                />
+                            {videos.map((video) => (
+                                <Link
+                                    key={video.id}
+                                    href={`/videos/${video.id}`}
+                                    className="flex flex-col lg:flex-row bg-card text-card-foreground rounded-xl overflow-hidden border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-2xl"
+                                >
+                                    {/* Thumbnail */}
+                                    <div className="relative lg:w-96 xl:w-[400px] h-48 lg:h-56 flex-shrink-0">
+                                        <VideoThumbnail title={video.title} duration={video.duration} imageUrl={video.thumbnailUrl} isAi={video.isAi}
+                                        />
 
-                                {/* {video.isLive && (
+                                        {/* {video.isLive && (
                                     <div className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-red-600 text-white px-2 py-1 rounded text-xs font-bold uppercase tracking-wide">
                                         Live
                                     </div>
                                 )} */}
-                            </div>
-
-                            {/* Video Content */}
-                            <div className="flex-1 p-6 flex flex-col justify-between">
-                                <div>
-                                    <h3 className="text-xl font-semibold mb-2 line-clamp-2">
-                                        {video.title}
-                                    </h3>
-                                    <div className="flex items-center gap-4 text-muted-foreground text-sm mb-3">
-                                        <span>{compactNumber(Number(video.videoViews) ?? 0)}</span>
-                                        <span>{compactDate(video.createdAt)}</span>
                                     </div>
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <UserAvatar imageUrl={video.user.imageUrl} name={video.user.name} userId={video.user.id} disableLink={true} />
-                                        <span className="font-medium">{video.user.name}</span>
-                                        {/* TODO: verified */}
-                                        {/* {video.channel.verified && (
+
+                                    {/* Video Content */}
+                                    <div className="flex-1 p-6 flex flex-col justify-between">
+                                        <div>
+                                            <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                                                {video.title}
+                                            </h3>
+                                            <div className="flex items-center gap-4 text-muted-foreground text-sm mb-3">
+                                                <span>{compactNumber(Number(video.videoViews) ?? 0)}</span>
+                                                <span>{compactDate(video.createdAt)}</span>
+                                            </div>
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <UserAvatar imageUrl={video.user.imageUrl} name={video.user.name} userId={video.user.id} disableLink={true} />
+                                                <span className="font-medium">{video.user.name}</span>
+                                                {/* TODO: verified */}
+                                                {/* {video.channel.verified && (
                                             <i className="fas fa-check-circle text-primary text-sm" />
                                         )} */}
-                                    </div>
-                                    <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-                                        {video.description}
-                                    </p>
-                                </div>
+                                            </div>
+                                            <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
+                                                {video.description}
+                                            </p>
+                                        </div>
 
-                                {/* Rating */}
-                                <div className="flex items-center gap-3">
-                                    <Rating value={Math.floor(Number(video.averageRating))} readOnly>
-                                        {Array.from({ length: 5 }).map((_, index) => (
-                                            <RatingButton className="text-primary" key={index} />
-                                        ))}
-                                    </Rating>
-                                    <div className="text-center">
-                                        <p className="text-xs text-muted-foreground">({Number(video.averageRating).toFixed(1)})</p>
+                                        {/* Rating */}
+                                        <div className="flex items-center gap-3">
+                                            <Rating value={Math.floor(Number(video.averageRating))} readOnly>
+                                                {Array.from({ length: 5 }).map((_, index) => (
+                                                    <RatingButton className="text-primary" key={index} />
+                                                ))}
+                                            </Rating>
+                                            <div className="text-center">
+                                                <p className="text-xs text-muted-foreground">({Number(video.averageRating).toFixed(1)})</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+                                </Link>
+                            ))}
+                        </div>
 
-                {/* Pagination */}
-                <InfiniteScroll isManual={false} hasNextPage={resultQuery.hasNextPage} isFetchingNextPage={resultQuery.isFetchingNextPage} fetchNextPage={resultQuery.fetchNextPage} />
+                        {/* Pagination */}
+                        <InfiniteScroll isManual={false} hasNextPage={resultQuery.hasNextPage} isFetchingNextPage={resultQuery.isFetchingNextPage} fetchNextPage={resultQuery.fetchNextPage} />
                     </div>
                 )}
 

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { compactDate, compactNumber, cn } from "@/lib/utils";
 import { getTitleGradient } from "@/constants";
 import {
-  Check,
   EyeIcon,
   EyeOff,
   Lock,
@@ -171,7 +170,7 @@ export const UsersView = ({ userId }: Props) => {
     previousLevelRef.current = channelLevel;
   }, [channelLevel, isInitialLoad, userId, prefetchRankings, updateLevel]);
 
-  
+
 
   // Calculate XP bar percentage
   const xpPercentage = Math.max(
@@ -237,12 +236,12 @@ export const UsersView = ({ userId }: Props) => {
                     @{user.username}
                   </div>
                 )}
-                
+
                 {/* Title Display */}
                 {equippedTitle && (
-                    <div className={cn("mt-1 font-bold bg-clip-text text-transparent bg-gradient-to-r text-sm", getTitleGradient(equippedTitle.name))}>
-                        {equippedTitle.name}
-                    </div>
+                  <div className={cn("mt-1 font-bold bg-clip-text text-transparent bg-gradient-to-r text-sm", getTitleGradient(equippedTitle.name))}>
+                    {equippedTitle.name}
+                  </div>
                 )}
 
                 {/* <PlanetIcon className="text-yellow-600 ml-2 shadow-red-100/50 bg-transparent size-8 flex-shrink-0" /> */}
@@ -293,7 +292,7 @@ export const UsersView = ({ userId }: Props) => {
 
             <div className="md:w-2/3 md:pl-6">
               {user.accountType === 'business' ? (
-                <BusinessProfileSection 
+                <BusinessProfileSection
                   userId={user.id}
                   isOwnProfile={isOwnProfile}
                   businessDescription={user.businessDescription}
@@ -438,17 +437,17 @@ export const UsersView = ({ userId }: Props) => {
               return true;
             })
             .map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeTab === tab
-                ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted/50"
-                }`}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeTab === tab
+                  ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted/50"
+                  }`}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
         </div>
 
         {/* Video Grid */}
@@ -541,9 +540,9 @@ export const UsersView = ({ userId }: Props) => {
                 <h3 className="text-lg font-semibold mb-4">Socials</h3>
                 <div className="flex flex-wrap gap-4">
                   {user.instagram && (
-                    <a 
-                      href={user.instagram.startsWith('http') ? user.instagram : `https://instagram.com/${user.instagram}`} 
-                      target="_blank" 
+                    <a
+                      href={user.instagram.startsWith('http') ? user.instagram : `https://instagram.com/${user.instagram}`}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
                     >
@@ -552,9 +551,9 @@ export const UsersView = ({ userId }: Props) => {
                     </a>
                   )}
                   {user.twitter && (
-                    <a 
-                      href={user.twitter.startsWith('http') ? user.twitter : `https://twitter.com/${user.twitter}`} 
-                      target="_blank" 
+                    <a
+                      href={user.twitter.startsWith('http') ? user.twitter : `https://twitter.com/${user.twitter}`}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
                     >
@@ -563,9 +562,9 @@ export const UsersView = ({ userId }: Props) => {
                     </a>
                   )}
                   {user.youtube && (
-                    <a 
-                      href={user.youtube.startsWith('http') ? user.youtube : `https://youtube.com/${user.youtube}`} 
-                      target="_blank" 
+                    <a
+                      href={user.youtube.startsWith('http') ? user.youtube : `https://youtube.com/${user.youtube}`}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
                     >
@@ -574,9 +573,9 @@ export const UsersView = ({ userId }: Props) => {
                     </a>
                   )}
                   {user.tiktok && (
-                    <a 
-                      href={user.tiktok.startsWith('http') ? user.tiktok : `https://tiktok.com/@${user.tiktok.replace('@', '')}`} 
-                      target="_blank" 
+                    <a
+                      href={user.tiktok.startsWith('http') ? user.tiktok : `https://tiktok.com/@${user.tiktok.replace('@', '')}`}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
                     >
@@ -585,9 +584,9 @@ export const UsersView = ({ userId }: Props) => {
                     </a>
                   )}
                   {user.discord && (
-                    <a 
-                      href={user.discord.startsWith('http') ? user.discord : `https://discord.gg/${user.discord}`} 
-                      target="_blank" 
+                    <a
+                      href={user.discord.startsWith('http') ? user.discord : `https://discord.gg/${user.discord}`}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
                     >
@@ -596,9 +595,9 @@ export const UsersView = ({ userId }: Props) => {
                     </a>
                   )}
                   {user.website && (
-                    <a 
-                      href={user.website.startsWith('http') ? user.website : `https://${user.website}`} 
-                      target="_blank" 
+                    <a
+                      href={user.website.startsWith('http') ? user.website : `https://${user.website}`}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
                     >
@@ -613,12 +612,12 @@ export const UsersView = ({ userId }: Props) => {
         )}
 
         {activeTab === "chat" && (
-            <div className="mt-6">
-                <CommunityChat 
-                    channelId={userId} 
-                    isFollowing={followers[0]?.viewerIsFollowing || isOwnProfile} 
-                />
-            </div>
+          <div className="mt-6">
+            <CommunityChat
+              channelId={userId}
+              isFollowing={followers[0]?.viewerIsFollowing || isOwnProfile}
+            />
+          </div>
         )}
       </div>
 

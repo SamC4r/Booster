@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { trpc } from "@/trpc/client";
 import { UploadDropzone } from "@/lib/uploadthing";
-import { X, Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
@@ -69,14 +69,15 @@ export const BusinessProfileSection = ({
               <DialogHeader>
                 <DialogTitle>Edit Business Profile</DialogTitle>
               </DialogHeader>
-              
+
               <div className="space-y-6 py-4">
                 <div className="space-y-2">
                   <Label>Company Description</Label>
-                  <Textarea 
+                  <Textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Tell us about your company..."
+                    maxLength={5000}
                     className="min-h-[150px]"
                   />
                 </div>
@@ -86,8 +87,8 @@ export const BusinessProfileSection = ({
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                     {images.map((url, index) => (
                       <div key={index} className="relative aspect-video rounded-lg overflow-hidden border border-border group">
-                        <Image 
-                          src={url} 
+                        <Image
+                          src={url}
                           alt={`Gallery image ${index + 1}`}
                           fill
                           className="object-cover"
@@ -101,7 +102,7 @@ export const BusinessProfileSection = ({
                       </div>
                     ))}
                   </div>
-                  
+
                   {images.length < 5 && (
                     <div className="border-2 border-dashed border-border rounded-lg p-4">
                       <UploadDropzone
@@ -145,8 +146,8 @@ export const BusinessProfileSection = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {businessImageUrls.map((url, index) => (
               <div key={index} className="relative aspect-video rounded-xl overflow-hidden border border-border bg-muted/30">
-                <Image 
-                  src={url} 
+                <Image
+                  src={url}
                   alt={`Gallery image ${index + 1}`}
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"

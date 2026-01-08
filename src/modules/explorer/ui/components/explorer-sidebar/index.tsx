@@ -1,7 +1,6 @@
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar"
 import { MainSection } from "./main-section"
 import { Separator } from "@/components/ui/separator"
-import { RankingsSection } from "./rankings-section"
 import { FooterSection } from "./footer-section"
 import { FollowingSection } from "./following-section"
 import { PersonalSection } from "./personal-section"

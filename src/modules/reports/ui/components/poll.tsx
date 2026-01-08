@@ -62,7 +62,7 @@ export const Poll = ({ videoId, className, compact = false }: PollProps) => {
             <h3 className="font-semibold text-lg flex items-center gap-2">
                 <span className="text-red-500">Community Review</span>
             </h3>
-            
+
             {visiblePolls.map((poll) => {
                 const totalVotes = poll.agreeCount + poll.disagreeCount;
                 const agreePercentage = totalVotes > 0 ? (poll.agreeCount / totalVotes) * 100 : 0;
@@ -70,9 +70,9 @@ export const Poll = ({ videoId, className, compact = false }: PollProps) => {
 
                 return (
                     <div key={poll.id} className="bg-card p-4 rounded-xl border shadow-sm relative">
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
+                        <Button
+                            variant="ghost"
+                            size="icon"
                             className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-foreground"
                             onClick={() => setDismissedPolls(prev => [...prev, poll.id])}
                         >
@@ -84,7 +84,7 @@ export const Poll = ({ videoId, className, compact = false }: PollProps) => {
                                 <Button
                                     variant="link"
                                     className="text-xs p-0 h-auto ml-2 text-primary"
-                                    onClick={() => setExpandedDetails(prev => ({...prev, [poll.id]: !prev[poll.id]}))}
+                                    onClick={() => setExpandedDetails(prev => ({ ...prev, [poll.id]: !prev[poll.id] }))}
                                 >
                                     {expandedDetails[poll.id] ? "Hide details" : "Show details"}
                                 </Button>
@@ -100,7 +100,7 @@ export const Poll = ({ videoId, className, compact = false }: PollProps) => {
 
                         <div className="space-y-4">
                             <div className="flex gap-4">
-                                <Button 
+                                <Button
                                     variant={poll.userVote === 'agree' ? "default" : "outline"}
                                     className={cn("flex-1", poll.userVote === 'agree' && "bg-green-600 hover:bg-green-700")}
                                     onClick={() => handleVote(poll.id, 'agree')}
@@ -109,14 +109,14 @@ export const Poll = ({ videoId, className, compact = false }: PollProps) => {
                                     <Check className="mr-2 size-4" />
                                     Yes, it is
                                 </Button>
-                                <Button 
+                                <Button
                                     variant={poll.userVote === 'disagree' ? "default" : "outline"}
                                     className={cn("flex-1", poll.userVote === 'disagree' && "bg-red-600 hover:bg-red-700")}
                                     onClick={() => handleVote(poll.id, 'disagree')}
                                     disabled={voteMutation.isPending}
                                 >
                                     <X className="mr-2 size-4" />
-                                    No, it's safe
+                                    No, it&apos;s safe
                                 </Button>
                             </div>
 

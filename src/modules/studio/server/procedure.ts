@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { db } from "@/db";
-import { comments, videoRatings, videos, videoViews, users } from "@/db/schema";
+import { videos, videoViews, users } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { eq, and, or, lt, desc, sql, getTableColumns, avg, count, sum } from "drizzle-orm";
+import { eq, and, or, lt, desc, sql, getTableColumns } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { getBunnyVideo, statusMap, createBunnyVideo, uploadBunnyVideoStream } from "@/lib/bunny";
 import { google } from "googleapis";
@@ -29,48 +29,48 @@ export const studioRouter = createTRPCRouter({
                 })
                 .from(videos)
                 .where(and(eq(videos.id, input.id), eq(videos.userId, userId)));
-            
+
             if (!video) {
                 throw new TRPCError({ code: "NOT_FOUND" })
             }
 
             // Sync with Bunny if processing
-            if (video.bunnyVideoId && video.bunnyLibraryId && 
-               (video.bunnyStatus === 'processing' || video.bunnyStatus === 'uploaded' || video.bunnyStatus === 'queued' || video.bunnyStatus === 'encoding')) {
+            if (video.bunnyVideoId && video.bunnyLibraryId &&
+                (video.bunnyStatus === 'processing' || video.bunnyStatus === 'uploaded' || video.bunnyStatus === 'queued' || video.bunnyStatus === 'encoding')) {
                 try {
                     const bunnyData = await getBunnyVideo(video.bunnyLibraryId, video.bunnyVideoId);
                     const rawStatus = String(bunnyData.status);
                     const newStatus = statusMap.get(rawStatus) || 'processing';
-                    
+
                     if (newStatus !== video.bunnyStatus) {
-                         const dbStatus = rawStatus === '3' ? 'completed' : 'processing';
-                         const duration = bunnyData.length ? Math.round(bunnyData.length) : video.duration;
-                         
-                         let thumbnailUrl = video.thumbnailUrl;
-                         let thumbnailKey = video.thumbnailKey;
-                         
-                         if (rawStatus === '3' && bunnyData.thumbnailFileName) {
-                             const host = process.env.BUNNY_PULLZONE_HOST!;
-                             thumbnailKey = `/${video.bunnyVideoId}/${bunnyData.thumbnailFileName}`;
-                             thumbnailUrl = `https://${host}${thumbnailKey}`;
-                         }
+                        const dbStatus = rawStatus === '3' ? 'completed' : 'processing';
+                        const duration = bunnyData.length ? Math.round(bunnyData.length) : video.duration;
 
-                         await db.update(videos).set({
-                             bunnyStatus: newStatus,
-                             status: dbStatus,
-                             duration: duration,
-                             thumbnailUrl: thumbnailUrl,
-                             thumbnailKey: thumbnailKey
-                         }).where(and(eq(videos.userId, userId),eq(videos.id, video.id)));
+                        let thumbnailUrl = video.thumbnailUrl;
+                        let thumbnailKey = video.thumbnailKey;
 
-                         return {
-                             ...video,
-                             bunnyStatus: newStatus,
-                             status: dbStatus,
-                             duration: duration,
-                             thumbnailUrl: thumbnailUrl,
-                             thumbnailKey: thumbnailKey
-                         };
+                        if (rawStatus === '3' && bunnyData.thumbnailFileName) {
+                            const host = process.env.BUNNY_PULLZONE_HOST!;
+                            thumbnailKey = `/${video.bunnyVideoId}/${bunnyData.thumbnailFileName}`;
+                            thumbnailUrl = `https://${host}${thumbnailKey}`;
+                        }
+
+                        await db.update(videos).set({
+                            bunnyStatus: newStatus,
+                            status: dbStatus,
+                            duration: duration,
+                            thumbnailUrl: thumbnailUrl,
+                            thumbnailKey: thumbnailKey
+                        }).where(and(eq(videos.userId, userId), eq(videos.id, video.id)));
+
+                        return {
+                            ...video,
+                            bunnyStatus: newStatus,
+                            status: dbStatus,
+                            duration: duration,
+                            thumbnailUrl: thumbnailUrl,
+                            thumbnailKey: thumbnailKey
+                        };
                     }
                 } catch (error) {
                     console.error("Failed to sync with Bunny:", error);
@@ -92,11 +92,11 @@ export const studioRouter = createTRPCRouter({
         )
         .query(async ({ ctx, input }) => {
             const { cursor, limit } = input;
-            const { id: userId } = ctx.user; //rename id to userId
+            const { id: userId, name: userName } = ctx.user; //rename id to userId
 
             const data = await db.select({
                 ...getTableColumns(videos),
-                videoViews: sql<number>`(SELECT count(*) FROM ${videoViews} WHERE ${videoViews.videoId} = ${videos.id})`.mapWith(Number),
+                videoViews: sql<number>`(SELECT count(*) FROM ${videoViews} WHERE ${videoViews.videoId} = ${videos.id} AND NOT ${userName} = '')`.mapWith(Number),
                 videoRatings: videos.averageRating,
                 videoComments: videos.commentCount,
             }).from(videos)
@@ -159,7 +159,7 @@ export const studioRouter = createTRPCRouter({
             }
 
             const youtube = google.youtube({ version: 'v3', auth: oauth2Client });
-            
+
             // Get Uploads Playlist ID
             const channels = await youtube.channels.list({ mine: true, part: ['contentDetails'] });
             const uploadsPlaylistId = channels.data.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
@@ -172,13 +172,13 @@ export const studioRouter = createTRPCRouter({
             const playlistItems = await youtube.playlistItems.list({
                 playlistId: uploadsPlaylistId,
                 part: ['snippet', 'contentDetails'],
-                maxResults: 5, 
+                maxResults: 5,
             });
 
             // Fetch video details to get duration
             const videoIds = playlistItems.data.items?.map(item => item.contentDetails?.videoId).filter((id): id is string => !!id) || [];
             const videoDetailsMap = new Map<string, any>();
-            
+
             if (videoIds.length > 0) {
                 const videosResponse = await youtube.videos.list({
                     id: videoIds,
@@ -223,33 +223,33 @@ export const studioRouter = createTRPCRouter({
 
                 try {
                     console.log(`Starting sync for video: ${title} (${videoId})`);
-                    
+
                     // 1. Create placeholder in Bunny
                     const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID;
                     if (!libraryId) throw new Error("BUNNY_STREAM_LIBRARY_ID is not set");
-                    
+
                     const bunnyVideo = await createBunnyVideo(libraryId, title);
                     console.log(`Created Bunny video: ${bunnyVideo.guid}`);
-                    
+
                     // 2. Get Video Stream from YouTube
                     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
                     console.log(`Fetching stream from: ${videoUrl}`);
-                    
+
                     // Use yt-dlp-wrap for robust downloading
                     const ytDlpBinaryPath = path.join(process.cwd(), 'yt-dlp.exe');
-                    
+
                     // Ensure binary exists (simple check for dev environment)
                     if (!fs.existsSync(ytDlpBinaryPath)) {
                         console.log("Downloading yt-dlp binary...");
                         await YTDlpWrap.downloadFromGithub(ytDlpBinaryPath);
                     }
-                    
+
                     const ytDlpWrap = new YTDlpWrap(ytDlpBinaryPath);
-                    
+
                     // Download to temp file to avoid stream timeouts
                     const tempFilePath = path.join(os.tmpdir(), `${videoId}.mp4`);
                     console.log(`Downloading to temp file: ${tempFilePath}`);
-                    
+
                     try {
                         await ytDlpWrap.execPromise([videoUrl, '-f', 'best[ext=mp4]/best', '-o', tempFilePath]);
                     } catch (err) {
@@ -261,10 +261,10 @@ export const studioRouter = createTRPCRouter({
                     console.log(`Uploading to Bunny...`);
                     const fileStream = fs.createReadStream(tempFilePath);
                     const webStream = Readable.toWeb(fileStream) as ReadableStream;
-                    
+
                     await uploadBunnyVideoStream(libraryId, bunnyVideo.guid, webStream);
                     console.log(`Upload complete.`);
-                    
+
                     // Cleanup
                     try {
                         fs.unlinkSync(tempFilePath);
@@ -304,11 +304,11 @@ function parseISO8601Duration(duration: string | null | undefined): number {
     if (!duration) return 0;
     const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
     if (!match) return 0;
-    
+
     const hours = (parseInt(match[1] || '0') || 0);
     const minutes = (parseInt(match[2] || '0') || 0);
     const seconds = (parseInt(match[3] || '0') || 0);
-    
+
     return hours * 3600 + minutes * 60 + seconds;
 }
-    
+
