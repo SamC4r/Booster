@@ -98,7 +98,7 @@ export const FilterCarousel = ({
                                     variant={value === item.value ? "default" : "secondary"}
                                     className={cn(
                                         "rounded-lg px-3 py-1 cursor-pointer whitespace-nowrap text-sm border-2 transition-all ",
-                                        active === item.value ? "btn-primary border-transparent font-semibold shadow-md" : "bg-white dark:bg-[#1a1a1a] border-slate-200 dark:border-[#333] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#252525] hover:border-slate-300 dark:hover:border-[#444]"
+                                        active === item.value ? "btn-primary  font-semibold shadow-md" : " dark:bg-[#1a1a1a] border-slate-200 dark:border-[#333] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#252525] hover:border-slate-300 dark:hover:border-[#444]"
                                     )}
                                 >
                                     {item.label}

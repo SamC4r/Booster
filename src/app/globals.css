@@ -166,11 +166,9 @@ body {
     }
 
     .btn-primary {
-        background: linear-gradient(to top, #ff9800 0%, #ffc100 100%) !important;
+        background: linear-gradient(to right, #ff9800 0%, #ffc100 100%) !important;
         color: #121212;
-        border: none;
         box-shadow: 0 2px 8px 0 rgba(255,193,0,0.15);
-        transition: background 0.2s, box-shadow 0.2s; 
     }
     .btn-primary:hover {
         background: linear-gradient(to top, #ffc100 0%, #ff9800 100%);
@@ -180,7 +178,6 @@ body {
     .dark .btn-primary {
         background: linear-gradient(90deg, #ff9800 0%, #ffc100 100%);
         color: #121212;
-        border: none;
         box-shadow: 0 2px 8px 0 rgba(255,193,0,0.15);
         transition: background 0.2s, box-shadow 0.2s;
     }
