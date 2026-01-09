@@ -138,9 +138,8 @@ export const VideoOwner = ({ user, videoId, boostPoints, className }: Props) => 
                     <div className="hidden lg:flex sm:flex-col">
                         {userId === user.clerkId ? (
                             <Button
-                                className="rounded-full gap-2 shadow-sm hover:shadow-md transition-all bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                                className="rounded-full gap-2 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600"
                                 asChild
-                                variant='secondary'
                                 size="sm"
                             >
                                 <Link href={`/studio/videos/${videoId}`}>

@@ -131,7 +131,7 @@ export const SearchInput = ({ isMobileSearchOpen, setIsMobileSearchOpen }: Searc
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 type="text"
-                placeholder="Ask AI..."
+                placeholder="Smart Search"
                 className={`w-full pl-12 pr-16 py-2 rounded-full border-2 bg-background/95 backdrop-blur-sm transition-all duration-300 focus:outline-none text-foreground placeholder:text-muted-foreground
                   ${value ? "pr-12" : "pr-4"}
                   border-primary shadow-lg shadow-orange-500/30

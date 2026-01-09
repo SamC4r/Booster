@@ -39,7 +39,7 @@ export const SectionSelector = ({ videoId }: { videoId: string }) => {
                 onClick={() => setTab("info")}
                 className={`px-3 py-1.5 rounded-full font-medium transition ${
                   tab === "info"
-                   ? "bg-gradient-to-b from-primary to-secondary text-primary-foreground"
+                   ? "btn-primary"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
               >
@@ -50,8 +50,8 @@ export const SectionSelector = ({ videoId }: { videoId: string }) => {
             onClick={() => setTab("videos")}
             className={`px-3 py-1.5 rounded-full font-medium transition ${
               tab === "videos"
-               ? "bg-gradient-to-b from-primary to-secondary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                   ? "btn-primary" 
+                                  : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
             Videos
@@ -60,8 +60,8 @@ export const SectionSelector = ({ videoId }: { videoId: string }) => {
             onClick={() => setTab("comments")}
             className={`px-3 py-1.5 rounded-full font-medium transition ${
               tab === "comments"
-                ? "bg-gradient-to-b from-primary to-secondary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                   ? "btn-primary"
+                                   : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
             Comments

@@ -4,7 +4,7 @@
     "license": "Business Source License 1.1",
     "private": true,
     "scripts": {
-        "dev": "next dev",
+        "dev": "next dev --webpack",
         "dev:all": "concurrently \"bunrun dev:webhook\" \"bun run dev\" ",
         "dev:webhook": "cloudflared tunnel --url http://localhost:3000",
         "build": "next build --webpack",

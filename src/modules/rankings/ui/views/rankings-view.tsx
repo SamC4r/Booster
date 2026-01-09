@@ -258,7 +258,7 @@ export const RankingsView = () => {
                                          px-4 py-2.5 
                                           ">
                               <ZapIcon className="w-5 h-5 text-amber-500" />
-                              <span className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">
+                              <span className="text-2xl font-bold text-secondary ">
                                 {channelLevel}
                               </span>
                             </div>

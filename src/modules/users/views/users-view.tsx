@@ -301,7 +301,7 @@ export const UsersView = ({ userId }: Props) => {
               ) : (
                 <>
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    <h2 className="text-xl font-bold text-primary">
                       Channel Boost
                     </h2>
                     <div
@@ -346,8 +346,7 @@ export const UsersView = ({ userId }: Props) => {
                   <div className="flex gap-2">
                     <Button
                       onClick={() => setShowPersonalizeModal(true)}
-                      // className="rounded-full p-4 shadow-sm hover:shadow-md transition-all bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
-                      className="rounded-full shadow-sm hover:from-amber-400 hover:to-orange-400 bg-gradient-to-b from-primary to-secondary text-textprimary"
+                      className="rounded-full shadow-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition-all font-medium"
                     >
                       <Settings className="size-4 mr-2" />
                       Personalize Channel
@@ -441,8 +440,7 @@ export const UsersView = ({ userId }: Props) => {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeTab === tab
-                  ? "bg-gradient-to-r from-primary to-secondary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted/50"
+                   ? "btn-primary"                  : "text-muted-foreground hover:bg-muted/50"
                   }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
