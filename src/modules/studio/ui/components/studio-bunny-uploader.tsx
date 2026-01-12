@@ -145,8 +145,8 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
           height,
         });
       })
-    } catch {
-      toast.error("Upload failed")
+    } catch(error:any) {
+      toast.error("Upload failed" + error.message)
     }
   }
 
