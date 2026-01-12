@@ -16,13 +16,13 @@ interface StudioBunnyUploaderProps {
   children?: React.ReactNode;
 }
 
-const getVideoDuration = (file: File): Promise<number> => {
+const getVideoMetadata = (file: File): Promise<{ duration: number; width: number; height: number }> => {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video');
     video.preload = 'metadata';
     video.onloadedmetadata = () => {
       window.URL.revokeObjectURL(video.src);
-      resolve(video.duration);
+      resolve({ duration: video.duration, width: video.videoWidth, height: video.videoHeight });
     };
     video.onerror = () => {
       reject("Invalid video file");
@@ -35,7 +35,7 @@ const getVideoDuration = (file: File): Promise<number> => {
 type UploadCallbacks = {
   onProgress?: (progress: number) => void;
   onError?: (error: string) => void;
-  onSuccess?: (videoId: string) => void;
+  onSuccess?: (videoId: string, width: number, height: number) => void;
   onUploadStarted?: (videoId: string) => void;
 };
 
@@ -58,7 +58,7 @@ class BunnyUploadService {
         callbacks.onError?.("Video file is larger than 10 GB. Contact the admins to upload a bigger video file.");
         return;
       }
-      const duration = await getVideoDuration(file);
+      const { duration, width, height } = await getVideoMetadata(file);
       if (duration > 600) {
         callbacks.onError?.("Video is longer than 10 minutes");
         return;
@@ -108,7 +108,7 @@ class BunnyUploadService {
         },
         onSuccess: async () => {
           callbacks.onProgress?.(100);
-          callbacks.onSuccess?.(videoId);
+          callbacks.onSuccess?.(videoId, width, height);
         },
       });
       this.activeUpload.findPreviousUploads().then(async (previousUploads) => {
@@ -163,14 +163,14 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
     BunnyUploadService.getInstance().startUpload(f, {
       onProgress: (pct) => setProgress(pct),
       onError: (msg) => { toast.error(msg); },
-      onSuccess: (vid) => {
+      onSuccess: (vid, width, height) => {
         setProgress(100);
         toast.success("Uploaded! Processing started.");
         setVideoId(vid);
         if (onSuccess) onSuccess(vid);
         else router.push(`/studio/videos/${vid}`);
         // After upload, call mutation
-        createAfterUpload.mutateAsync({ bunnyVideoId: vid, title: f.name });
+        createAfterUpload.mutateAsync({ bunnyVideoId: vid, title: f.name, width, height });
       },
       onUploadStarted: (vid) => {
         setVideoId(vid);

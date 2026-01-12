@@ -35,10 +35,10 @@ export const studioRouter = createTRPCRouter({
             }
 
             // Sync with Bunny if processing
-            if (video.bunnyVideoId && video.bunnyLibraryId &&
+            if (video.bunnyVideoId &&
                 (video.bunnyStatus === 'processing' || video.bunnyStatus === 'uploaded' || video.bunnyStatus === 'queued' || video.bunnyStatus === 'encoding')) {
                 try {
-                    const bunnyData = await getBunnyVideo(video.bunnyLibraryId, video.bunnyVideoId);
+                    const bunnyData = await getBunnyVideo(video.bunnyVideoId);
                     const rawStatus = String(bunnyData.status);
                     const newStatus = statusMap.get(rawStatus) || 'processing';
 

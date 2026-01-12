@@ -56,17 +56,17 @@ const s3 = new S3Client({
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-export async function embedText(text: string) {
-  try {
-    const response = await openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input: text,
-    });
-    return response.data[0].embedding;
-  } catch (e) {
-    console.log("Embedding response", e);
-  }
-}
+// export async function embedText(text: string) {
+//   try {
+//     const response = await openai.embeddings.create({
+//       model: "text-embedding-3-small",
+//       input: text,
+//     });
+//     return response.data[0].embedding;
+//   } catch (e) {
+//     console.log("Embedding response", e);
+//   }
+// }
 
 export const videosRouter = createTRPCRouter({
   //.query() para queries
@@ -195,14 +195,14 @@ export const videosRouter = createTRPCRouter({
       const [currentVideo] = await db
         .select({
           categoryId: videos.categoryId,
-          embedding: videos.embedding,
+          // embedding: videos.embedding,
           tags: videos.tags,
         })
         .from(videos)
         .where(eq(videos.id, videoId));
 
       const currentCategoryId = currentVideo?.categoryId;
-      const currentEmbedding = currentVideo?.embedding;
+      // const currentEmbedding = currentVideo?.embedding;
       const currentTags = currentVideo?.tags;
 
       const viewerFollow = db.$with("viewer_follow").as(
@@ -296,6 +296,15 @@ export const videosRouter = createTRPCRouter({
           : sql`false`;
 
       //TODO: add time factor -> older videos get subtracted? Or recent are more valuable
+
+      // AISEARCH INCLUDE: 
+    // -- (CASE WHEN ${
+    //                         --   currentEmbedding
+    //                         --     ? sql`(${videos.embedding} <=> ${JSON.stringify(
+    //                         --         currentEmbedding
+    //                         --       )}::vector)`
+    //                         --     : sql`1`
+    //                         -- } < 0.5 THEN 100 ELSE 0 END)
       const scoreExpr = sql<number>`
                             (
                             LN(
@@ -334,19 +343,15 @@ export const videosRouter = createTRPCRouter({
                             + (CASE WHEN ${videos.categoryId} = ${
         currentCategoryId ?? null
       } THEN 50 ELSE 0 END)
-                            + (CASE WHEN ${
-                              currentEmbedding
-                                ? sql`(${videos.embedding} <=> ${JSON.stringify(
-                                    currentEmbedding
-                                  )}::vector)`
-                                : sql`1`
-                            } < 0.5 THEN 100 ELSE 0 END)
+                            + 
+                        
                             + (CASE WHEN ${tagsOverlapExpr} THEN 50 ELSE 0 END)
                             + (COALESCE(${
                               collaborativeMatch.matchCount
                             }, 0) * 20)
                     `;
 
+                          
       const whereParts: any[] = [
         and(
           eq(videos.visibility, "public"),
@@ -491,10 +496,9 @@ export const videosRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      if (removedVideo.bunnyVideoId && removedVideo.bunnyLibraryId) {
+      if (removedVideo.bunnyVideoId) {
         try {
           await deleteBunnyVideo(
-            removedVideo.bunnyLibraryId,
             removedVideo.bunnyVideoId
           );
         } catch (error) {
@@ -582,7 +586,7 @@ export const videosRouter = createTRPCRouter({
       }
 
       const textToEmbed = `${input.title}\n${input.description}`;
-      const embedding = await embedText(textToEmbed);
+      // const embedding = await embedText(textToEmbed);
 
       const [updatedVideo] = await db
         .update(videos)
@@ -597,7 +601,7 @@ export const videosRouter = createTRPCRouter({
               : undefined,
           updatedAt: new Date(),
           isAi: input.isAi,
-          embedding: embedding,
+          // embedding: embedding,
           tags: input.tags,
         })
         .where(and(eq(videos.id, input.id), eq(videos.userId, userId)))
@@ -752,28 +756,26 @@ export const videosRouter = createTRPCRouter({
         title: z.string().min(1).max(200),
         description: z.string().max(5000).optional(),
         categoryId: z.string().uuid().optional(),
+        width: z.number().optional(),
+        height: z.number().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { id: userId, accountType } = ctx.user;
       const [row] = await db
-        .update(videos)
-        .set({
+        .insert(videos)
+        .values({
+          userId,
           title: input.title,
           description: input.description,
           categoryId: input.categoryId,
           bunnyVideoId: input.bunnyVideoId,
-          bunnyLibraryId: process.env.BUNNY_STREAM_LIBRARY_ID!,
           bunnyStatus: "uploaded", // webhook will flip to "ready"
           isAi: false,
           isFeatured: accountType === "business",
+          width: input.width,
+          height: input.height,
         })
-        .where(
-          and(
-            eq(videos.bunnyVideoId, input.bunnyVideoId),
-            eq(videos.userId, userId)
-          )
-        )
         .returning();
       return row;
     }),

@@ -661,7 +661,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                     /> */}
                   <BunnyEmbed
                     key={video.bunnyStatus}
-                    libraryId={video.bunnyLibraryId}
+                    libraryId={process.env.BUNNY_STREAM_LIBRARY_ID!}
                     videoId={video.bunnyVideoId}
                     theme={theme}
                   />

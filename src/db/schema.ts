@@ -142,7 +142,7 @@ export const videos = pgTable("videos", {
     previewKey: text("preview_key"),
 
     bunnyVideoId: text("bunny_video_id").unique(),        
-    bunnyLibraryId: text("bunny_library_id"),             
+    // bunnyLibraryId: text("bunny_library_id"),             
     bunnyStatus: text("bunny_status"),                    
     bunnyDuration: integer("bunny_duration"),             
 
@@ -174,7 +174,7 @@ export const videos = pgTable("videos", {
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
     isAi: boolean("is_ai").notNull().default(false),
-    embedding: vector("embedding", { dimensions: 1536 } ), // OpenAI text-embedding-ada-002 dimension is 1536
+    // embedding: vector("embedding", { dimensions: 1536 } ), // OpenAI text-embedding-ada-002 dimension is 1536
     tags: text("tags").array(),
 
     commentCount: integer("comment_count").default(0).notNull(),

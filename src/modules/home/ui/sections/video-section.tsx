@@ -311,7 +311,7 @@ export const VideoSectionSuspense = ({ videoId, next, prev }: Props) => {
 
                     {/* <Player src={video.playbackUrl} autoPlay={shouldPlay} isAI={video.isAi} /> */}
                     <BunnyEmbed
-                        libraryId={video.bunnyLibraryId}
+                        libraryId={process.env.BUNNY_STREAM_LIBRARY_ID!}
                         videoId={video.bunnyVideoId}
                         autoplay
                         theme={theme}

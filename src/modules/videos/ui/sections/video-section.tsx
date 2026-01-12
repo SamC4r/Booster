@@ -220,7 +220,7 @@ const VideoSectionSuspense = ({ videoId }: VideoSectionProps) => {
                         thumbnailUrl={video.thumbnailUrl}
                     /> */}
                     <BunnyEmbed
-                        libraryId={video.bunnyLibraryId}
+                        libraryId={process.env.BUNNY_STREAM_LIBRARY_ID!}
                         videoId={video.bunnyVideoId}
                         theme={theme}
                         onTimeUpdate={handleTimeUpdate}

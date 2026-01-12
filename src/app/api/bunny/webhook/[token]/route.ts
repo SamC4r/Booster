@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 
 import { db } from "@/db";
 import { videos } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import Sightengine from "sightengine";
 
 const statusMap = new Map<string, string>([
@@ -64,12 +64,9 @@ export async function POST(req: Request, { params }: { params: { token: string }
   const payload = await req.json().catch(() => ({} as any));
 
   // Be defensive with field names across accounts/templates
-  const libraryId = String(
-    payload.VideoLibraryId ??
-    payload.LibraryId ??
-    process.env.BUNNY_STREAM_LIBRARY_ID ??
-    ""
-  );
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID ??
+    
+  
   const videoId = String(
     payload.VideoGuid ?? payload.Guid ?? payload.VideoId ?? ""
   );
@@ -117,7 +114,7 @@ export async function POST(req: Request, { params }: { params: { token: string }
 
     // Only mark as completed when fully finished (status 3)
     // Status 4 is "resolution_finished" (e.g. 360p ready), so we keep it as processing
-    const dbStatus = rawStatus === "3" ? "completed" : "processing";
+    const dbStatus = (rawStatus === "3" || rawStatus === "4") ? "completed" : "processing";
 
     await db
       .update(videos)

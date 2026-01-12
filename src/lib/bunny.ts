@@ -8,7 +8,8 @@ export const statusMap = new Map<string, string>([
   ["5", "failed"],
 ]);
 
-export async function getBunnyVideo(libraryId: string, videoId: string) {
+export async function getBunnyVideo(videoId: string) {
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID!;
   const r = await fetch(
     `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`,
     {
@@ -31,7 +32,8 @@ export async function getBunnyVideo(libraryId: string, videoId: string) {
   }>;
 }
 
-export async function deleteBunnyVideo(libraryId: string, videoId: string) {
+export async function deleteBunnyVideo(videoId: string) {
+  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID!;
   const r = await fetch(
     `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`,
     {
@@ -46,7 +48,8 @@ export async function deleteBunnyVideo(libraryId: string, videoId: string) {
   return r.json();
 }
 
-export async function createBunnyVideo(libraryId: string, title: string) {
+export async function createBunnyVideo( title: string) {
+  const libraryId = "";
   const r = await fetch(
     `https://video.bunnycdn.com/library/${libraryId}/videos`,
     {

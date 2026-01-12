@@ -122,7 +122,7 @@ export const SearchInput = ({ isMobileSearchOpen, setIsMobileSearchOpen }: Searc
             </div>
 
             {/* Star Mode Input */}
-            <div
+            {/* <div
               className={`transition-all duration-500 ease-out overflow-hidden ${
                 !isStarMode ? "w-0 opacity-0" : "w-full opacity-100"
               }`}
@@ -137,7 +137,7 @@ export const SearchInput = ({ isMobileSearchOpen, setIsMobileSearchOpen }: Searc
                   border-primary shadow-lg shadow-orange-500/30
                 `}
               />
-            </div>
+            </div> */}
 
             {/* Search Icon - Only visible in normal mode */}
             <div
@@ -148,7 +148,7 @@ export const SearchInput = ({ isMobileSearchOpen, setIsMobileSearchOpen }: Searc
               <button
                 disabled={!value.trim()}
                 type="submit"
-                className="px-4 rounded-r-full flex text-gray-500 items-center justify-center focus:outline-none transition-colors duration-200 hover:bg-muted/50"
+                className="px-4 rounded-r-full flex text-gray-500 items-center justify-center focus:outline-none transition-colors duration-200 hover:text-orange-300"
                 onSubmit={handleAiSearch}
               >
                 {mounted && theme === 'retro' ? <FileFind variant="16x16_4" /> : <SearchIcon className="size-5" />}
@@ -156,7 +156,7 @@ export const SearchInput = ({ isMobileSearchOpen, setIsMobileSearchOpen }: Searc
             </div>
 
             {/* Star Icon - Only visible in star mode */}
-            <div
+            {/* <div
               className={`absolute left-0 top-0 bottom-0 flex items-center transition-all duration-500 ease-in-out ${
                 !isStarMode ? "opacity-0 scale-0" : "opacity-100 scale-100"
               }`}
@@ -168,10 +168,10 @@ export const SearchInput = ({ isMobileSearchOpen, setIsMobileSearchOpen }: Searc
               >
                 {mounted && theme === 'retro' ? <Star variant="16x16_4" /> : <Stars className="size-4 text-[#f59e0b]" />}
               </button>
-            </div>
+            </div> */}
 
             {/* Search Toggle Button - Only visible in star mode */}
-            <div
+            {/* <div
                 className={`absolute -left-16 top-0 bottom-0 flex items-center transition-all duration-500 ease-in-out ${
                 !isStarMode ? "opacity-0 scale-0" : "opacity-100 scale-100"
                 }`}
@@ -187,7 +187,7 @@ export const SearchInput = ({ isMobileSearchOpen, setIsMobileSearchOpen }: Searc
                   </div>
                 </div>
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Clear search button */}
@@ -205,23 +205,23 @@ export const SearchInput = ({ isMobileSearchOpen, setIsMobileSearchOpen }: Searc
         </div>
 
         {/* Enhanced Stars Button with Primary-Secondary Gradient Glow */}
+        {/*
         {!isStarMode && (
           <div
             onClick={handleStarClick}
             className="relative p-1.5 group rounded-full transition-all duration-300 hover:scale-105 active:scale-95 bg-background hover:cursor-pointer hidden sm:block"
           >
-            {/* Glow Effect */}
+            {/* Glow Effect
             <div className="absolute inset-0 rounded-2xl transition-opacity duration-300 blur-md group-hover:blur-lg -z-10 bg-gradient-to-r from-[#f59e0b] to-[#ff8904] opacity-70 group-hover:opacity-90" />
 
-            {/* Gradient Border */}
+            {/* Gradient Border
             <div className="absolute inset-0 rounded-2xl p-0.5 -z-5 transition-all duration-300 bg-gradient-to-r from-[#f59e0b] to-[#ff8904]" />
 
-            {/* Icon with Gradient Fill */}
-            <div className="z-50 p-1 relative bg-clip-text text-transparent group-hover:brightness-110 transition-all duration-300 bg-gradient-to-r from-[#f59e0b] to-[#ff8904]">
+            {/* <div className="z-50 p-1 relative bg-clip-text text-transparent group-hover:brightness-110 transition-all duration-300 bg-gradient-to-r from-[#f59e0b] to-[#ff8904]">
               {mounted && theme === 'retro' ? <Star variant="16x16_4" /> : <Stars className="size-4 text-black font-bold" />}
             </div>
           </div>
-        )}
+        )} */}
       </form>
     </>
   );
