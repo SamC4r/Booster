@@ -15,13 +15,17 @@ interface StudioBunnyUploaderProps {
   children?: React.ReactNode;
 }
 
-const getVideoDuration = (file: File): Promise<number> => {
+const getVideoMetadata = (file: File): Promise<{ duration: number; width: number; height: number }> => {
   return new Promise((resolve, reject) => {
     const video = document.createElement('video');
     video.preload = 'metadata';
     video.onloadedmetadata = () => {
       window.URL.revokeObjectURL(video.src);
-      resolve(video.duration);
+      resolve({
+        duration: video.duration,
+        width: video.videoWidth,
+        height: video.videoHeight
+      });
     };
     video.onerror = () => {
       reject("Invalid video file");
@@ -60,7 +64,7 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
 
   const tusUploader = async (file: File) => {
     try {
-      const duration = await getVideoDuration(file);
+      const { duration, width, height } = await getVideoMetadata(file);
       if (duration > 600) {
         toast.error("Video is longer than 10 minutes");
         return;
@@ -137,6 +141,8 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
         await createAfterUpload.mutateAsync({
           bunnyVideoId: videoId,
           title: file.name,
+          width,
+          height,
         });
       })
     } catch {
