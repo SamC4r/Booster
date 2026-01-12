@@ -30,13 +30,13 @@ export async function POST(req: Request) {
   const { success } = await uploadRateLimit.limit(userId);
   if (!success) {
     return NextResponse.json(
-      { error: "Daily upload limit reached" },
+      { error: "Daily upload limit reached (5 uploads per day)" },
       { status: 429 }
     );
   }
 
   const { title } = await req.json();
-  const lib = process.env.BUNNY_STREAM_LIBRARY_ID!;
+  const lib = process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID!;
   const r = await fetch(`https://video.bunnycdn.com/library/${lib}/videos`, {
     method: "POST",
     headers: {
@@ -50,16 +50,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: await r.text() }, { status: r.status });
   const json = await r.json(); //video id is on guid
 
-  // await db.insert(videos).values({
-  //   userId,
-  //   status: "created", 
-  //   title,
-  //   s3Name: "a",
-  //   isAi: false,
-  //   isFeatured: false,
-  //   bunnyVideoId: json.guid,
-  //   
-  // });
+
 
   return NextResponse.json(json);
 }

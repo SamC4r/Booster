@@ -35,7 +35,7 @@ export default function UploadButton({ onUploaded }: { onUploaded?: (guid: strin
     return (
         <>
             <input type="file" accept="video/*" disabled={busy} onChange={onPick} />;
-            {/* <BunnyEmbed libraryId={process.env.BUNNY_STREAM_LIBRARY_ID!} videoId={video_id} /> */}
+            {/* <BunnyEmbed libraryId={process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID!} videoId={video_id} /> */}
         </>
   )
 }

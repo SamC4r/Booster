@@ -225,8 +225,8 @@ export const studioRouter = createTRPCRouter({
     //                 console.log(`Starting sync for video: ${title} (${videoId})`);
 
     //                 // 1. Create placeholder in Bunny
-    //                 const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID;
-    //                 if (!libraryId) throw new Error("BUNNY_STREAM_LIBRARY_ID is not set");
+    //                 const libraryId = process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID;
+    //                 if (!libraryId) throw new Error("NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID is not set");
 
     //                 const bunnyVideo = await createBunnyVideo(libraryId, title);
     //                 console.log(`Created Bunny video: ${bunnyVideo.guid}`);

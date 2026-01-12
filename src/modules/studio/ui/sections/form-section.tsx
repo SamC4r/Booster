@@ -162,7 +162,7 @@ const FormErrorFallback = () => {
         Something went wrong
       </h3>
       <p className="text-gray-600 dark:text-gray-300 mb-6">
-        We couldn&apost load the video details. Please try again.
+        We couldn&apos;t load the video details. Please try again.
       </p>
       <Button
         onClick={() => window.location.reload()}
@@ -661,7 +661,7 @@ const FormSectionSuspense = ({ videoId }: PageProps) => {
                                     /> */}
                   <BunnyEmbed
                     key={video.bunnyStatus}
-                    libraryId={process.env.BUNNY_STREAM_LIBRARY_ID!}
+                    // libraryId={process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID!}
                     videoId={video.bunnyVideoId}
                     theme={theme}
                   />

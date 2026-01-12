@@ -64,7 +64,7 @@ export async function POST(req: Request, { params }: { params: { token: string }
   const payload = await req.json().catch(() => ({} as any));
 
   // Be defensive with field names across accounts/templates
-  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID ??
+  const libraryId = process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID!;
     
   
   const videoId = String(

@@ -9,7 +9,7 @@ export const statusMap = new Map<string, string>([
 ]);
 
 export async function getBunnyVideo(videoId: string) {
-  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID!;
+  const libraryId = process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID!;
   const r = await fetch(
     `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`,
     {
@@ -33,7 +33,7 @@ export async function getBunnyVideo(videoId: string) {
 }
 
 export async function deleteBunnyVideo(videoId: string) {
-  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID!;
+  const libraryId = process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID!;
   const r = await fetch(
     `https://video.bunnycdn.com/library/${libraryId}/videos/${videoId}`,
     {

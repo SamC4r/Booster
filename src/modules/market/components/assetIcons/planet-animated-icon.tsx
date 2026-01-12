@@ -24,8 +24,6 @@ export const AnimatedPlanetIcon = ({ className, size }: Props) => {
 
   return (
 
-    console.log("Rendered AnimatedPlanetIcon with size:", size),
-
     <div 
       className="relative group"
       onMouseEnter={() => setIsHovered(true)}

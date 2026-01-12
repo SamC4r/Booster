@@ -8,7 +8,6 @@ declare global {
 }
 
 export function BunnyEmbed({
-    libraryId,
     videoId,
     autoplay = true,
     muted = false,
@@ -20,7 +19,6 @@ export function BunnyEmbed({
     onTimeUpdate,
     theme,
 }: {
-    libraryId: string | null;
     videoId: string | null;
     autoplay?: boolean;
     muted?: boolean;
@@ -67,8 +65,11 @@ export function BunnyEmbed({
     params.set('loop', 'false');
     params.set('includeRum', 'false');
 
+
+    const libraryId = process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID!;
     const src = `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?${params}`;
 
+    // console.log("SOURCE", src);
     if (!libraryId || !videoId) {
         return <div className="w-full bg-black flex items-center justify-center text-white" style={{ paddingTop: '56.25%' }}>Video Unavailable</div>;
     }

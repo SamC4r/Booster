@@ -46,12 +46,14 @@ export async function PUT(req: Request) {
   }
 
   const r = await fetch(
-    `https://video.bunnycdn.com/library/${process.env.BUNNY_STREAM_LIBRARY_ID}/${"videos"}/${videoId}`,
+    `https://video.bunnycdn.com/library/${
+      process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID
+    }/${"videos"}/${videoId}`,
     {
       method: "PUT",
       headers: {
-        "AccessKey": process.env.BUNNY_STREAM_API_KEY!,
-        "accept": "application/json",
+        AccessKey: process.env.BUNNY_STREAM_API_KEY!,
+        accept: "application/json",
       },
       body: req.body,
       duplex: "half",
@@ -59,6 +61,17 @@ export async function PUT(req: Request) {
   );
   if (!r.ok) return new Response(await r.text(), { status: r.status });
 
+  // const { title } = await req.json();
+
+  // const json = await r.json(); //video id is on guid
+  // await db.insert(videos).values({
+  //   userId:user.id,
+  //   status: "created",
+  //   title,
+  //   isAi: false,
+  //   isFeatured: false,
+  //   bunnyVideoId: json.guid,
+  // });
 
   return new Response("ok");
 }
