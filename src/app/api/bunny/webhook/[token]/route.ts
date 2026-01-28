@@ -10,7 +10,7 @@ const statusMap = new Map<string, string>([
   ["0", "queued"],
   ["1", "processing"],
   ["2", "encoding"],
-  ["3", "finished"],
+  ["3", "completed"],
   ["4", "resolution_finished"],
   ["5", "failed"],
 ]);
@@ -50,9 +50,8 @@ async function getBunnyVideo(libraryId: string, videoId: string) {
   }>;
 }
 
-export async function POST(req: Request, { params }: { params: { token: string } }) {
-
-
+export async function POST(req: Request, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
 
   //TODO: verify bunny is sending this webhook -> DONE
   if (params.token !== process.env.BUNNY_WEBHOOK_SECRET) {
@@ -89,7 +88,6 @@ export async function POST(req: Request, { params }: { params: { token: string }
   // Only act when the video is processed/ready
 
   try {
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     // Ask Bunny which thumbnail file they generated
     const meta = await getBunnyVideo(libraryId, videoId); // fields documented in Get Video API
     const thumbnailFile = meta.thumbnailFileName || "thumbnail.jpg"; // fallback

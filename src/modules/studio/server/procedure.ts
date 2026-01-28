@@ -36,25 +36,25 @@ export const studioRouter = createTRPCRouter({
 
             // Sync with Bunny if processing
             if (video.bunnyVideoId &&
-                (video.bunnyStatus === 'processing' || video.bunnyStatus === 'uploaded' || video.bunnyStatus === 'queued' || video.bunnyStatus === 'encoding')) {
+                (video.bunnyStatus === 'processing' || video.bunnyStatus === 'uploaded' || video.bunnyStatus === 'queued' || video.bunnyStatus === 'encoding' || video.bunnyStatus === 'resolution_finished')) {
                 try {
                     const bunnyData = await getBunnyVideo(video.bunnyVideoId);
                     const rawStatus = String(bunnyData.status);
                     const newStatus = statusMap.get(rawStatus) || 'processing';
+                    const dbStatus = (rawStatus === '3' || rawStatus === '4') ? 'completed' : 'processing';
+                    const duration = bunnyData.length ? Math.round(bunnyData.length) : video.duration;
 
-                    if (newStatus !== video.bunnyStatus) {
-                        const dbStatus = rawStatus === '3' ? 'completed' : 'processing';
-                        const duration = bunnyData.length ? Math.round(bunnyData.length) : video.duration;
+                    let thumbnailUrl = video.thumbnailUrl;
+                    let thumbnailKey = video.thumbnailKey;
 
-                        let thumbnailUrl = video.thumbnailUrl;
-                        let thumbnailKey = video.thumbnailKey;
+                    if ((rawStatus === '3' || rawStatus === '4') && bunnyData.thumbnailFileName) {
+                        const host = process.env.BUNNY_PULLZONE_HOST!;
+                        thumbnailKey = `/${video.bunnyVideoId}/${bunnyData.thumbnailFileName}`;
+                        thumbnailUrl = `https://${host}${thumbnailKey}`;
+                    }
 
-                        if (rawStatus === '3' && bunnyData.thumbnailFileName) {
-                            const host = process.env.BUNNY_PULLZONE_HOST!;
-                            thumbnailKey = `/${video.bunnyVideoId}/${bunnyData.thumbnailFileName}`;
-                            thumbnailUrl = `https://${host}${thumbnailKey}`;
-                        }
-
+                    if (newStatus !== video.bunnyStatus || (thumbnailUrl !== video.thumbnailUrl && thumbnailUrl)) {
+                        
                         await db.update(videos).set({
                             bunnyStatus: newStatus,
                             status: dbStatus,
