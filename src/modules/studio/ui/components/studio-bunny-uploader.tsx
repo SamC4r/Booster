@@ -12,6 +12,8 @@ import * as tus from 'tus-js-client'
 interface StudioBunnyUploaderProps {
   onSuccess?: (videoId: string) => void;
   onUploadStarted?: (videoId: string) => void;
+  onUploadError?: () => void;
+  onProgressChange?: (isUploading: boolean) => void;
   children?: React.ReactNode;
 }
 
@@ -34,7 +36,7 @@ const getVideoMetadata = (file: File): Promise<{ duration: number; width: number
   });
 };
 
-export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: StudioBunnyUploaderProps) => {
+export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, onProgressChange, children }: StudioBunnyUploaderProps) => {
   const [state, setState] = useState<{ file: File | null; progress: number; uploading: boolean }>({
     file: null, progress: 0, uploading: false
   });
@@ -71,6 +73,7 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
       }
 
       setState({ file, progress: 0, uploading: true });
+      onProgressChange?.(true);
       const createRes = await fetch("/api/bunny/create", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -113,6 +116,7 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
         // Callback for errors which cannot be fixed using retries
         onError: (err) => {
           setState((s) => ({ ...s, uploading: false }));
+          onProgressChange?.(false);
           toast.error(`Upload failed: ${err.message}`);
         },
         onProgress: (bytesUploaded, bytesTotal) => {
@@ -121,6 +125,7 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
         },
         onSuccess: async () => {
           setState((s) => ({ ...s, progress: 100, uploading: false }));
+          onProgressChange?.(false);
           toast.success("Uploaded the video! Processing started.");
           if (onSuccess && videoIdRef.current) {
             onSuccess(videoIdRef.current);
@@ -131,9 +136,9 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
       })
       upload.findPreviousUploads().then(async function (previousUploads) {
         // Found previous uploads so we select the first one. 
-        if (previousUploads.length) {
-          upload.resumeFromPreviousUpload(previousUploads[0])
-        }
+        // if (previousUploads.length) {
+        //   upload.resumeFromPreviousUpload(previousUploads[0])
+        // }
 
         // Start the upload
         upload.start()
@@ -146,6 +151,8 @@ export const StudioBunnyUploader = ({ onSuccess, onUploadStarted, children }: St
         });
       })
     } catch(error:any) {
+      setState((s) => ({ ...s, uploading: false }));
+      onProgressChange?.(false);
       toast.error("Upload failed" + error.message)
     }
   }

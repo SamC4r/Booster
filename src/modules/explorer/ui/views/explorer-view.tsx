@@ -458,7 +458,7 @@ export const ExplorerViewSuspense = ({ categoryId }: HomeViewProps) => {
                         >
                             <div className="flex justify-end mb-4 px-1">
                                 <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-foreground gap-2 h-8">
-                                    <Link href="/settings">
+                                    <Link href="/settings" className="flex items-center">
                                         <Settings className="w-3.5 h-3.5" />
                                         <span className="text-xs font-medium">Customize Feed</span>
                                     </Link>
