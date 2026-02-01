@@ -12,7 +12,7 @@
         "lint": "next lint"
     },
     "dependencies": {
-        "@aws-sdk/client-s3": "^3.901.0",
+        "@aws-sdk/client-s3": "^3.931.0",
         "@aws-sdk/s3-request-presigner": "^3.901.0",
         "@clerk/nextjs": "6.36.6",
         "@distube/ytdl-core": "^4.16.12",
@@ -91,7 +91,7 @@
         "lucide-react": "^0.544.0",
         "media-chrome": "^4.14.0",
         "media-icons": "^1.1.5",
-        "next": "16.1.1",
+        "next": "16.1.5",
         "next-themes": "^0.4.6",
         "openai": "^6.9.0",
         "pgvector": "^0.2.1",
